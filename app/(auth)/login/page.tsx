@@ -1,8 +1,14 @@
 import Link from "next/link";
 import LoginForm from "@/app/components/auth/LoginForm";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Login - DevPulse",
+  description:
+    "Log in to your DevPulse account to monitor your coding activity and compete on leaderboards.",
+};
 
 export default async function Login() {
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-indigo-950 to-black text-white">
       <div className="bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-md">

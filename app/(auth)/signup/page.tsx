@@ -1,5 +1,12 @@
 import Link from "next/link";
 import SignupForm from "@/app/components/auth/SignupForm";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Sign Up - DevPulse",
+  description:
+    "Create a DevPulse account to monitor your coding activity and compete on leaderboards.",
+};
 
 export default async function Signup() {
   return (

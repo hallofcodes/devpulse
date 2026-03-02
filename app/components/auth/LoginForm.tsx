@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createClient } from "../../lib/supabase/client";
 import { toast } from "react-toastify";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 
 export default function LoginForm() {
   const supabase = createClient();
@@ -11,6 +12,8 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const captcha = useRef<HCaptcha>(null);
 
   const handleLogin = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -21,6 +24,7 @@ export default function LoginForm() {
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
+          options: { captchaToken },
         });
 
         if (error) return reject(error);
@@ -35,12 +39,14 @@ export default function LoginForm() {
       pending: "Logging in...",
       success: {
         render() {
+          if (captcha.current) captcha.current.resetCaptcha();
           router.push("/dashboard");
           return "Login successful! Redirecting...";
         },
       },
       error: {
         render({ data }) {
+          if (captcha.current) captcha.current.resetCaptcha();
           setLoading(false);
           const err = data as Error;
           return err?.message || "Failed to login. Please try again.";
@@ -62,10 +68,20 @@ export default function LoginForm() {
       <input
         type="password"
         placeholder="Password"
-        className="w-full p-3 mb-6 rounded-lg bg-black/40 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full p-3 mb-4 rounded-lg bg-black/40 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         onChange={(e) => setPassword(e.target.value)}
         required
       />
+
+      <div className="mb-4">
+        <HCaptcha
+          ref={captcha}
+          sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || ""}
+          onVerify={(token) => {
+            setCaptchaToken(token);
+          }}
+        />
+      </div>
 
       <button
         type="submit"

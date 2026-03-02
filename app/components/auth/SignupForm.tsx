@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createClient } from "../../lib/supabase/client";
 import { toast } from "react-toastify";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 
 export default function AuthPage() {
   const supabase = createClient();
@@ -10,6 +11,8 @@ export default function AuthPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const captcha = useRef<HCaptcha>(null);
 
   const handleSignup = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,6 +27,7 @@ export default function AuthPage() {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
+          options: { captchaToken },
         });
 
         if (error) return reject(error);
@@ -37,12 +41,14 @@ export default function AuthPage() {
       pending: "Signing up...",
       success: {
         render() {
+          if (captcha.current) captcha.current.resetCaptcha();
           setLoading(false);
           return "Signed up successfully! Check your email to confirm your account.";
         },
       },
       error: {
         render({ data }) {
+          if (captcha.current) captcha.current.resetCaptcha();
           setLoading(false);
           const err = data as Error;
           return err?.message || "Failed to signup. Please try again.";
@@ -72,10 +78,20 @@ export default function AuthPage() {
       <input
         type="password"
         placeholder="Confirm Password"
-        className="w-full p-3 mb-6 rounded-lg bg-black/40 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full p-3 mb-4 rounded-lg bg-black/40 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         onChange={(e) => setConfirmPassword(e.target.value)}
         required
       />
+
+      <div className="mb-4">
+        <HCaptcha
+          ref={captcha}
+          sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || ""}
+          onVerify={(token) => {
+            setCaptchaToken(token);
+          }}
+        />
+      </div>
 
       <button
         type="submit"
