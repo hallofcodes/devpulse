@@ -10,9 +10,9 @@ export const metadata: Metadata = {
 
 export default async function Login() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-indigo-950 to-black text-white">
-      <div className="bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-md">
-        <h2 className="text-3xl font-bold mb-2 text-center">DevPulse</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-950 via-indigo-950 to-black text-white px-4">
+      <div className="w-full max-w-lg bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-10">
+        <h2 className="text-3xl font-bold mb-2 text-indigo-400">DevPulse</h2>
         <p className="mb-6 text-gray-400">
           Welcome back! Please enter your credentials to log in.
         </p>

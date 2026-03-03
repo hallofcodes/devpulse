@@ -40,7 +40,7 @@ export default async function Auth(req: NextRequest) {
 
   const { pathname } = req.nextUrl;
 
-  const protectedRoutes = ["/dashboard"];
+  const protectedRoutes = ["/dashboard", "/logout"];
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route),
   );
@@ -49,7 +49,8 @@ export default async function Auth(req: NextRequest) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  if (pathname.startsWith("/login") && user) {
+  const authRoutes = ["/login", "signup"];
+  if (authRoutes.includes(pathname) && user) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
@@ -57,5 +58,5 @@ export default async function Auth(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

@@ -62,7 +62,9 @@ export default function AuthPage() {
       <input
         type="email"
         placeholder="Email"
-        className="w-full p-3 mb-4 rounded-lg bg-black/40 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full p-3 rounded-xl bg-black/40 border border-gray-700
+                   focus:outline-none focus:ring-2 focus:ring-indigo-500
+                   transition mb-4"
         onChange={(e) => setEmail(e.target.value)}
         required
       />
@@ -70,7 +72,9 @@ export default function AuthPage() {
       <input
         type="password"
         placeholder="Password"
-        className="w-full p-3 mb-4 rounded-lg bg-black/40 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full p-3 rounded-xl bg-black/40 border border-gray-700
+                   focus:outline-none focus:ring-2 focus:ring-indigo-500
+                   transition mb-4"
         onChange={(e) => setPassword(e.target.value)}
         required
       />
@@ -78,7 +82,9 @@ export default function AuthPage() {
       <input
         type="password"
         placeholder="Confirm Password"
-        className="w-full p-3 mb-4 rounded-lg bg-black/40 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full p-3 rounded-xl bg-black/40 border border-gray-700
+                   focus:outline-none focus:ring-2 focus:ring-indigo-500
+                   transition mb-4"
         onChange={(e) => setConfirmPassword(e.target.value)}
         required
       />
