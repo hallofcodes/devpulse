@@ -1,6 +1,15 @@
 import Link from "next/link";
+import { createClient } from "./lib/supabase/server";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("leaderboards")
+    .select("id, name, slug")
+    .order("created_at", { ascending: false })
+    .limit(10);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-indigo-950 to-black text-white overflow-hidden">
       <section className="min-h-screen flex flex-col items-center justify-center relative max-w-6xl mx-auto px-6 pt-28 pb-32 text-center">
@@ -55,7 +64,7 @@ export default function Home() {
         />
       </section>
 
-      <section className="max-w-4xl mx-auto px-6 pb-32 text-center">
+      <section className="max-w-4xl mx-auto px-6 pb-5 text-center">
         <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-12">
           <h2 className="text-3xl font-bold mb-4">
             Ready to track your coding productivity?
@@ -71,6 +80,29 @@ export default function Home() {
           >
             Create Free Account
           </Link>
+        </div>
+      </section>
+
+      <section className="max-w-4xl mx-auto px-6 text-center">
+        <div className="p-12 bg-indigo-500/20 rounded-2xl shadow-md border border-white/10">
+          <h2 className="text-3xl font-bold mb-6 text-white">
+            Recently Created Leaderboards
+          </h2>
+
+          <div className="space-y-3">
+            {data?.map((board) => (
+              <Link
+                key={board.id}
+                href={`/leaderboard/${board.slug}`}
+                className="bg-white/10 hover:bg-white/20 transition-colors rounded-lg px-6 py-3 text-left flex justify-between items-center"
+              >
+                <span className="text-white font-medium hover:underline">
+                  {board.name}
+                </span>
+                <span className="text-gray-400 text-sm">View →</span>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 

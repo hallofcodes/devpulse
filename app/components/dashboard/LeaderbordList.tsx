@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "../../lib/supabase/server";
 
 export default async function LeaderboardsList() {
@@ -48,7 +49,7 @@ export default async function LeaderboardsList() {
         ))}
 
         {joinedBoards.map((board: any) => (
-          <a
+          <Link
             key={board.id}
             href={`/leaderboard/${board.slug}`}
             className="block p-4 rounded-xl bg-black/40 border border-gray-700
@@ -56,7 +57,7 @@ export default async function LeaderboardsList() {
           >
             <p className="font-semibold">{board.name}</p>
             <p className="text-sm text-gray-400">Member</p>
-          </a>
+          </Link>
         ))}
 
         {!owned?.length && !joinedBoards.length && (
