@@ -265,7 +265,7 @@ export default function Stats() {
                   }}
                   labelStyle={{ color: "#9ca3af" }}
                   itemStyle={{ color: "#818cf8" }}
-                  formatter={(value: number) => [`${value}h`, "Time"]}
+                  formatter={(value: any) => [`${value}h`, "Time"]}
                 />
                 <Area
                   type="monotone"
@@ -323,7 +323,7 @@ export default function Stats() {
                     border: "1px solid rgba(99,102,241,0.2)",
                     borderRadius: "8px",
                   }}
-                  formatter={(value: number) => [formatHours(value), "Time"]}
+                  formatter={(value: any) => [formatHours(Number(value) || 0), "Time"]}
                 />
               </PieChart>
             </ResponsiveContainer>
