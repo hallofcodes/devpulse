@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { toast } from "react-toastify";
 
 export default function DashboardWithoutKey({ email }: { email: string }) {
@@ -51,7 +52,7 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
 
   const testApiKey = async (apiKey: string) => {
     const response = await fetch(
-      `/api/wakatime/sync?=apiKey=${encodeURIComponent(apiKey)}`,
+      `/api/wakatime/sync?apiKey=${encodeURIComponent(apiKey)}`,
       {
         headers: {
           Authorization: `Basic ${Buffer.from(apiKey).toString("base64")}`,
@@ -62,11 +63,16 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-indigo-950 to-black text-white px-4">
-      <div className="bg-white/5 backdrop-blur-md p-10 rounded-3xl shadow-2xl w-full max-w-md border border-white/10">
-        <h2 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500">
-          Connect WakaTime
-        </h2>
+    <div className="min-h-screen flex items-center justify-center bg-[#0a0a1a] text-white px-4 grid-bg relative">
+      <div className="glow-orb w-[400px] h-[400px] bg-indigo-600/10 top-1/4 left-1/2 -translate-x-1/2" />
+
+      <div className="glass-card p-10 w-full max-w-md relative z-10">
+        <div className="flex items-center gap-3 mb-2">
+          <Image src="/logo.svg" alt="DevPulse Logo" width={36} height={36} />
+          <h2 className="text-2xl font-bold gradient-text">
+            Connect WakaTime
+          </h2>
+        </div>
 
         <p className="text-gray-400 mb-8 text-sm">
           Welcome <span className="text-white font-medium">{email}</span>. Enter
@@ -75,26 +81,23 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
 
         <input
           placeholder="Enter your WakaTime API Key"
-          className="w-full p-3 mb-4 rounded-xl bg-black/40 border border-gray-700
-                     focus:outline-none focus:ring-2 focus:ring-indigo-500
-                     focus:border-indigo-500 transition"
+          className="input-field mb-4"
           onChange={(e) => setKey(e.target.value)}
         />
 
         <button
           onClick={saveKey}
           disabled={loading}
-          className={`w-full py-3 rounded-xl font-semibold transition-all duration-300
-            ${
-              loading
-                ? "bg-gray-700 cursor-not-allowed opacity-70"
-                : "bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-purple-500 hover:to-indigo-500 hover:scale-[1.02] shadow-lg"
-            }`}
+          className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
+            loading
+              ? "bg-gray-800 cursor-not-allowed opacity-60"
+              : "btn-primary"
+          }`}
         >
           {loading ? "Saving..." : "Save API Key"}
         </button>
 
-        <p className="mt-6 text-sm text-gray-400 leading-relaxed mb-3">
+        <p className="mt-6 text-sm text-gray-500 leading-relaxed mb-3">
           You can get your WakaTime API key from your{" "}
           <Link
             href="https://wakatime.com/settings/account"
@@ -108,7 +111,7 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
 
         <Link
           href="/logout"
-          className="ml-auto text-sm text-gray-400 hover:text-gray-300"
+          className="text-sm text-gray-500 hover:text-gray-300 transition"
         >
           Logout
         </Link>

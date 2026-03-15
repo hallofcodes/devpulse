@@ -31,45 +31,47 @@ export default function BoardList({
     <>
       <div
         key={board.id}
-        className="p-4 rounded-xl bg-black/40 border border-gray-800 hover:border-indigo-500 transition"
+        className="stat-card flex justify-between items-center group"
       >
-        <div className="flex justify-between items-center">
-          <Link href={`/leaderboard/${board.slug}`} className="flex-1">
-            <p className="font-medium hover:text-indigo-400">{board.name}</p>
-          </Link>
+        <Link href={`/leaderboard/${board.slug}`} className="flex-1">
+          <p className="font-medium text-gray-300 group-hover:text-indigo-400 transition">
+            {board.name}
+          </p>
+        </Link>
 
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setShowDeleteModal(true)}
-            className="px-3 py-1.5 text-xs rounded-lg bg-gray-600 hover:bg-gray-500 transition mr-2"
+            className="p-2 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition"
           >
-            <FontAwesomeIcon icon={faTrash} />
+            <FontAwesomeIcon icon={faTrash} className="text-xs" />
           </button>
           <button
             onClick={() => {
               setSelectedCode(board.join_code);
               setShowCodeModal(true);
             }}
-            className="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-500 transition"
+            className="p-2 rounded-lg text-gray-600 hover:text-indigo-400 hover:bg-indigo-500/10 transition"
           >
-            <FontAwesomeIcon icon={faKey} />
+            <FontAwesomeIcon icon={faKey} className="text-xs" />
           </button>
         </div>
       </div>
 
       {showCodeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 rounded-2xl">
-          <div className="bg-gray-900 border border-gray-700 p-8 w-[90%] max-w-md shadow-2xl rounded-2xl">
-            <h3 className="text-xl font-semibold mb-4">
-              Leaderboard Join Code
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="glass-card p-8 w-[90%] max-w-md">
+            <h3 className="text-lg font-semibold mb-4 text-gray-200">
+              Join Code
             </h3>
 
-            <div className="text-center text-3xl font-bold tracking-widest text-indigo-400 mb-6">
+            <div className="text-center text-3xl font-bold tracking-widest text-indigo-400 mb-6 py-4 stat-card">
               {selectedCode}
             </div>
 
             <button
               onClick={() => setShowCodeModal(false)}
-              className="w-full py-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition"
+              className="btn-secondary w-full py-2.5"
             >
               Close
             </button>
@@ -78,30 +80,30 @@ export default function BoardList({
       )}
 
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 rounded-2xl">
-          <div className="bg-gray-900 border border-gray-700 p-8 w-[90%] max-w-md shadow-2xl rounded-2xl">
-            <h3 className="text-xl font-semibold mb-4">
-              Are you sure you want to delete this leaderboard?
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="glass-card p-8 w-[90%] max-w-md">
+            <h3 className="text-lg font-semibold mb-4 text-gray-200">
+              Delete Leaderboard?
             </h3>
 
-            <div className="text-center text-3xl font-bold tracking-widest text-indigo-400 mb-6">
+            <div className="text-center text-xl font-bold text-indigo-400 mb-4 py-3 stat-card">
               {board.name}
             </div>
 
-            <small className="text-red-400 italic">
-              This action is irreversable.
-            </small>
+            <p className="text-red-400/80 text-sm italic mb-6 text-center">
+              This action is irreversible.
+            </p>
 
-            <div className="flex justify-between items-center gap-3">
+            <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="w-full py-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition"
+                className="btn-secondary w-full py-2.5"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleDelete()}
-                className="w-full py-2 rounded-lg bg-red-500 hover:bg-red-400 transition"
+                className="w-full py-2.5 rounded-xl font-semibold bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30 transition"
               >
                 Delete
               </button>

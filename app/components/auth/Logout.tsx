@@ -1,11 +1,12 @@
 "use client";
 
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase/client";
 import { useEffect } from "react";
 
 export default function Logout() {
   const supabase = createClient();
+  const router = useRouter();
 
   const handleLogout = async () => {
     try {
@@ -13,7 +14,7 @@ export default function Logout() {
     } catch (err) {
       console.error("Error logging out:", err);
     } finally {
-      redirect("/");
+      router.push("/");
     }
   };
 
@@ -22,8 +23,8 @@ export default function Logout() {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-950 via-indigo-950 to-black text-white px-4">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-orange"></div>
+    <div className="min-h-screen flex items-center justify-center bg-[#0a0a1a] text-white grid-bg">
+      <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
     </div>
   );
 }

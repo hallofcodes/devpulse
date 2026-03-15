@@ -70,13 +70,11 @@ export default function LoginForm() {
 
   return (
     <>
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleLogin} className="space-y-4">
         <input
           type="email"
           placeholder="Email"
-          className="w-full p-3 rounded-xl bg-black/40 border border-gray-700
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500
-                   transition mb-4"
+          className="input-field"
           onChange={(e) => setEmail(e.target.value)}
           required
         />
@@ -84,9 +82,7 @@ export default function LoginForm() {
         <input
           type="password"
           placeholder="Password"
-          className="w-full p-3 rounded-xl bg-black/40 border border-gray-700
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500
-                   transition mb-4"
+          className="input-field"
           onChange={(e) => setPassword(e.target.value)}
           required
         />
@@ -94,12 +90,11 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-3 mb-3 rounded-lg font-semibold transition
-         ${
-           loading
-             ? "bg-gray-700 cursor-not-allowed opacity-70"
-             : "bg-gradient-to-r from-indigo-500 to-purple-500 hover:scale-105"
-         }`}
+          className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
+            loading
+              ? "bg-gray-800 cursor-not-allowed opacity-60"
+              : "btn-primary"
+          }`}
         >
           Login
         </button>
@@ -107,17 +102,18 @@ export default function LoginForm() {
         <button
           type="button"
           onClick={handleOAuthSignIn}
-          className="w-full py-3 rounded-lg font-semibold transition
-                     bg-gray-700 hover:bg-gray-600 text-white"
+          className="btn-secondary w-full py-3"
         >
           Sign In with GitHub
         </button>
       </form>
 
       {showCaptcha && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50 rounded-2xl">
-          <div className="bg-gray-900 border border-gray-700 p-8 shadow-2xl text-center rounded-2xl">
-            <h3 className="text-xl font-semibold mb-4">Verify you are human</h3>
+        <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 backdrop-blur-sm">
+          <div className="glass-card p-8 text-center">
+            <h3 className="text-lg font-semibold mb-4 text-gray-200">
+              Verify you are human
+            </h3>
 
             <HCaptcha
               ref={captcha}
@@ -127,7 +123,7 @@ export default function LoginForm() {
 
             <button
               onClick={() => setShowCaptcha(false)}
-              className="mt-4 text-sm text-gray-400 hover:text-white"
+              className="mt-4 text-sm text-gray-500 hover:text-gray-300 transition"
             >
               Cancel
             </button>

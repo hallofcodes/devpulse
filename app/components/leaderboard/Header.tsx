@@ -6,6 +6,7 @@ import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { createClient } from "../../lib/supabase/client";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 type Leaderboard = {
   id: string;
@@ -72,59 +73,60 @@ export default function LeaderboardHeader({
 
   return (
     <>
-      <div className="group relative mb-8">
-        <div className="flex justify-center items-center">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">{leaderboard.name}</h1>
-
-            <p className="text-gray-400 text-center">
-              {leaderboard.description?.length > 0
-                ? leaderboard.description
-                : "No description available."}
-            </p>
-          </div>
+      <div className="group relative mb-8 text-center">
+        <div className="flex justify-center items-center gap-3">
+          <Image src="/logo.svg" alt="DevPulse Logo" width={36} height={36} />
+          <h1 className="text-3xl font-bold text-white">{leaderboard.name}</h1>
 
           {isOwner && (
             <button
               onClick={() => setOpen(true)}
-              className="ms-5 opacity-0 group-hover:opacity-100 transition text-gray-400 hover:text-white"
+              className="opacity-0 group-hover:opacity-100 transition text-gray-600 hover:text-indigo-400 p-1.5"
             >
-              <FontAwesomeIcon icon={faPencil} />
+              <FontAwesomeIcon icon={faPencil} className="text-sm" />
             </button>
           )}
         </div>
+
+        <p className="text-gray-500 mt-2 text-sm">
+          {leaderboard.description?.length > 0
+            ? leaderboard.description
+            : "No description available."}
+        </p>
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 rounded-2xl">
-          <div className="bg-gray-900 border border-gray-700 p-8 w-[90%] max-w-md shadow-2xl rounded-2xl">
-            <h3 className="text-xl font-semibold mb-4">Edit Leaderboard</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="glass-card p-8 w-[90%] max-w-md">
+            <h3 className="text-lg font-semibold mb-4 text-gray-200">
+              Edit Leaderboard
+            </h3>
 
             <input
-              className="w-full h-11 px-4 rounded-lg bg-black/40 border border-gray-700
-            focus:outline-none focus:ring-2 focus:ring-indigo-500 transition mb-2"
+              className="input-field mb-3"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              placeholder="Leaderboard name"
             />
 
             <textarea
-              className="w-full h-11 px-4 rounded-lg bg-black/40 border border-gray-700
-          focus:outline-none focus:ring-2 focus:ring-indigo-500 transition mb-3"
+              className="input-field mb-4 min-h-[80px] resize-none"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              placeholder="Description (optional)"
             />
 
-            <div className="flex justify-between items-center gap-3">
+            <div className="flex gap-3">
               <button
                 onClick={() => setOpen(false)}
-                className="w-full py-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition"
+                className="btn-secondary w-full py-2.5"
               >
                 Cancel
               </button>
 
               <button
                 onClick={handleEdit}
-                className="w-full py-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 transition"
+                className="btn-primary w-full py-2.5"
               >
                 Save
               </button>
