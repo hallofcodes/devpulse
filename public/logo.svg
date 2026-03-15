@@ -1,0 +1,33 @@
+<svg width="500" height="500" viewBox="35 60 130 65" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DevPulse Logo">
+  <defs>
+    <linearGradient id="profGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1" />
+      <feOffset dx="1" dy="1" result="offsetblur" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.2" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <rect x="40" y="65" width="45" height="12" rx="6" fill="url(#profGrad)" />
+    <rect x="92" y="65" width="20" height="12" rx="6" fill="url(#profGrad)" />
+    <rect x="118" y="65" width="35" height="12" rx="6" fill="url(#profGrad)" />
+
+    <rect x="40" y="85" width="25" height="12" rx="6" fill="url(#profGrad)" />
+    <rect x="72" y="85" width="65" height="12" rx="6" fill="url(#profGrad)" />
+    <rect x="144" y="85" width="15" height="12" rx="6" fill="url(#profGrad)" />
+
+    <rect x="40" y="105" width="35" height="12" rx="6" fill="url(#profGrad)" />
+    <rect x="82" y="105" width="55" height="12" rx="6" fill="url(#profGrad)" />
+    <rect x="144" y="105" width="15" height="12" rx="6" fill="url(#profGrad)" />
+  </g>
+</svg>

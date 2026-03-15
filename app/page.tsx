@@ -1,24 +1,35 @@
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "./lib/supabase/server";
 
 export default async function Home() {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("leaderboards")
     .select("id, name, slug")
     .order("created_at", { ascending: false })
     .limit(10);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-indigo-950 to-black text-white overflow-hidden">
-      <section className="min-h-screen flex flex-col items-center justify-center relative max-w-6xl mx-auto px-2 pt-28 pb-32 text-center">
-        <div className="absolute inset-0 -z-10 flex justify-center">
-          <div className="w-[600px] h-[600px] bg-purple-600/20 blur-[160px] rounded-full" />
-        </div>
+    <div className="min-h-screen bg-[#0a0a1a] text-white overflow-hidden grid-bg">
+      {/* Hero */}
+      <section className="min-h-screen flex flex-col items-center justify-center relative max-w-6xl mx-auto px-6 pt-28 pb-32 text-center">
+        <div className="glow-orb w-[500px] h-[500px] bg-indigo-600/15 top-1/4 left-1/2 -translate-x-1/2" />
+        <div className="glow-orb w-[300px] h-[300px] bg-purple-600/10 top-1/3 right-0" />
+
+        <Image
+          src="/logo.svg"
+          alt="DevPulse Logo"
+          width={80}
+          height={80}
+          className="mb-8 relative z-10"
+          data-aos="fade-up"
+          priority
+        />
 
         <h1
-          className="text-6xl md:text-7xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500 text-transparent bg-clip-text"
+          className="text-5xl md:text-7xl font-extrabold tracking-tight gradient-text relative z-10"
           data-aos="fade-up"
           data-aos-delay="100"
         >
@@ -26,7 +37,7 @@ export default async function Home() {
         </h1>
 
         <p
-          className="mt-6 text-lg md:text-xl text-gray-300 max-w-2xl mx-auto"
+          className="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed relative z-10"
           data-aos="fade-up"
           data-aos-delay="200"
         >
@@ -35,120 +46,107 @@ export default async function Home() {
           using WakaTime insights.
         </p>
 
-        <div className="mt-10 flex justify-center gap-4">
-          <Link
-            href="/signup"
-            className="px-10 py-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 font-semibold shadow-xl hover:scale-105 transition"
-            data-aos="fade-up"
-            data-aos-delay="300"
-          >
+        <div
+          className="mt-10 flex justify-center gap-4 relative z-10"
+          data-aos="fade-up"
+          data-aos-delay="300"
+        >
+          <Link href="/signup" className="btn-primary px-10 py-4">
             Get Started
           </Link>
-
-          <Link
-            href="/login"
-            className="px-10 py-4 rounded-xl border border-white/20 hover:bg-white/10 transition"
-            data-aos="fade-up"
-            data-aos-delay="400"
-          >
+          <Link href="/login" className="btn-secondary px-10 py-4">
             Login
           </Link>
         </div>
       </section>
 
-      <section className="max-w-6xl mx-auto px-2 pb-28 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <Feature
-          color="text-indigo-400"
+      {/* Features */}
+      <section className="max-w-6xl mx-auto px-6 pb-28 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <FeatureCard
+          icon="⚡"
           title="Private & Public Boards"
           description="Create private boards for your team or open public leaderboards to compete with the community."
+          delay="0"
         />
-
-        <Feature
-          color="text-purple-400"
+        <FeatureCard
+          icon="📊"
           title="Real-Time Stats"
           description="Sync your WakaTime data automatically and watch your progress climb the leaderboard."
+          delay="100"
         />
-
-        <Feature
-          color="text-pink-400"
+        <FeatureCard
+          icon="👥"
           title="Team Collaboration"
           description="Invite teammates, compare coding activity, and foster a culture of productivity."
+          delay="200"
         />
       </section>
 
-      <section className="max-w-4xl mx-auto px-2 pb-5 text-center">
-        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-12">
-          <h2 className="text-3xl font-bold mb-4" data-aos="fade-up">
+      {/* CTA */}
+      <section className="max-w-4xl mx-auto px-6 pb-8 text-center">
+        <div className="glass-card p-12" data-aos="fade-up">
+          <h2 className="text-3xl font-bold mb-4 gradient-text">
             Ready to track your coding productivity?
           </h2>
-
-          <p
-            className="text-gray-400 mb-8"
-            data-aos="fade-up"
-            data-aos-delay="100"
-          >
+          <p className="text-gray-400 mb-8">
             Join developers and teams competing on DevPulse.
           </p>
-
           <Link
             href="/signup"
-            className="px-2 py-4  rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 font-semibold hover:scale-105 transition"
-            data-aos="fade-up"
-            data-aos-delay="200"
+            className="btn-primary inline-block px-8 py-4"
           >
             Create Free Account
           </Link>
         </div>
       </section>
 
-      <section className="max-w-4xl mx-auto px-2 text-center">
-        <div className="p-12 bg-indigo-500/20 rounded-2xl shadow-md border border-white/10">
-          <h2 className="text-3xl font-bold mb-6 text-white" data-aos="fade-up">
-            Recently Created Leaderboards
-          </h2>
-
-          <div className="space-y-3">
-            {data?.map((board) => (
-              <Link
-                key={board.id}
-                href={`/leaderboard/${board.slug}`}
-                className="bg-white/10 hover:bg-white/20 transition-colors rounded-lg px-6 py-3 text-left flex justify-between items-center"
-                data-aos="fade-up"
-                data-aos-delay="100"
-              >
-                <span
-                  className="text-white font-medium hover:underline"
+      {/* Recent Leaderboards */}
+      {data && data.length > 0 && (
+        <section className="max-w-4xl mx-auto px-6 mt-4 text-center">
+          <div className="glass-card p-10" data-aos="fade-up">
+            <h2 className="text-2xl font-bold mb-6 text-white">
+              Recently Created Leaderboards
+            </h2>
+            <div className="space-y-2">
+              {data.map((board: { id: string; name: string; slug: string }) => (
+                <Link
+                  key={board.id}
+                  href={`/leaderboard/${board.slug}`}
+                  className="stat-card flex justify-between items-center px-5 py-3 group"
                   data-aos="fade-up"
-                  data-aos-delay="100"
+                  data-aos-delay="50"
                 >
-                  {board.name}
-                </span>
-                <span className="text-gray-400 text-sm">View →</span>
-              </Link>
-            ))}
+                  <span className="text-gray-200 font-medium group-hover:text-indigo-400 transition">
+                    {board.name}
+                  </span>
+                  <span className="text-gray-500 text-sm group-hover:text-indigo-400 transition">
+                    View →
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      <footer className="border-t border-white/10 mt-20 py-8 text-center text-sm text-gray-400">
-        <p className="font-medium text-gray-300">
+      {/* Footer */}
+      <footer className="border-t border-white/5 mt-20 py-10 text-center text-sm text-gray-500">
+        <p className="font-medium text-gray-400">
           © {new Date().getFullYear()} DevPulse
         </p>
-
         <p className="mt-1">
           A creation by{" "}
           <span className="text-indigo-400 font-medium">
             Melvin Jones Repol
           </span>
         </p>
-
-        <p className="text-gray-500">
+        <p className="mt-1 text-gray-600">
           Open source on{" "}
           <a
             href="https://github.com/mrepol742/devpulse"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-indigo-400 hover:text-indigo-300 underline-offset-4 hover:underline transition"
+            className="text-indigo-500 hover:text-indigo-400 underline-offset-4 hover:underline transition"
           >
             GitHub
           </a>
@@ -158,23 +156,28 @@ export default async function Home() {
   );
 }
 
-function Feature({
+function FeatureCard({
+  icon,
   title,
   description,
-  color,
+  delay,
 }: {
+  icon: string;
   title: string;
   description: string;
-  color: string;
+  delay: string;
 }) {
   return (
     <div
-      className="group bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 transition hover:bg-white/10 hover:scale-[1.02]"
+      className="glass-card p-8 group hover:scale-[1.02]"
       data-aos="fade-up"
+      data-aos-delay={delay}
     >
-      <h3 className={`text-xl font-semibold mb-3 ${color}`}>{title}</h3>
-
-      <p className="text-gray-400">{description}</p>
+      <div className="text-3xl mb-4">{icon}</div>
+      <h3 className="text-lg font-semibold mb-3 text-indigo-300 group-hover:text-indigo-200 transition">
+        {title}
+      </h3>
+      <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
     </div>
   );
 }

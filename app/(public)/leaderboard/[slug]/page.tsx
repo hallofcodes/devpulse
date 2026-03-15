@@ -16,8 +16,11 @@ export default async function LeaderboardPage(props: {
 
   if (!leaderboard) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-white">
-        Leaderboard not found {slug}
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a1a] text-white grid-bg">
+        <div className="glass-card p-10 text-center">
+          <p className="text-gray-400 text-lg">Leaderboard not found</p>
+          <p className="text-gray-600 text-sm mt-2">{slug}</p>
+        </div>
       </div>
     );
   }
@@ -36,18 +39,20 @@ export default async function LeaderboardPage(props: {
   if (error) {
     console.error("Error fetching members:", error);
     return (
-      <div className="min-h-screen flex items-center justify-center text-white">
-        Error loading members.
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a1a] text-white grid-bg">
+        <div className="glass-card p-10 text-center">
+          <p className="text-red-400">Error loading members.</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-indigo-950 to-black text-white p-10">
-      <div className="max-w-5xl mx-auto">
-        <div className="max-w-5xl mx-auto">
-          <LeaderboardHeader leaderboard={leaderboard} isOwner={isOwner} />
-        </div>
+    <div className="min-h-screen bg-[#0a0a1a] text-white grid-bg relative">
+      <div className="glow-orb w-[400px] h-[400px] bg-indigo-600/8 top-0 right-1/4" />
+
+      <div className="max-w-5xl mx-auto p-6 md:p-10 relative z-10">
+        <LeaderboardHeader leaderboard={leaderboard} isOwner={isOwner} />
         <LeaderboardTable
           members={members || []}
           isOwner={isOwner}

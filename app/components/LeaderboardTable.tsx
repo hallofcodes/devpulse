@@ -1,6 +1,3 @@
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 type Member = {
   user_id: string;
   role: string;
@@ -12,12 +9,10 @@ type Member = {
 };
 
 function LeaderboardStats({ members }: { members: Member[] }) {
-  // Total coding time in hours
   const totalHours = Math.round(
     members.reduce((acc, m) => acc + (m.total_seconds || 0), 0) / 3600,
   );
 
-  // Count languages, editors, OS
   const languageCount: Record<string, number> = {};
   const editorCount: Record<string, number> = {};
   const osCount: Record<string, number> = {};
@@ -48,28 +43,26 @@ function LeaderboardStats({ members }: { members: Member[] }) {
     Object.entries(osCount).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A";
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6 text-sm text-gray-400">
-      <div className="bg-white/5 p-4 rounded-xl flex-1 text-center border border-white/10">
-        <div className="font-bold text-yellow-300 text-lg">
-          {totalHours} hrs
-        </div>
-        <div>Last 7 Days</div>
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
+      <div className="stat-card text-center">
+        <p className="text-2xl font-bold text-white">{totalHours}</p>
+        <p className="text-xs text-indigo-400 mt-1 uppercase tracking-wider">Total Hours</p>
       </div>
-      <div className="bg-white/5 p-4 rounded-xl flex-1 text-center border border-white/10">
-        <div className="font-bold text-yellow-300 text-lg">{topLanguage}</div>
-        <div>Top Language</div>
+      <div className="stat-card text-center">
+        <p className="text-lg font-bold text-white truncate">{topLanguage}</p>
+        <p className="text-xs text-indigo-400 mt-1 uppercase tracking-wider">Top Language</p>
       </div>
-      <div className="bg-white/5 p-4 rounded-xl flex-1 text-center border border-white/10">
-        <div className="font-bold text-yellow-300 text-lg">{leastLanguage}</div>
-        <div>Least Language</div>
+      <div className="stat-card text-center">
+        <p className="text-lg font-bold text-white truncate">{leastLanguage}</p>
+        <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">Least Language</p>
       </div>
-      <div className="bg-white/5 p-4 rounded-xl flex-1 text-center border border-white/10">
-        <div className="font-bold text-yellow-300 text-lg">{topEditor}</div>
-        <div>Top Editor</div>
+      <div className="stat-card text-center">
+        <p className="text-lg font-bold text-white truncate">{topEditor}</p>
+        <p className="text-xs text-indigo-400 mt-1 uppercase tracking-wider">Top Editor</p>
       </div>
-      <div className="bg-white/5 p-4 rounded-xl flex-1 text-center border border-white/10">
-        <div className="font-bold text-yellow-300 text-lg">{topOS}</div>
-        <div>Top OS</div>
+      <div className="stat-card text-center">
+        <p className="text-lg font-bold text-white truncate">{topOS}</p>
+        <p className="text-xs text-indigo-400 mt-1 uppercase tracking-wider">Top OS</p>
       </div>
     </div>
   );
@@ -100,6 +93,13 @@ export default function LeaderboardTable({
       editor: member.editors[0]?.name || "N/A",
     }));
 
+  const getRankBadge = (rank: number) => {
+    if (rank === 1) return "🥇";
+    if (rank === 2) return "🥈";
+    if (rank === 3) return "🥉";
+    return `#${rank}`;
+  };
+
   return (
     <div>
       <LeaderboardStats members={members} />
@@ -108,44 +108,42 @@ export default function LeaderboardTable({
         {ranked.map((user) => (
           <div
             key={user.email}
-            className={`bg-white/5 border rounded-2xl p-5
-              hover:bg-white/10 transition  ${user.user_id === ownerId ? "border-yellow-300" : "border-white/10"}`}
+            className={`glass-card p-5 ${
+              user.user_id === ownerId
+                ? "!border-indigo-500/40 shadow-[0_0_20px_rgba(99,102,241,0.1)]"
+                : ""
+            }`}
           >
             <div className="flex justify-between items-center mb-3">
               <span className="text-lg font-bold text-indigo-400">
-                #{user.rank}
+                {getRankBadge(user.rank)}
               </span>
 
-              <div>
-                <span className="text-sm text-gray-400">{user.hours} hrs</span>
-                {/*
-                {isOwner && user.user_id !== ownerId && (
-                  <button className="ml-2">
-                    <FontAwesomeIcon
-                      icon={faTrash}
-                      className="text-red-500 ml-2 cursor-pointer hover:text-red-400 transition"
-                    />
-                  </button>
-                )}*/}
-              </div>
+              <span className="text-sm text-gray-500 font-medium">
+                {user.hours} hrs
+              </span>
             </div>
 
-            <p className="font-semibold text-white mb-4 truncate">
+            <p className="font-semibold text-white mb-4 truncate text-sm">
               {user.email}
             </p>
 
-            <div className="space-y-1 text-sm text-gray-300">
-              <p>
-                <span className="text-gray-400">Languages:</span>{" "}
-                {user.languages.length > 0 ? user.languages : "N/A"}
+            <div className="space-y-1.5 text-sm">
+              <p className="text-gray-400">
+                <span className="text-gray-600">Languages:</span>{" "}
+                <span className="text-gray-300">
+                  {user.languages.length > 0 ? user.languages : "N/A"}
+                </span>
               </p>
 
-              <p>
-                <span className="text-gray-400">OS:</span> {user.os}
+              <p className="text-gray-400">
+                <span className="text-gray-600">OS:</span>{" "}
+                <span className="text-gray-300">{user.os}</span>
               </p>
 
-              <p>
-                <span className="text-gray-400">Editor:</span> {user.editor}
+              <p className="text-gray-400">
+                <span className="text-gray-600">Editor:</span>{" "}
+                <span className="text-gray-300">{user.editor}</span>
               </p>
             </div>
           </div>
