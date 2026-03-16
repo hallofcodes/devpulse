@@ -22,7 +22,16 @@ export default async function Layout({
     .single();
 
   if (!profile?.wakatime_api_key) {
-    return <>{children}</>;
+    return (
+      <div className="min-h-screen bg-[#0a0a1a] flex items-center justify-center p-4 grid-bg text-white relative">
+        <div className="fixed top-0 inset-x-0 h-screen pointer-events-none -z-10 overflow-hidden">
+          <div className="absolute top-[20%] left-[30%] w-[300px] h-[300px] rounded-full bg-indigo-500/10 blur-[100px] mix-blend-screen" />
+        </div>
+        <div className="w-full max-w-xl relative z-10">
+          {children}
+        </div>
+      </div>
+    );
   }
 
   const email = profile?.email || user.email!;

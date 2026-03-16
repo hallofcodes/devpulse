@@ -62,7 +62,7 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
         </p>
       </div>
 
-      <div className="glass-card p-6">
+      <div className="bento-card p-8">
         <p className="text-gray-400 mb-8 text-sm">
           Welcome <span className="text-white font-medium">{email}</span>. Enter
           your WakaTime API key to activate your DevPulse dashboard.
@@ -70,16 +70,16 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
 
         <input
           placeholder="Enter your WakaTime API Key"
-          className="input-field mb-4"
+          className="input-field mb-5 !py-2.5 !rounded-lg text-sm bg-[#0a0a1a]/50"
           onChange={(e) => setKey(e.target.value)}
         />
 
         <button
           onClick={saveKey}
           disabled={loading}
-          className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
+          className={`w-full py-2.5 rounded-lg text-sm transition-all duration-300 ${
             loading
-              ? "bg-gray-800 cursor-not-allowed opacity-60"
+              ? "bg-gray-800 cursor-not-allowed opacity-60 text-gray-400"
               : "btn-primary"
           }`}
         >

@@ -11,27 +11,57 @@ export const metadata: Metadata = {
 
 export default async function Signup() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0a1a] text-white px-4 grid-bg relative">
-      <div className="glow-orb w-[400px] h-[400px] bg-purple-600/10 top-1/4 left-1/2 -translate-x-1/2" />
-
-      <div className="w-full max-w-lg glass-card p-10 relative z-10">
-        <div className="flex items-center gap-3 mb-2">
-          <Image src="/logo.svg" alt="DevPulse Logo" width={36} height={36} />
-          <h2 className="text-2xl font-bold gradient-text">DevPulse</h2>
+    <div className="min-h-screen flex bg-[#0a0a1a] text-[#e2e8f0] selection:bg-purple-500/30">
+      {/* Left Side Branding */}
+      <div className="hidden md:flex flex-col justify-between w-5/12 lg:w-1/2 p-12 lg:p-20 relative overflow-hidden grid-bg border-r border-white/5">
+        <div className="absolute top-[20%] left-[20%] w-[500px] h-[500px] rounded-full bg-purple-500/10 blur-[120px] mix-blend-screen pointer-events-none" />
+        
+        <div className="relative z-10 flex flex-col h-full justify-between">
+          <div>
+            <Link href="/" className="inline-block hover:scale-105 transition-transform mb-12 cursor-pointer">
+              <div className="flex items-center gap-3">
+                <Image src="/logo.svg" alt="DevPulse Logo" width={40} height={40} />
+                <span className="text-xl font-bold gradient-text">DevPulse</span>
+              </div>
+            </Link>
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight max-w-lg">
+              Start your journey today.
+            </h2>
+            <p className="text-gray-400 text-base leading-relaxed max-w-md">
+              Create an account to track your coding activity, discover insights into your habits, and join developer leaderboards.
+            </p>
+          </div>
+          
+          <div className="text-xs text-gray-600">
+            &copy; {new Date().getFullYear()} DevPulse. All rights reserved.
+          </div>
         </div>
-        <p className="mb-8 text-gray-400 text-sm">
-          Create your account to start monitoring your coding activity and
-          competing on leaderboards!
-        </p>
+      </div>
 
-        <SignupForm />
+      {/* Right Side Form */}
+      <div className="w-full md:w-7/12 lg:w-1/2 flex flex-col justify-center p-8 sm:p-12 lg:p-24 bg-[#0a0a1a] sm:bg-[#0c0c24] relative">
+        <div className="w-full max-w-sm mx-auto">
+          <div className="mb-10 text-center sm:text-left">
+            <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
+            <p className="text-gray-400 text-sm">Register for free and monitor your productivity.</p>
+          </div>
 
-        <Link
-          href="/login"
-          className="block mt-6 text-center text-sm text-gray-500 hover:text-gray-300 transition"
-        >
-          Already have an account? <span className="text-indigo-400">Log In</span>
-        </Link>
+          <div className="relative z-10">
+            <SignupForm />
+          </div>
+
+          <div className="mt-12 flex flex-col items-center sm:items-start text-sm text-gray-500">
+            <div>
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="text-purple-400 font-medium hover:text-purple-300 transition-colors"
+              >
+                Log in
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
