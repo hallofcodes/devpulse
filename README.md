@@ -1,4 +1,7 @@
+<img src="this-is-a-screenshot.png" alt="Screenshot of the floating console extension in action" width="600">
+  
 # devpulse
+
 Measure and share your coding productivity with personalized leaderboards. Compare your progress with peers while keeping full control over privacy and leaderboard settings.
 
 ## Getting Started

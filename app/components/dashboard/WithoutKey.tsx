@@ -1,13 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { toast } from "react-toastify";
 
 export default function DashboardWithoutKey({ email }: { email: string }) {
-  const router = useRouter();
   const [key, setKey] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -16,9 +13,7 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
 
     const saveKey = new Promise(async (resolve, reject) => {
       try {
-        const wakatimeApiKeyRegex =
-          /^waka_[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-        if (!key.trim() || !wakatimeApiKeyRegex.test(key))
+        if (!key.trim() || !/^waka_[0-9a-f-]{36}$/i.test(key))
           return reject(new Error("Please enter a valid WakaTime API key."));
 
         const isValid = await testApiKey(key);
@@ -46,34 +41,28 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
     });
 
     saveKey.then(() => {
-      router.refresh();
+      window.location.reload();
     });
   };
 
   const testApiKey = async (apiKey: string) => {
     const response = await fetch(
       `/api/wakatime/sync?apiKey=${encodeURIComponent(apiKey)}`,
-      {
-        headers: {
-          Authorization: `Basic ${Buffer.from(apiKey).toString("base64")}`,
-        },
-      },
     );
     return response.ok;
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0a1a] text-white px-4 grid-bg relative">
-      <div className="glow-orb w-[400px] h-[400px] bg-indigo-600/10 top-1/4 left-1/2 -translate-x-1/2" />
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-white">Connect Wakatime</h1>
+        <p className="text-sm text-gray-600">
+          Connect your WakaTime account to DevPulse to visualize your coding
+          activity
+        </p>
+      </div>
 
-      <div className="glass-card p-10 w-full max-w-md relative z-10">
-        <div className="flex items-center gap-3 mb-2">
-          <Image src="/logo.svg" alt="DevPulse Logo" width={36} height={36} />
-          <h2 className="text-2xl font-bold gradient-text">
-            Connect WakaTime
-          </h2>
-        </div>
-
+      <div className="glass-card p-6">
         <p className="text-gray-400 mb-8 text-sm">
           Welcome <span className="text-white font-medium">{email}</span>. Enter
           your WakaTime API key to activate your DevPulse dashboard.
@@ -108,13 +97,6 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
           </Link>{" "}
           on WakaTime.
         </p>
-
-        <Link
-          href="/logout"
-          className="text-sm text-gray-500 hover:text-gray-300 transition"
-        >
-          Logout
-        </Link>
       </div>
     </div>
   );

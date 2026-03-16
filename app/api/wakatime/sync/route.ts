@@ -7,9 +7,7 @@ export async function GET(request: Request) {
   const apiKey = searchParams.get("apiKey") || "";
   let profile$: { wakatime_api_key: string };
 
-  const wakatimeApiKeyRegex =
-    /^waka_[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (apiKey && (!apiKey.trim() || !wakatimeApiKeyRegex.test(apiKey))) {
+  if (apiKey && (!apiKey.trim() || !/^waka_[0-9a-f-]{36}$/i.test(apiKey))) {
     return NextResponse.json(
       { error: "Please enter a valid WakaTime API key." },
       { status: 400 },

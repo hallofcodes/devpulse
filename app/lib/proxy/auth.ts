@@ -38,17 +38,15 @@ export default async function Auth(req: NextRequest) {
   );
 
   if (isProtectedRoute && !user) {
+    console.log("User is not authenticated, redirecting to login.");
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
   const authRoutes = ["/login", "/signup"];
   if (authRoutes.includes(pathname) && user) {
+    console.log("User is authenticated, redirecting to dashboard.");
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   return response;
 }
-
-export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
-};
