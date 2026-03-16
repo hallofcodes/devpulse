@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 export default async function Auth(req: NextRequest) {
-  let response = NextResponse.next({
+  const response = NextResponse.next({
     request: { headers: req.headers },
   });
 
@@ -15,17 +15,9 @@ export default async function Auth(req: NextRequest) {
           return req.cookies.get(name)?.value;
         },
         set(name, value, options) {
-          req.cookies.set({ name, value, ...options });
-          response = NextResponse.next({
-            request: { headers: req.headers },
-          });
           response.cookies.set({ name, value, ...options });
         },
         remove(name, options) {
-          req.cookies.set({ name, value: "", ...options });
-          response = NextResponse.next({
-            request: { headers: req.headers },
-          });
           response.cookies.set({ name, value: "", ...options });
         },
       },
@@ -33,19 +25,25 @@ export default async function Auth(req: NextRequest) {
   );
 
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const user = session?.user;
 
   const { pathname } = req.nextUrl;
 
-  const isProtectedRoute = pathname.startsWith("/dashboard") || pathname.startsWith("/logout");
+  const protectedRoutes = ["/dashboard", "/logout"];
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route),
+  );
+
   if (isProtectedRoute && !user) {
     console.log("User is not authenticated, redirecting to login.");
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  const isAuthRoute = pathname === "/login" || pathname === "/signup";
-  if (isAuthRoute && user) {
+  const authRoutes = ["/login", "/signup"];
+  if (authRoutes.includes(pathname) && user) {
     console.log("User is authenticated, redirecting to dashboard.");
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
