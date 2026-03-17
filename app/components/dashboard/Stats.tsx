@@ -91,10 +91,10 @@ export default function Stats() {
     return <i className={`devicon-${lang.toLowerCase()}-plain colored`} />;
   };
 
-  const totalHours = (stats.total_seconds / 3600).toFixed(1);
-  const avgDaily = stats.daily_average
-    ? (stats.daily_average / 3600).toFixed(1)
-    : (stats.total_seconds / 3600 / 7).toFixed(1);
+  const totalHoursFormatted = formatHours(stats.total_seconds);
+  const avgDailyFormatted = stats.daily_average
+    ? formatHours(stats.daily_average)
+    : formatHours(stats.total_seconds / 7);
   const topLang = stats.languages[0]?.name || "N/A";
   const topEditor = stats.editors[0]?.name || "N/A";
   const maxLangSeconds = stats.languages[0]?.total_seconds || 1;
@@ -119,7 +119,7 @@ export default function Stats() {
   const statCards = [
     {
       label: "Total Coding",
-      value: `${totalHours}h`,
+      value: totalHoursFormatted,
       sub: "Last 7 days",
       color: "#6366f1",
       trend: "+12%",
@@ -127,7 +127,7 @@ export default function Stats() {
     },
     {
       label: "Daily Average",
-      value: `${avgDaily}h`,
+      value: avgDailyFormatted,
       sub: "Per day",
       color: "#8b5cf6",
       trend: "+5%",
@@ -372,7 +372,7 @@ export default function Stats() {
                         border: "1px solid rgba(99,102,241,0.2)",
                         borderRadius: "8px",
                       }}
-                      formatter={(value) => [`${value as number}h`, "Time"]}
+                      formatter={(value) => [formatHours(value as number), "Time"]}
                     />
                   </PieChart>
                 </ResponsiveContainer>
