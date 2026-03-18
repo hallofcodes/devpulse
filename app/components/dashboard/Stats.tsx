@@ -304,7 +304,7 @@ export default function Stats() {
                       }}
                       labelStyle={{ color: "#9ca3af" }}
                       itemStyle={{ color: "#818cf8" }}
-                      formatter={(value) => [`${value as number}h`, "Time"]}
+                      formatter={(value) => [formatHours((value as number) * 3600), "Time"]}
                     />
                     <Area
                       type="monotone"
