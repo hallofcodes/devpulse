@@ -11,10 +11,6 @@ export interface Leaderboard {
   owner_id?: string;
 };
 
-export interface LeaderboardMember {
-  leaderboards: Leaderboard[];
-};
-
 export default async function LeaderboardsList() {
   const supabase = await createClient();
 
