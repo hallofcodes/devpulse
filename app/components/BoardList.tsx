@@ -139,7 +139,7 @@ export default function BoardList({
       </div>
 
       {showCodeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
           <div className="glass-card p-8 w-[90%] max-w-md">
             <h3 className="text-lg font-semibold mb-4 text-gray-200">
               Join Code
@@ -160,7 +160,7 @@ export default function BoardList({
       )}
 
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
           <div className="glass-card p-8 w-[90%] max-w-md">
             <h3 className="text-lg font-semibold mb-4 text-gray-200">
               Delete Leaderboard?
