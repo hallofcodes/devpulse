@@ -2,13 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase/client";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 
 export default function Logout() {
   const supabase = createClient();
   const router = useRouter();
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     try {
       await supabase.auth.signOut();
     } catch (err) {
@@ -16,11 +16,11 @@ export default function Logout() {
     } finally {
       router.push("/");
     }
-  };
+  }, [supabase.auth, router]);
 
   useEffect(() => {
     handleLogout();
-  }, []);
+  }, [handleLogout]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0a0a1a] text-white grid-bg">

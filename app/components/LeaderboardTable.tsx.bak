@@ -107,6 +107,7 @@ export default function LeaderboardTable({
   ownerId,
 }: {
   members: Member[];
+  isOwner: boolean;
   ownerId?: string;
 }) {
   const ranked = members

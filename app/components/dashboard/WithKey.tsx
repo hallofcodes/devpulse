@@ -1,21 +1,26 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { createClient } from "../../lib/supabase/client";
 import { toast } from "react-toastify";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faUsers, faTimes } from "@fortawesome/free-solid-svg-icons";
+
+type ModalState = "create" | "join" | null;
 
 export default function DashboardWithKey() {
   const supabase = createClient();
   const [leaderboardName, setLeaderboardName] = useState("");
   const [joinCode, setJoinCode] = useState("");
+  const [activeModal, setActiveModal] = useState<ModalState>(null);
 
   const createLeaderboard = async () => {
     if (leaderboardName.trim().length === 0)
       return toast.error("Please enter a leaderboard name.");
     if (leaderboardName.trim().length < 3)
-      return toast.error("Leaderboard name must be at least 3 characters.");
+      return toast.error("Leaderboard name must be at least 3 characters.");    
     if (leaderboardName.length > 50)
-      return toast.error("Leaderboard name must be under 50 characters.");
+      return toast.error("Leaderboard name must be under 50 characters.");      
 
     const createLeaderboard = new Promise(async (resolve, reject) => {
       try {
@@ -97,7 +102,7 @@ export default function DashboardWithKey() {
 
         if (!board) throw new Error("Invalid join code");
 
-        const { error } = await supabase.from("leaderboard_members").insert({
+        const { error } = await supabase.from("leaderboard_members").insert({   
           leaderboard_id: board.id,
           user_id: user.id,
         });
@@ -131,50 +136,105 @@ export default function DashboardWithKey() {
   };
 
   return (
-    <div className="glass-card p-6">
-      <h3 className="text-xs font-semibold text-indigo-400 uppercase tracking-widest mb-5">
-        Manage Leaderboards
-      </h3>
+    <>
+      <div className="flex items-center gap-3">
+        <button 
+          onClick={() => setActiveModal("create")}
+          className="btn-secondary px-4 py-2 text-sm flex items-center gap-2 whitespace-nowrap transition-colors rounded-xl"
+        >
+          <FontAwesomeIcon icon={faPlus} className="w-3.5 h-3.5" />
+          Create
+        </button>
+        <button 
+          onClick={() => setActiveModal("join")}
+          className="btn-secondary px-4 py-2 text-sm flex items-center gap-2 whitespace-nowrap transition-colors rounded-xl"
+        >
+          <FontAwesomeIcon icon={faUsers} className="w-3.5 h-3.5" />
+          Join
+        </button>
+      </div>
 
-      {/* Create */}
-      <div className="space-y-3 mb-6">
-        <label className="text-sm text-gray-400 font-medium">Create New</label>
-        <div className="flex gap-2">
-          <input
-            placeholder="Leaderboard name"
-            className="input-field flex-1"
-            onChange={(e) => setLeaderboardName(e.target.value)}
-          />
-          <button onClick={createLeaderboard} className="btn-primary px-5 py-2.5 text-sm whitespace-nowrap">
-            Create
-          </button>
+      {activeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="glass-card w-full max-w-sm relative overflow-hidden flex flex-col animate-in zoom-in-95 duration-200 border-white/10 shadow-2xl">
+            <div className={`absolute -top-24 -right-24 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-20 ${
+              activeModal === "create" ? "bg-indigo-500" : "bg-blue-500"
+            }`} />
+
+            <div className="flex items-start justify-between p-6 pb-4 border-b border-white/5 relative z-10">
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border ${
+                  activeModal === "create" 
+                    ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.15)]" 
+                    : "bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]"
+                }`}>
+                  <FontAwesomeIcon icon={activeModal === "create" ? faPlus : faUsers} className="w-5 h-5" />
+                </div>
+                <div className="flex flex-col">
+                  <h3 className="text-lg font-bold text-white tracking-tight">
+                    {activeModal === "create" ? "Create Server" : "Join Server"}
+                  </h3>
+                  <span className="text-[10px] font-medium text-gray-500 uppercase tracking-widest mt-0.5">
+                    {activeModal === "create" ? "Start a new leaderboard" : "Enter a join code"}
+                  </span>
+                </div>
+              </div>
+              
+              <button 
+                onClick={() => setActiveModal(null)}
+                className="text-gray-500 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5"
+              >
+                <FontAwesomeIcon icon={faTimes} className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-6 relative z-10 bg-black/20">
+              {activeModal === "create" ? (
+                <div className="space-y-6">
+                  <div className="space-y-2.5">
+                    <label className="text-[11px] uppercase tracking-widest text-gray-400 font-bold ml-1">Leaderboard Name</label> 
+                    <input
+                      placeholder="e.g., Top Coders"
+                      className="input-field w-full px-4 text-sm py-3.5 bg-white/[0.02] border border-white/10 focus:border-indigo-500/50 focus:bg-white/[0.04] transition-all rounded-xl shadow-inner placeholder:text-gray-600"
+                      value={leaderboardName}
+                      onChange={(e) => setLeaderboardName(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && createLeaderboard()}
+                      autoFocus
+                    />
+                  </div>
+                  <button 
+                    onClick={createLeaderboard} 
+                    className="btn-primary w-full py-3.5 text-sm font-bold shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 rounded-xl transition-all"
+                  >
+                    Build Server
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="space-y-2.5">
+                    <label className="text-[11px] uppercase tracking-widest text-gray-400 font-bold ml-1">Join Code</label> 
+                    <input
+                      placeholder="8-character code..."
+                      className="input-field w-full px-4 font-mono text-sm py-3.5 tracking-wider bg-white/[0.02] border border-white/10 focus:border-blue-500/50 focus:bg-white/[0.04] transition-all uppercase rounded-xl shadow-inner placeholder:text-gray-600"
+                      maxLength={8}
+                      value={joinCode}
+                      onChange={(e) => setJoinCode(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && joinLeaderboard()}
+                      autoFocus
+                    />
+                  </div>
+                  <button 
+                    onClick={joinLeaderboard} 
+                    className="btn-primary w-full py-3.5 text-sm font-bold !bg-blue-500 hover:!bg-blue-600 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 rounded-xl !border-blue-400/50 transition-all"
+                  >
+                    Join Server
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-
-      <div className="flex items-center gap-3 my-5">
-        <div className="flex-1 h-px bg-white/5" />
-        <span className="text-gray-700 text-xs uppercase tracking-wider">or join</span>
-        <div className="flex-1 h-px bg-white/5" />
-      </div>
-
-      {/* Join */}
-      <div className="space-y-3">
-        <label className="text-sm text-gray-400 font-medium">Join Existing</label>
-        <div className="flex gap-2">
-          <input
-            placeholder="Enter 8-character code"
-            className="input-field flex-1 font-mono"
-            maxLength={8}
-            onChange={(e) => setJoinCode(e.target.value)}
-          />
-          <button
-            onClick={joinLeaderboard}
-            className="btn-secondary px-5 py-2.5 text-sm whitespace-nowrap"
-          >
-            Join
-          </button>
-        </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }

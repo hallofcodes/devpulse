@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { createClient } from "../lib/supabase/client";
 import Link from "next/link";
 import { useState } from "react";
-import { faKey, faRefresh, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faKey, faRotateRight, faTrashAlt, faChevronRight, faServer } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import { Leaderboard } from "./dashboard/LeaderbordList";
 import { User } from "@supabase/supabase-js";
@@ -18,7 +18,7 @@ export default function BoardList({
 }) {
   const supabase = createClient();
   const [showCodeModal, setShowCodeModal] = useState(false);
-  const [selectedCode, setSelectedCode] = useState<string | null>(null);
+  const [selectedCode, setSelectedCode] = useState<string | null>(null);        
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleDelete = async () => {
@@ -88,7 +88,7 @@ export default function BoardList({
       error: {
         render({ data }) {
           const err = data as Error;
-          return err?.message || "Failed to get join code. Please try again.";
+          return err?.message || "Failed to get join code. Please try again.";  
         },
       },
     });
@@ -101,91 +101,106 @@ export default function BoardList({
 
   return (
     <>
-      <div
-        key={board.id}
-        className="stat-card flex justify-between items-center group"
-      >
-        <Link href={`/leaderboard/${board.slug}`} className="flex-1">
-          <p className="font-medium text-gray-300 group-hover:text-indigo-400 transition">
-            {board.name}
-          </p>
+      <div className="flex justify-between items-center group/card p-4 sm:p-5">
+        <Link href={`/leaderboard/${board.slug}`} className="flex-1 flex items-center min-w-0 pr-4">
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/5 to-white/10 border border-white/10 flex items-center justify-center shrink-0 mr-4 shadow-sm group-hover/card:border-indigo-500/30 transition-colors">
+            <FontAwesomeIcon icon={faServer} className="text-gray-400 group-hover/card:text-indigo-400 transition-colors w-4 h-4" />
+          </div>
+          <div className="flex flex-col flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <p className="font-bold text-gray-200 group-hover/card:text-white transition-colors tracking-tight truncate text-[15px]">
+                {board.name}
+              </p>
+            </div>
+            <p className="text-[11px] text-gray-500 font-mono tracking-wider truncate mt-0.5 group-hover/card:text-indigo-300/70 transition-colors">
+              /{board.slug}
+            </p>
+          </div>
+          
+          <div className="hidden sm:flex w-8 h-8 rounded-full border border-white/5 bg-white/5 items-center justify-center opacity-0 -translate-x-4 group-hover/card:opacity-100 group-hover/card:translate-x-0 transition-all duration-300 ml-4">
+            <FontAwesomeIcon icon={faChevronRight} className="text-indigo-400 w-3 h-3" />
+          </div>
         </Link>
 
         {user.id === board.owner_id && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 ml-2 pl-4 border-l border-white/10 shrink-0">
             <button
-              onClick={() => setShowDeleteModal(true)}
-              className="p-2 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition"
-              title="Delete Leaderboard"
+              onClick={() => getJoinCode(board.id)}
+              className="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 hover:text-indigo-400 hover:bg-indigo-500/10 transition-colors"
+              title="View Join Code"
             >
-              <FontAwesomeIcon icon={faTrash} className="text-xs" />
+              <FontAwesomeIcon icon={faKey} className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => regenerateJoinCode(board.id)}
-              className="p-2 rounded-lg text-gray-600 hover:text-indigo-400 hover:bg-indigo-500/10 transition"
+              className="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 hover:text-blue-400 hover:bg-blue-500/10 transition-colors"
               title="Regenerate Join Code"
             >
-              <FontAwesomeIcon icon={faRefresh} className="text-xs" />
+              <FontAwesomeIcon icon={faRotateRight} className="w-3.5 h-3.5" />
             </button>
             <button
-              onClick={() => getJoinCode(board.id)}
-              className="p-2 rounded-lg text-gray-600 hover:text-indigo-400 hover:bg-indigo-500/10 transition"
-              title="View Join Code"
+              onClick={() => setShowDeleteModal(true)}
+              className="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+              title="Delete Leaderboard"
             >
-              <FontAwesomeIcon icon={faKey} className="text-xs" />
+              <FontAwesomeIcon icon={faTrashAlt} className="w-3.5 h-3.5" />
             </button>
           </div>
         )}
       </div>
 
       {showCodeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="glass-card p-8 w-[90%] max-w-md">
-            <h3 className="text-lg font-semibold mb-4 text-gray-200">
-              Join Code
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+          <div className="glass-card p-8 w-full max-w-sm relative shadow-2xl border-indigo-500/20">
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl" />
+            
+            <h3 className="text-[11px] font-bold tracking-widest uppercase text-indigo-400 mb-6 text-center flex items-center justify-center gap-2">
+              <FontAwesomeIcon icon={faKey} /> Server Join Code
             </h3>
-
-            <div className="text-center text-3xl font-bold tracking-widest text-indigo-400 mb-6 py-4 stat-card">
-              {selectedCode}
+            
+            <div className="bg-black/50 border border-white/10 rounded-xl p-6 text-center relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <p className="text-3xl font-mono text-white tracking-[0.2em] font-bold relative z-10">
+                {selectedCode}
+              </p>
             </div>
-
-            <button
-              onClick={() => setShowCodeModal(false)}
-              className="btn-secondary w-full py-2.5"
-            >
-              Close
-            </button>
+            
+            <div className="mt-8 flex justify-center">
+              <button
+                onClick={() => setShowCodeModal(false)}
+                className="w-full py-2.5 px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium text-gray-300 transition-colors"
+              >
+                Close Window
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="glass-card p-8 w-[90%] max-w-md">
-            <h3 className="text-lg font-semibold mb-4 text-gray-200">
-              Delete Leaderboard?
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+          <div className="glass-card p-8 w-full max-w-sm relative shadow-2xl border-red-500/20">
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-red-500/20 rounded-full blur-3xl" />
+            
+            <h3 className="text-lg font-bold text-gray-200 mb-2">
+              Delete Network
             </h3>
-
-            <div className="text-center text-xl font-bold text-indigo-400 mb-4 py-3 stat-card">
-              {board.name}
-            </div>
-
-            <p className="text-red-400/80 text-sm italic mb-6 text-center">
-              This action is irreversible.
+            <p className="text-sm text-gray-400 mb-6 leading-relaxed">
+              Are you sure you want to delete <span className="font-mono text-gray-300 bg-white/5 px-1 rounded">{board.name}</span>? This action cannot be undone.
             </p>
-
+            
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="btn-secondary w-full py-2.5"
+                className="flex-1 py-2.5 px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium text-gray-300 transition-colors"
               >
                 Cancel
               </button>
               <button
-                onClick={() => handleDelete()}
-                className="w-full py-2.5 rounded-xl font-semibold bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30 transition"
+                onClick={handleDelete}
+                className="flex-1 py-2.5 px-4 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-500 rounded-lg text-sm font-bold transition-colors"
               >
-                Delete
+                Confirm Delete
               </button>
             </div>
           </div>

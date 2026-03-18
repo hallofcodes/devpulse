@@ -14,6 +14,8 @@ export default function UpdatePasswordForm() {
   const [showCaptcha, setShowCaptcha] = useState(false);
 
   const handleCaptchaVerify = async (token: string) => {
+    // Optionally use token here when implemented to backend
+    void token;
     setShowCaptcha(false);
     setLoading(true);
 

@@ -1,6 +1,7 @@
 import { createClient } from "../../../lib/supabase/server";
 import LeaderboardTable from "../../../components/LeaderboardTable";
 import LeaderboardHeader from "@/app/components/leaderboard/Header";
+import BackButton from "@/app/components/leaderboard/BackButton";
 import Footer from "@/app/components/layout/Footer";
 import CTA from "@/app/components/layout/CTA";
 
@@ -52,10 +53,10 @@ export default async function LeaderboardPage(props: {
   return (
     <div className="min-h-screen bg-[#0a0a1a] text-white grid-bg relative">
       <div className="max-w-5xl mx-auto p-6 md:p-10 relative z-10">
+        <BackButton />
         <LeaderboardHeader leaderboard={leaderboard} isOwner={isOwner} />
         <LeaderboardTable
           members={members || []}
-          isOwner={isOwner}
           ownerId={user?.id}
         />
       </div>
