@@ -13,7 +13,7 @@ export default async function Signup() {
   return (
     <div className="min-h-screen flex bg-[#0a0a1a] text-white">
       {/* Left Side - Visual / Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 border-r border-white/5 bg-gradient-to-br from-[#0a0a1a] to-[#0a0a1a] overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 md:p-16 xl:p-24 border-r border-white/5 bg-gradient-to-br from-[#0a0a1a] to-[#0a0a1a] overflow-hidden">
         {/* Background elements */}
         <div className="absolute inset-0 grid-bg opacity-30" />
 
