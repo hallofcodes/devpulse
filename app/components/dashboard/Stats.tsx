@@ -115,38 +115,47 @@ export default function Stats() {
     value: l.total_seconds,
   }));
 
+  const totalCodingProgress = Math.min(100, (stats.total_seconds / (40 * 3600)) * 100);
+  const dailyAverageProgress = Math.min(100, ((stats.daily_average || stats.total_seconds / 7) / (8 * 3600)) * 100);
+  const topLangProgress = stats.languages[0]?.percent || 0;
+  const topEditorProgress = stats.editors[0]?.percent || 0;
+
   const statCards = [
     {
       label: "Total Coding",
       value: totalHoursFormatted,
       sub: "Last 7 days",
       color: "#6366f1",
-      trend: "+12%",
+      trend: `${totalCodingProgress.toFixed(0)}%`,
       trendUp: true,
+      progress: totalCodingProgress,
     },
     {
       label: "Daily Average",
       value: avgDailyFormatted,
       sub: "Per day",
       color: "#8b5cf6",
-      trend: "+5%",
+      trend: `${dailyAverageProgress.toFixed(0)}%`,
       trendUp: true,
+      progress: dailyAverageProgress,
     },
     {
       label: "Top Language",
       value: topLang,
       sub: formatHours(stats.languages[0]?.total_seconds || 0),
       color: "#22d3ee",
-      trend: `${stats.languages[0]?.percent?.toFixed(0) || 0}%`,
+      trend: `${topLangProgress.toFixed(0)}%`,
       trendUp: true,
+      progress: topLangProgress,
     },
     {
       label: "Editor",
       value: topEditor,
       sub: formatHours(stats.editors[0]?.total_seconds || 0),
       color: "#34d399",
-      trend: `${stats.editors[0]?.percent?.toFixed(0) || 0}%`,
+      trend: `${topEditorProgress.toFixed(0)}%`,
       trendUp: true,
+      progress: topEditorProgress,
     },
   ];
 
@@ -228,7 +237,7 @@ export default function Stats() {
                   <div
                     className="h-full rounded-full transition-all duration-1000 ease-out"
                     style={{
-                      width: "65%",
+                      width: `${card.progress}%`,
                       background: card.color,
                     }}
                   />
