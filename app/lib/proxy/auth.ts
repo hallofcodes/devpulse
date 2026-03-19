@@ -29,7 +29,7 @@ export default async function Auth(req: NextRequest) {
   } = await supabase.auth.getUser();
   const { pathname } = req.nextUrl;
 
-  const protectedRoutes = ["/dashboard", "/logout"];
+  const protectedRoutes = ["/dashboard", "/update-password", "/logout"];
   const isProtectedRoute = protectedRoutes.some((route) => {
     const regex = new RegExp(`^${route}(/.*)?$`);
     return regex.test(pathname);
