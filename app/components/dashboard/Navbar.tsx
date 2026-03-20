@@ -12,6 +12,7 @@ import {
   faChevronLeft,
   faChevronRight,
   faGear,
+  faMessage,
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
@@ -23,6 +24,7 @@ function Sidebar({ email, name }: { email: string; name: string }) {
 
   const navItems: { href: string; label: string; icon: IconDefinition }[] = [
     { href: "/dashboard", label: "Dashboard", icon: faChartLine },
+    { href: "/dashboard/chat", label: "Chat", icon: faMessage },
     { href: "/dashboard/leaderboards", label: "Leaderboards", icon: faTrophy },
     { href: "/dashboard/settings", label: "Settings", icon: faGear },
   ];
@@ -163,7 +165,7 @@ export default function DashboardLayout({
 
         {/* Main Content */}
         <main
-          className={`min-h-screen p-6 md:p-8 grid-bg relative transition-[margin-left] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-x-hidden ${
+          className={`min-h-screen grid-bg relative transition-[margin-left] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-x-hidden ${
             collapsed ? "ml-[68px]" : "ml-[240px]"
           }`}
         >

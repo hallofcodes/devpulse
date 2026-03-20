@@ -1,5 +1,5 @@
 ﻿import DashboardWithKey from "../../../components/dashboard/WithKey";
-import LeaderboardsList from "@/app/components/dashboard/LeaderbordList";       
+import LeaderboardsList from "@/app/components/dashboard/LeaderbordList";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function LeaderboardsPage() {
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="p-6 md:p-8 space-y-6 max-w-5xl mx-auto">
       <div className="border-b border-white/5 pb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Leaderboards</h1>

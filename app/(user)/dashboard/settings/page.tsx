@@ -15,7 +15,7 @@ export default async function LeaderboardsPage() {
   const user = userData.user;
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 md:p-8 space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">Settings</h1>
         <p className="text-sm text-gray-600">
