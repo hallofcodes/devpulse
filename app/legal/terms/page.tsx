@@ -87,7 +87,7 @@ export default function Terms() {
         7. Limitation of Liability
       </h2>
       <p className="mb-4">
-        DevPulse is provided "as is" without warranties of any kind. We are not
+        DevPulse is provided &quot;as is&quot; without warranties of any kind. We are not
         liable for any damages, including loss of data, arising from your use of
         the service.
       </p>

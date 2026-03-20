@@ -17,15 +17,15 @@ export default function CodingActivity({
   return (
     <>
       <div
-        className="glass-card p-6 lg:col-span-2"
+        className="glass-card p-6 lg:col-span-2 h-full flex flex-col"
         data-aos="fade-up"
         data-aos-delay="200"
       >
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-sm font-semibold text-white">Coding Activity</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-white">Coding Activity</h3> 
           <span className="text-xs text-gray-600">Last 7 days</span>
         </div>
-        <div className="h-[280px]">
+        <div className="flex-1 min-h-[200px]">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={dailyData}

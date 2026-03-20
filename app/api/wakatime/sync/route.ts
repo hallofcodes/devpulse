@@ -63,26 +63,50 @@ export async function GET(request: Request) {
     }
   }
 
-  // Fetch from WakaTime
-  const response = await fetch(
-    "https://wakatime.com/api/v1/users/current/stats/last_7_days",
-    {
-      headers: {
-        Authorization: `Basic ${Buffer.from(profile$.wakatime_api_key).toString(
-          "base64",
-        )}`,
-      },
-    },
-  );
+  // Fetch from WakaTime API endpoints
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setDate(endDate.getDate() - 6);
+  const endStr = endDate.toISOString().split("T")[0];
+  const startStr = startDate.toISOString().split("T")[0];
 
-  const data = await response.json();
+  const authHeader = `Basic ${Buffer.from(profile$.wakatime_api_key).toString("base64")}`;
 
-  if (!response.ok) {
+  const [statsResponse, summariesResponse] = await Promise.all([
+    fetch("https://wakatime.com/api/v1/users/current/stats/last_7_days", {
+      headers: { Authorization: authHeader },
+    }),
+    fetch(
+      `https://wakatime.com/api/v1/users/current/summaries?start=${startStr}&end=${endStr}`,
+      {
+        headers: { Authorization: authHeader },
+      }
+    ),
+  ]);
+
+  const statsData = await statsResponse.json();
+  const summariesData = await summariesResponse.json();
+
+  if (!statsResponse.ok || !summariesResponse.ok) {
     return NextResponse.json(
-      { error: "Failed to fetch WakaTime" },
+      { error: "Failed to fetch data from WakaTime" },
       { status: 500 },
     );
   }
+
+  const wakaStats = statsData.data;
+  const wakaSummaries = summariesData.data;
+
+  // Process daily summaries
+  const daily_stats = wakaSummaries.map(
+    (day: {
+      range: { date: string };
+      grand_total: { total_seconds: number };
+    }) => ({
+      date: day.range.date,
+      total_seconds: day.grand_total.total_seconds,
+    }),
+  );
 
   if (apiKey) {
     const { error } = await supabase
@@ -109,10 +133,16 @@ export async function GET(request: Request) {
     .from("user_stats")
     .upsert({
       user_id: user.id,
-      total_seconds: Math.floor(data.data.total_seconds),
-      languages: data.data.languages,
-      operating_systems: data.data.operating_systems,
-      editors: data.data.editors,
+      total_seconds: Math.floor(wakaStats.total_seconds),
+      daily_average: Math.floor(wakaStats.daily_average || 0),
+      languages: wakaStats.languages,
+      operating_systems: wakaStats.operating_systems,
+      editors: wakaStats.editors,
+      machines: wakaStats.machines,
+      categories: wakaStats.categories,
+      dependencies: wakaStats.dependencies || [],
+      best_day: wakaStats.best_day || {},
+      daily_stats: daily_stats,
       last_fetched_at: new Date().toISOString(),
     })
     .select()
@@ -122,7 +152,7 @@ export async function GET(request: Request) {
     .from("user_projects")
     .upsert({
       user_id: user.id,
-      projects: data.data.projects,
+      projects: wakaStats.projects,
       last_fetched_at: new Date().toISOString(),
     })
     .select()

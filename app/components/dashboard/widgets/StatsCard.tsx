@@ -18,14 +18,20 @@ export default function StatsCard({
   setAnimated: (val: boolean) => void;
 }) {
   return (
-    <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="glass-card p-6" data-aos="fade-up">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-y-8">
         {statCards.map((card, idx) => (
           <div
             key={card.label}
-            className="glass-card p-5 group"
-            data-aos="fade-up"
-            data-aos-delay={idx * 100}
+            className={`group flex flex-col ${
+              idx > 0 ? "xl:border-l xl:pl-8 xl:pt-0 xl:border-t-0 border-gray-800/50 " : ""
+            }${
+              idx % 2 !== 0 ? "sm:border-l sm:pl-8 border-gray-800/50 " : "sm:pr-8 xl:pr-0 "
+            }${
+              idx >= 2 ? "sm:border-t sm:pt-8 border-gray-800/50 " : ""
+            }${
+              idx === 4 ? "sm:col-span-2 xl:col-span-1 sm:border-l-0 sm:pl-0 sm:pr-0 xl:border-l xl:pl-8" : ""
+            }`}
           >
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">
@@ -42,10 +48,10 @@ export default function StatsCard({
               </span>
             </div>
             <p className="text-2xl font-bold text-white mb-1">{card.value}</p>
-            <p className="text-xs text-gray-600">{card.sub}</p>
+            <p className="text-xs text-gray-600 mb-3">{card.sub}</p>
             {/* Mini bar */}
             <div
-              className="mt-3 h-1 rounded-full bg-white/5 overflow-hidden cursor-pointer"
+              className="mt-auto h-1.5 rounded-full bg-gray-800/50 overflow-hidden cursor-pointer"
               role="button"
               onClick={() => {
                 setAnimated(false);
@@ -63,6 +69,6 @@ export default function StatsCard({
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }

@@ -28,5 +28,8 @@ export default async function Dashboard() {
     return <DashboardWithoutKey email={profile?.email || user.email!} />;
   }
 
-  return <Stats />;
+  const email = profile?.email || user.email!;
+  const name = user?.user_metadata?.name || email.split("@")[0];
+
+  return <Stats name={name} email={email} />;
 }

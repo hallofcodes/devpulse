@@ -5,7 +5,7 @@ import { StatsData } from "../Stats";
 export default function OperatingSystem({ stats }: { stats: StatsData }) {
   return (
     <>
-      <div className="glass-card p-6" data-aos="fade-in">
+      <div data-aos="fade-in">
         <h3 className="text-sm font-semibold text-white mb-4">
           Operating Systems
         </h3>

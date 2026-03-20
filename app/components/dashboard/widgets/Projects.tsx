@@ -2,43 +2,57 @@ import { formatHours } from "@/app/utils/time";
 import { StatsData } from "../Stats";
 
 export default function Projects({ stats }: { stats: StatsData }) {
+  const totalProjectSeconds = (stats.projects || []).reduce(
+    (acc, curr) => acc + curr.total_seconds,
+    0
+  );
+
   return (
     <>
-      {stats.projects ? (
+      {stats.projects && stats.projects.length > 0 ? (
         <>
-          <div className="glass-card p-6" data-aos="fade-in">
-            <h3 className="text-sm font-semibold text-white mb-4">Projects</h3>
-            <div className="space-y-3">
-              {stats.projects.slice(0, 4).map((project, idx) => (
-                <div key={idx} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-base opacity-70"></span>
-                    <span className="text-sm text-gray-300 font-medium">
-                      {project.name}
-                    </span>
-                    {idx === 0 && (
-                      <span className="text-[10px] bg-purple-500/20 text-purple-400 px-1.5 py-0.5 rounded-full font-semibold">
-                        PRIMARY
+          <div className="glass-card p-6 h-full flex flex-col" data-aos="fade-in">
+            <h3 className="text-sm font-semibold text-white mb-4 lg:mb-6">Top Projects</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 flex-1">
+              {stats.projects.slice(0, 6).map((project, idx) => {
+                const percent =
+                  totalProjectSeconds > 0
+                    ? (project.total_seconds / totalProjectSeconds) * 100
+                    : 0;
+                return (
+                  <div key={idx}>
+                    <div className="flex flex-col gap-1 mb-2">
+                      <span className="text-sm text-gray-300 font-medium truncate block">
+                        {project.name}
                       </span>
-                    )}
+                      <div className="flex items-center justify-between text-xs font-mono">
+                        <span className="text-gray-400">
+                          {formatHours(project.total_seconds)}
+                        </span>
+                        <span className="text-indigo-400 font-semibold">
+                          {percent.toFixed(0)}%
+                        </span>
+                      </div>
+                    </div>
+                    <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-indigo-500 rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: `${percent}%` }}
+                      />
+                    </div>
                   </div>
-                  <span className="text-xs text-gray-500 font-mono">
-                    {formatHours(project.total_seconds)}
-                  </span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </>
       ) : (
-        <div>
-          <div
-            className="glass-card p-6 flex items-center justify-center"
-            data-aos="fade-in"
-          >
-            <p className="text-sm text-gray-500">No project data available.</p>
+          <div className="glass-card p-6 h-full flex flex-col min-h-[250px]" data-aos="fade-in">
+            <h3 className="text-sm font-semibold text-white mb-4 lg:mb-6">Top Projects</h3>
+            <div className="flex-1 flex items-center justify-center">
+              <p className="text-sm text-gray-500">No project data available.</p>
+            </div>
           </div>
-        </div>
       )}
     </>
   );

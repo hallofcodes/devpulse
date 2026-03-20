@@ -19,11 +19,11 @@ export default function LanguageDestribution({
 }) {
   return (
     <>
-      <div className="glass-card p-6" data-aos="fade-up" data-aos-delay="300">
-        <h3 className="text-sm font-semibold text-white mb-4">
+      <div className="glass-card p-6 h-full flex flex-col" data-aos="fade-up" data-aos-delay="300">
+        <h3 className="text-sm font-semibold text-white mb-2">
           Language Distribution
         </h3>
-        <div className="h-[200px]">
+        <div className="flex-1 min-h-[160px] flex flex-col justify-center">     
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie

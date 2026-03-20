@@ -24,7 +24,7 @@ export default function DashboardWithKey() {
     if (leaderboardName.length > 50)
       return toast.error("Leaderboard name must be under 50 characters.");      
 
-    const createLeaderboard = new Promise(async (resolve, reject) => {
+    const createLeaderboard = new Promise<{ join_code: string }>(async (resolve, reject) => {
       try {
         const { data: userData } = await supabase.auth.getUser();
         const user = userData.user;
@@ -78,8 +78,9 @@ export default function DashboardWithKey() {
       },
     });
 
-    createLeaderboard.then((data: any) => {
-      setCreatedCode(data.join_code);
+    createLeaderboard.then((data: unknown) => {
+      const result = data as { join_code: string };
+      setCreatedCode(result.join_code);
       setLeaderboardName("");
       setActiveModal("share");
     });

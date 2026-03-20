@@ -16,14 +16,7 @@ async function getLeaderboard(code: string) {
   return data;
 }
 
-async function getMemberCount(leaderboardId: string) {
-  const supabase = await createClient();
-  const { count } = await supabase
-    .from("leaderboard_members")
-    .select("*", { count: "exact", head: true })
-    .eq("leaderboard_id", leaderboardId);
-  return count ?? 0;
-}
+
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { code } = await params;
@@ -64,3 +57,4 @@ export default async function JoinPage({ params }: Props) {
   const { code } = await params;
   redirect(`/join?id=${encodeURIComponent(code)}`);
 }
+
