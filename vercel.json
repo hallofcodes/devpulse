@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/sentry-example-page",
+      "destination": "/",
+      "permanent": true
+    }
+  ]
+}
