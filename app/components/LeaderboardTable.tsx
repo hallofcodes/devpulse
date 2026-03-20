@@ -236,7 +236,7 @@ export default function LeaderboardTable({
                     {/* Profile + Badges */}
                     <div className="flex-1 ml-3 sm:ml-4 min-w-0 flex items-center gap-3">
                       <div className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 rounded-lg bg-linear-to-br from-white/5 to-white/10 border border-white/10 flex items-center justify-center text-[10px] sm:text-sm font-semibold text-gray-300 shadow-sm uppercase">
-                        {user.name ? user.name.charAt(0) : user.email.charAt(0)}
+                        {user.name ? user.name : user.email.charAt(0)}
                       </div>
                       <div className="flex flex-col min-w-0 gap-1 sm:gap-1.5">
                         <div className="flex items-center gap-2">
