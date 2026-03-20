@@ -39,7 +39,7 @@ export default function RecentLeaderboard({
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
               {leaderboards.map(
                 (
                   board: { id: string; name: string; slug: string },
@@ -78,6 +78,13 @@ export default function RecentLeaderboard({
                 ),
               )}
             </div>
+
+            <Link
+              href="/leaderboard"
+              className="px-4 py-2 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 rounded-lg text-sm font-medium transition-colors"
+            >
+              View All Leaderboards
+            </Link>
           </div>
         </section>
       )}

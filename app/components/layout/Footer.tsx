@@ -17,6 +17,12 @@ export default function Footer() {
 
           <div className="flex items-center gap-6">
             <Link
+              href="/leaderboard"
+              className="hover:text-gray-300 transition"
+            >
+              Leaderboard
+            </Link>
+            <Link
               href="/legal/privacy"
               className="hover:text-gray-300 transition"
             >
