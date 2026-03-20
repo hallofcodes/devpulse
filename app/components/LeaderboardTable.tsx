@@ -6,9 +6,9 @@ type Member = {
   role: string;
   email: string;
   total_seconds: number;
-  languages: { name: string }[];
-  operating_systems: { name: string }[];
-  editors: { name: string }[];
+  languages: { name: string }[] | null;
+  operating_systems: { name: string }[] | null;
+  editors: { name: string }[] | null;
 };
 
 function LeaderboardStats({ members }: { members: Member[] }) {
@@ -21,13 +21,13 @@ function LeaderboardStats({ members }: { members: Member[] }) {
   const osCount: Record<string, number> = {};
 
   members.forEach((m) => {
-    m.languages.forEach((l) => {
+    (m.languages || []).forEach((l) => {
       languageCount[l.name] = (languageCount[l.name] || 0) + 1;
     });
-    m.editors.forEach((e) => {
+    (m.editors || []).forEach((e) => {
       editorCount[e.name] = (editorCount[e.name] || 0) + 1;
     });
-    m.operating_systems.forEach((os) => {
+    (m.operating_systems || []).forEach((os) => {
       osCount[os.name] = (osCount[os.name] || 0) + 1;
     });
   });
@@ -117,9 +117,9 @@ export default function LeaderboardTable({
       email: member.email,
       hours: Math.round((member.total_seconds || 0) / 3600),
       role: member.role,
-      languages: member.languages.slice(0, 3).map((l) => l.name),
-      os: member.operating_systems[0]?.name || "N/A",
-      editor: member.editors[0]?.name || "N/A",
+      languages: (member.languages || []).slice(0, 3).map((l) => l.name),
+      os: member.operating_systems?.[0]?.name || "N/A",
+      editor: member.editors?.[0]?.name || "N/A",
     }));
 
   const maxHours = ranked[0]?.hours || 1;
