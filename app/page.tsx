@@ -27,12 +27,15 @@ export default async function Home() {
       .lt("total_seconds", 14400) // thats 4 hours
       .neq("total_seconds", 0)
       .not("total_seconds", "is", null)
-      .order("total_seconds", { ascending: true }),
+      .order("total_seconds", { ascending: true })
+      .limit(50),
     supabase
       .from("top_user_stats")
       .select("*")
+      .neq("total_seconds", 0)
+      .not("total_seconds", "is", null)
       .order("total_seconds", { ascending: false })
-      .limit(100),
+      .limit(50),
   ]);
 
   const leaderboards = leaderboardsRes.data ?? [];
