@@ -1,6 +1,18 @@
+export interface Category {
+  name: string;
+  text: string;
+  hours: number;
+  decimal: string;
+  digital: string;
+  minutes: number;
+  percent: number;
+  total_seconds: number;
+}
+
 export interface TopMember {
   email: string;
   total_seconds: number;
+  categories?: Category[];
 }
 
 export default function TopLeaderboard({

@@ -6,45 +6,72 @@ import CTA from "./components/layout/CTA";
 import Contributors from "./components/landing-page/Contributors";
 import LosserMembers from "./components/landing-page/LosserMembers";
 import RecentLeaderboard from "./components/landing-page/RecentLeaderboard";
-import TopLeaderboard, { TopMember } from "./components/landing-page/TopLeaderbord";
+import TopLeaderboard, {
+  TopMember,
+} from "./components/landing-page/TopLeaderbord";
 import ContributeCard from "./components/landing-page/ContributeCard";
+import VibeCoders from "./components/landing-page/VibeCoders";
 
 export default async function Home() {
   const supabase = await createClient();
 
-  const { data: leaderboards } = await supabase
-    .from("leaderboards")
-    .select("id, name, slug")
-    .order("created_at", { ascending: false })
-    .limit(5);
+  const [leaderboardsRes, losserMembersRes, topMembersRes] = await Promise.all([
+    supabase
+      .from("leaderboards")
+      .select("id, name, slug")
+      .order("created_at", { ascending: false })
+      .limit(5),
+    supabase
+      .from("top_user_stats")
+      .select("*")
+      .lt("total_seconds", 14400) // thats 4 hours
+      .neq("total_seconds", 0)
+      .not("total_seconds", "is", null)
+      .order("total_seconds", { ascending: true }),
+    supabase
+      .from("top_user_stats")
+      .select("*")
+      .order("total_seconds", { ascending: false })
+      .limit(100),
+  ]);
 
-  const { data: losser_members } = await supabase
-    .from("top_user_stats")
-    .select("*")
-    .lt("total_seconds", 14400) // thats 4 hours
-    .neq("total_seconds", 0)
-    .not("total_seconds", "is", null)
-    .order("total_seconds", { ascending: true });
+  const leaderboards = leaderboardsRes.data ?? [];
+  const losser_members = losserMembersRes.data ?? [];
+  const top_members = topMembersRes.data ?? [];
 
-  const { data: top_members } = await supabase
-    .from("top_user_stats")
-    .select("*")
-    .order("total_seconds", { ascending: false })
-    .limit(3);
+  const topMembers: TopMember[] = top_members
+    ? top_members.filter(
+        (u): u is { email: string; total_seconds: number; user_id: string } =>
+          u.email !== null && u.total_seconds !== null && u.user_id !== null,
+      )
+    : [];
 
-  const topMembers: TopMember[] = top_members ? top_members.filter(
-     (u): u is { email: string; total_seconds: number; user_id: string } =>
-       u.email !== null &&
-       u.total_seconds !== null &&
-       u.user_id !== null
-   ) : [];
+  const losserMembers: TopMember[] = losser_members
+    ? losser_members.filter(
+        (u): u is { email: string; total_seconds: number; user_id: string } =>
+          u.email !== null && u.total_seconds !== null && u.user_id !== null,
+      )
+    : [];
 
-  const losserMembers: TopMember[] = losser_members ? losser_members.filter(
-     (u): u is { email: string; total_seconds: number; user_id: string } =>
-       u.email !== null &&
-       u.total_seconds !== null &&
-       u.user_id !== null
-   ) : [];
+  const topVibeCoders: TopMember[] = topMembers
+    .filter((member): member is TopMember =>
+      member.categories
+        ? member.categories?.some(
+            (cat) => cat.name === "AI Coding" && cat.total_seconds > 0,
+          ) &&
+          member.email !== null &&
+          member.total_seconds !== null
+        : false,
+    )
+    .map((member) => {
+      const codingCategory = member.categories
+        ? member.categories.find((cat) => cat.name === "AI Coding")
+        : undefined;
+
+      return codingCategory
+        ? { ...member, total_seconds: codingCategory.total_seconds }
+        : member;
+    });
 
   return (
     <div className="min-h-screen bg-[#0a0a1a] text-white overflow-hidden grid-bg relative">
@@ -341,6 +368,7 @@ export default async function Home() {
       <TopLeaderboard top_members={topMembers ?? []} />
       <RecentLeaderboard leaderboards={leaderboards ?? []} />
       <LosserMembers losser_members={losserMembers ?? []} />
+      <VibeCoders vibe_coders={topVibeCoders ?? []} />
       <Contributors />
       <CTA />
       <ContributeCard />

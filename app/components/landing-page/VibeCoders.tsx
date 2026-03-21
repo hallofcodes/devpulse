@@ -1,35 +1,32 @@
 import { TopMember } from "./TopLeaderbord";
 
-export default async function LosserMembers({
-  losser_members,
+export default async function VibeCoders({
+  vibe_coders,
 }: {
-  losser_members: TopMember[];
+  vibe_coders: TopMember[];
 }) {
   return (
     <>
-      {losser_members && losser_members.length > 0 && (
+      {vibe_coders && vibe_coders.length > 0 && (
         <section className="max-w-5xl mx-auto px-6 pb-5 relative z-10">
           <div
             className="glass-card border border-white/5 bg-white/[0.02] backdrop-blur-xl p-8 md:p-12 rounded-3xl"
             data-aos="fade-up"
           >
             <h2 className="text-2xl font-bold text-white mb-4">
-              Losser Leaderboard
+              Vibe Coders Leaderboard
             </h2>
             <p className="text-gray-400 text-sm mb-8">
-              Top most &quot;dedicated&quot; developers who have spent the least
-              amount of time coding. Remember, its not about how much you code,
-              but how effective you are! 😉
+              Meet the vibe coders of the week - those who spent the least
+              amount of time coding and more time prompting.
             </p>
-
-            {(!losser_members || losser_members.length) === 0 && (
+            {(!vibe_coders || vibe_coders.length) === 0 && (
               <div className="text-gray-500 text-sm italic">
-                No idoits found... 😜
+                No vibe coders found... 😜
               </div>
             )}
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {losser_members.map(
+              {vibe_coders.map(
                 (
                   member: { email: string; total_seconds: number },
                   i: number,
@@ -54,6 +51,9 @@ export default async function LosserMembers({
                 ),
               )}
             </div>
+            <span className="text-gray-400 text-xs mt-4 block">
+              Note: These are the time spent on AI Coding activities.
+            </span>
           </div>
         </section>
       )}

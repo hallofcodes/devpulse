@@ -7,14 +7,16 @@ import Image from "next/image";
 export default async function Leaderboards() {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from("leaderboards")
-    .select("id, name, slug")
-    .order("created_at", { ascending: false });
+  const [leaderboardsResult, userResult] = await Promise.all([
+    supabase
+      .from("leaderboards")
+      .select("id, name, slug")
+      .order("created_at", { ascending: false }),
+    supabase.auth.getUser(),
+  ]);
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data, error } = leaderboardsResult;
+  const { data: user } = userResult;
 
   if (error) {
     return (

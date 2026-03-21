@@ -23,16 +23,20 @@ export default async function LeaderboardsList() {
 
   if (!user) return null;
 
-  const { data: owned } = await supabase
-    .from("leaderboards")
-    .select("id, name, slug, owner_id")
-    .eq("owner_id", user.id);
+  const [ownResult, joinedResult] = await Promise.all([
+    supabase
+      .from("leaderboards")
+      .select("id, name, slug, owner_id")
+      .eq("owner_id", user.id),
+    supabase
+      .from("leaderboard_members")
+      .select("leaderboards(id, name, slug, owner_id)")
+      .eq("user_id", user.id)
+      .eq("role", "member"),
+  ]);
 
-  const { data: joined } = await supabase
-    .from("leaderboard_members")
-    .select("leaderboards(id, name, slug, owner_id)")
-    .eq("user_id", user.id)
-    .eq("role", "member");
+  const owned = ownResult.data || [];
+  const joined = joinedResult.data || [];
 
   const joinedBoards =
     joined?.flatMap((j) => j.leaderboards) || [];
