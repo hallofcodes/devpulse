@@ -6,8 +6,8 @@ CREATE TABLE conversations (
 
 /* ---- Participants ----- */
 CREATE TABLE conversation_participants (
-  conversation_id uuid REFERENCES conversations(id),
-  user_id uuid REFERENCES auth.users(id),
+  conversation_id uuid NOT NULL REFERENCES conversations(id),
+  user_id uuid NOT NULL REFERENCES auth.users(id),
   email text NOT NULL,
   PRIMARY KEY(conversation_id, user_id)
 );
@@ -15,10 +15,10 @@ CREATE TABLE conversation_participants (
 /* ---- Messages ----- */
 CREATE TABLE messages (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  conversation_id uuid REFERENCES conversations(id),
-  sender_id uuid REFERENCES auth.users(id),
+  conversation_id uuid NOT NULL REFERENCES conversations(id),
+  sender_id uuid NOT NULL REFERENCES auth.users(id),
   text text NOT NULL,
-  created_at timestamptz DEFAULT now()
+  created_at timestamptz NOT NULL DEFAULT now()
 );
 
 ALTER TABLE messages ENABLE ROW LEVEL SECURITY;

@@ -6,7 +6,7 @@ import CTA from "./components/layout/CTA";
 import Contributors from "./components/landing-page/Contributors";
 import LosserMembers from "./components/landing-page/LosserMembers";
 import RecentLeaderboard from "./components/landing-page/RecentLeaderboard";
-import TopLeaderboard from "./components/landing-page/TopLeaderbord";
+import TopLeaderboard, { TopMember } from "./components/landing-page/TopLeaderbord";
 import ContributeCard from "./components/landing-page/ContributeCard";
 
 export default async function Home() {
@@ -31,6 +31,20 @@ export default async function Home() {
     .select("*")
     .order("total_seconds", { ascending: false })
     .limit(3);
+
+  const topMembers: TopMember[] = top_members ? top_members.filter(
+     (u): u is { email: string; total_seconds: number; user_id: string } =>
+       u.email !== null &&
+       u.total_seconds !== null &&
+       u.user_id !== null
+   ) : [];
+
+  const losserMembers: TopMember[] = losser_members ? losser_members.filter(
+     (u): u is { email: string; total_seconds: number; user_id: string } =>
+       u.email !== null &&
+       u.total_seconds !== null &&
+       u.user_id !== null
+   ) : [];
 
   return (
     <div className="min-h-screen bg-[#0a0a1a] text-white overflow-hidden grid-bg relative">
@@ -324,9 +338,9 @@ export default async function Home() {
         </div>
       </section>
 
-      <TopLeaderboard top_members={top_members ?? []} />
+      <TopLeaderboard top_members={topMembers ?? []} />
       <RecentLeaderboard leaderboards={leaderboards ?? []} />
-      <LosserMembers losser_members={losser_members ?? []} />
+      <LosserMembers losser_members={losserMembers ?? []} />
       <Contributors />
       <CTA />
       <ContributeCard />

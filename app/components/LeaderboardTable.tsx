@@ -1,17 +1,42 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock, faCode, faTerminal, faServer, faBolt, faFire, faStar, faRocket } from "@fortawesome/free-solid-svg-icons";
+import {
+  faClock,
+  faCode,
+  faTerminal,
+  faServer,
+  faBolt,
+  faFire,
+  faStar,
+  faRocket,
+} from "@fortawesome/free-solid-svg-icons";
+import { Database } from "../supabase-types";
 
-type Member = {
+type LeaderboardMembersRow =
+  Database["public"]["Views"]["leaderboard_members_view"]["Row"];
+
+// Supabase-generated types for views are always nullable
+// due to the nature of views and
+// conservative type generation.
+export type NonNullableMember = Omit<
+  LeaderboardMembersRow,
+  | "user_id"
+  | "role"
+  | "email"
+  | "total_seconds"
+  | "languages"
+  | "operating_systems"
+  | "editors"
+> & {
   user_id: string;
   role: string;
   email: string;
   total_seconds: number;
-  languages: { name: string }[] | null;
-  operating_systems: { name: string }[] | null;
-  editors: { name: string }[] | null;
+  languages: { name: string }[];
+  operating_systems: { name: string }[];
+  editors: { name: string }[];
 };
 
-function LeaderboardStats({ members }: { members: Member[] }) {
+function LeaderboardStats({ members }: { members: NonNullableMember[] }) {
   const totalHours = Math.round(
     members.reduce((acc, m) => acc + (m.total_seconds || 0), 0) / 3600,
   );
@@ -32,9 +57,12 @@ function LeaderboardStats({ members }: { members: Member[] }) {
     });
   });
 
-  const topLanguage = Object.entries(languageCount).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A";
-  const topEditor = Object.entries(editorCount).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A";
-  const topOS = Object.entries(osCount).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A";
+  const topLanguage =
+    Object.entries(languageCount).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A";
+  const topEditor =
+    Object.entries(editorCount).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A";
+  const topOS =
+    Object.entries(osCount).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A";
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8 drop-shadow-xl border-white/5">
@@ -42,12 +70,20 @@ function LeaderboardStats({ members }: { members: Member[] }) {
         <div className="absolute -top-6 -right-6 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl transition-transform group-hover:scale-125 duration-500" />
         <div className="flex items-center gap-2 mb-2 sm:mb-3">
           <div className="w-5 h-5 sm:w-6 sm:h-6 rounded bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-            <FontAwesomeIcon icon={faClock} className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-indigo-400" />
+            <FontAwesomeIcon
+              icon={faClock}
+              className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-indigo-400"
+            />
           </div>
-          <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">Total Time</span>
+          <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
+            Total Time
+          </span>
         </div>
         <div className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-          {totalHours} <span className="text-xs sm:text-sm font-medium text-gray-500 tracking-normal">hrs</span>
+          {totalHours}{" "}
+          <span className="text-xs sm:text-sm font-medium text-gray-500 tracking-normal">
+            hrs
+          </span>
         </div>
       </div>
 
@@ -55,9 +91,14 @@ function LeaderboardStats({ members }: { members: Member[] }) {
         <div className="absolute -top-6 -right-6 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl transition-transform group-hover:scale-125 duration-500" />
         <div className="flex items-center gap-2 mb-2 sm:mb-3">
           <div className="w-5 h-5 sm:w-6 sm:h-6 rounded bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-            <FontAwesomeIcon icon={faCode} className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-400" />
+            <FontAwesomeIcon
+              icon={faCode}
+              className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-400"
+            />
           </div>
-          <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">Top Lang</span>
+          <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
+            Top Lang
+          </span>
         </div>
         <div className="text-xl sm:text-2xl font-bold text-white tracking-tight truncate mt-1">
           {topLanguage}
@@ -68,9 +109,14 @@ function LeaderboardStats({ members }: { members: Member[] }) {
         <div className="absolute -top-6 -right-6 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl transition-transform group-hover:scale-125 duration-500" />
         <div className="flex items-center gap-2 mb-2 sm:mb-3">
           <div className="w-5 h-5 sm:w-6 sm:h-6 rounded bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-            <FontAwesomeIcon icon={faTerminal} className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-400" />
+            <FontAwesomeIcon
+              icon={faTerminal}
+              className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-400"
+            />
           </div>
-          <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">Editor</span>
+          <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
+            Editor
+          </span>
         </div>
         <div className="text-xl sm:text-2xl font-bold text-white tracking-tight truncate mt-1">
           {topEditor}
@@ -81,9 +127,14 @@ function LeaderboardStats({ members }: { members: Member[] }) {
         <div className="absolute -top-6 -right-6 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl transition-transform group-hover:scale-125 duration-500" />
         <div className="flex items-center gap-2 mb-2 sm:mb-3">
           <div className="w-5 h-5 sm:w-6 sm:h-6 rounded bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-            <FontAwesomeIcon icon={faServer} className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-purple-400" />
+            <FontAwesomeIcon
+              icon={faServer}
+              className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-purple-400"
+            />
           </div>
-          <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">OS</span>
+          <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
+            OS
+          </span>
         </div>
         <div className="text-xl sm:text-2xl font-bold text-white tracking-tight truncate mt-1">
           {topOS}
@@ -94,11 +145,14 @@ function LeaderboardStats({ members }: { members: Member[] }) {
 }
 
 const getBadgeInfo = (rank: number, hours: number) => {
-  if (rank === 1) return { label: "GOD LEVEL", class: "badge-god", icon: faBolt };
+  if (rank === 1)
+    return { label: "GOD LEVEL", class: "badge-god", icon: faBolt };
   if (rank === 2) return { label: "ELITE", class: "badge-elite", icon: faFire };
   if (rank === 3) return { label: "PRO", class: "badge-pro", icon: faStar };
-  if (hours > 100) return { label: "MASTER", class: "badge-master", icon: faRocket };
-  if (hours > 20) return { label: "HUSTLER", class: "badge-hustler", icon: null };
+  if (hours > 100)
+    return { label: "MASTER", class: "badge-master", icon: faRocket };
+  if (hours > 20)
+    return { label: "HUSTLER", class: "badge-hustler", icon: null };
   return { label: "NOVICE", class: "badge-novice", icon: null };
 };
 
@@ -106,7 +160,7 @@ export default function LeaderboardTable({
   members,
   ownerId,
 }: {
-  members: Member[];
+  members: NonNullableMember[];
   ownerId?: string;
 }) {
   const ranked = members
@@ -126,7 +180,8 @@ export default function LeaderboardTable({
   const formatRank = (rank: number) => rank.toString().padStart(2, "0");
 
   const getRankColor = (rank: number) => {
-    if (rank === 1) return "text-yellow-400 font-bold drop-shadow-[0_0_8px_rgba(250,204,21,0.4)]";
+    if (rank === 1)
+      return "text-yellow-400 font-bold drop-shadow-[0_0_8px_rgba(250,204,21,0.4)]";
     if (rank === 2) return "text-gray-300 font-bold";
     if (rank === 3) return "text-amber-600 font-bold";
     return "text-gray-600 font-medium";
@@ -134,7 +189,9 @@ export default function LeaderboardTable({
 
   return (
     <div className="w-full">
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @keyframes shimmer-bg {
           0% { background-position: 0% 50%; }
           100% { background-position: 200% 50%; }
@@ -190,12 +247,16 @@ export default function LeaderboardTable({
           border: 1px solid rgba(107,114,128,0.4);
           color: #d1d5db;
         }
-      `}} />
+      `,
+        }}
+      />
       <LeaderboardStats members={members} />
 
       {ranked.length === 0 ? (
         <div className="glass-card p-16 text-center">
-          <p className="text-gray-500 tracking-tight font-medium">No tracking data available yet.</p>
+          <p className="text-gray-500 tracking-tight font-medium">
+            No tracking data available yet.
+          </p>
         </div>
       ) : (
         <div className="glass-card overflow-hidden">
@@ -223,9 +284,9 @@ export default function LeaderboardTable({
                   }`}
                 >
                   {/* Background Progress Bar */}
-                  <div 
-                    className="absolute left-0 bottom-0 h-[1px] bg-gradient-to-r from-indigo-500/50 to-transparent" 
-                    style={{ width: `${pct}%` }} 
+                  <div
+                    className="absolute left-0 bottom-0 h-[1px] bg-gradient-to-r from-indigo-500/50 to-transparent"
+                    style={{ width: `${pct}%` }}
                   />
                   {isCurrentUser && (
                     <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-indigo-500" />
@@ -235,7 +296,9 @@ export default function LeaderboardTable({
                   <div className="flex items-center w-full md:w-auto md:flex-1 min-w-0">
                     {/* Rank */}
                     <div className="w-8 sm:w-12 shrink-0 text-center flex items-center justify-center">
-                      <span className={`font-mono text-lg sm:text-xl tracking-tighter ${getRankColor(user.rank)}`}>
+                      <span
+                        className={`font-mono text-lg sm:text-xl tracking-tighter ${getRankColor(user.rank)}`}
+                      >
                         {formatRank(user.rank)}
                       </span>
                     </div>
@@ -258,7 +321,12 @@ export default function LeaderboardTable({
                         </div>
                         <div className="flex flex-wrap items-center">
                           <div className={`badge-base ${badgeInfo.class}`}>
-                            {badgeInfo.icon && <FontAwesomeIcon icon={badgeInfo.icon} className="w-2 h-2" />}
+                            {badgeInfo.icon && (
+                              <FontAwesomeIcon
+                                icon={badgeInfo.icon}
+                                className="w-2 h-2"
+                              />
+                            )}
                             {badgeInfo.label}
                           </div>
                         </div>
@@ -267,10 +335,12 @@ export default function LeaderboardTable({
 
                     {/* Mobile Score */}
                     <div className="md:hidden shrink-0 ml-3 flex flex-col items-end justify-center">
-                       <p className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-none">
-                         {user.hours}
-                       </p>
-                       <span className="text-[9px] sm:text-[10px] text-gray-500 font-medium uppercase tracking-widest mt-1">hrs</span>
+                      <p className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-none">
+                        {user.hours}
+                      </p>
+                      <span className="text-[9px] sm:text-[10px] text-gray-500 font-medium uppercase tracking-widest mt-1">
+                        hrs
+                      </span>
                     </div>
                   </div>
 
@@ -280,12 +350,17 @@ export default function LeaderboardTable({
                     <div className="flex flex-wrap items-center gap-1.5 w-full md:w-48 lg:w-72 xl:w-80 md:shrink-0 md:pr-4">
                       {user.languages.length > 0 ? (
                         user.languages.map((lang, i) => (
-                          <span key={i} className="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded bg-white/[0.03] border border-white/5 text-[9px] sm:text-[10px] text-gray-300 font-medium tracking-wide truncate max-w-[70px] sm:max-w-[80px]">
+                          <span
+                            key={i}
+                            className="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded bg-white/[0.03] border border-white/5 text-[9px] sm:text-[10px] text-gray-300 font-medium tracking-wide truncate max-w-[70px] sm:max-w-[80px]"
+                          >
                             {lang}
                           </span>
                         ))
                       ) : (
-                        <span className="text-[10px] sm:text-xs text-gray-600">No stack tracked</span>
+                        <span className="text-[10px] sm:text-xs text-gray-600">
+                          No stack tracked
+                        </span>
                       )}
                     </div>
 
@@ -311,7 +386,9 @@ export default function LeaderboardTable({
                       <p className="text-2xl font-bold tracking-tight text-white leading-none">
                         {user.hours}
                       </p>
-                      <span className="text-xs text-gray-500 font-medium ml-1.5 tracking-normal">hrs</span>
+                      <span className="text-xs text-gray-500 font-medium ml-1.5 tracking-normal">
+                        hrs
+                      </span>
                     </div>
                   </div>
                 </div>

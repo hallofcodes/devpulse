@@ -7,19 +7,15 @@ import { createClient } from "../../lib/supabase/client";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { Database } from "@/app/supabase-types";
 
-type Leaderboard = {
-  id: string;
-  name: string;
-  description: string;
-  slug: string;
-};
+type LeaderboardRow = Database["public"]["Tables"]["leaderboards"]["Row"];
 
 export default function LeaderboardHeader({
   leaderboard,
   isOwner,
 }: {
-  leaderboard: { id: string; name: string; description: string };
+  leaderboard: LeaderboardRow;
   isOwner: boolean;
 }) {
   const router = useRouter();
@@ -28,7 +24,7 @@ export default function LeaderboardHeader({
   const [description, setDescription] = useState(leaderboard.description || "");
 
   const handleEdit = async () => {
-    const editLeaderboard: Promise<Leaderboard> = new Promise(
+    const editLeaderboard: Promise<LeaderboardRow> = new Promise(
       async (resolve, reject) => {
         try {
           const supabase = await createClient();
@@ -89,7 +85,7 @@ export default function LeaderboardHeader({
         </div>
 
         <p className="text-gray-500 mt-2 text-sm">
-          {leaderboard.description?.length > 0
+          {leaderboard.description && leaderboard.description?.length > 0
             ? leaderboard.description
             : "No description available."}
         </p>

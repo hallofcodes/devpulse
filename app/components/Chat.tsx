@@ -85,7 +85,7 @@ export default function Chat({ user }: { user: User }) {
 
           return {
             id: convo.id,
-            users: convo.users.map((u) => ({
+            users: convo.users.map((u: { user_id: string; email: string }) => ({
               id: u.user_id,
               email: u.email,
             })),
@@ -210,7 +210,14 @@ export default function Chat({ user }: { user: User }) {
         .from("top_user_stats")
         .select("user_id, email")
         .neq("user_id", user.id);
-      if (data) setAllUsers(data);
+      if (data) {
+        const users: ChatUser[] = data.filter(
+          (u): u is { user_id: string; email: string } =>
+            u.user_id !== null && u.email !== null,
+        );
+
+        setAllUsers(users);
+      }
     };
 
     fetchUsers();
@@ -354,7 +361,7 @@ export default function Chat({ user }: { user: User }) {
           <p className="text-gray-300 text-[15px] font-bold mb-1.5 tracking-tight">
             No Conversation Selected
           </p>
-          <p className="text-gray-500 text-xs max-w-[200px] leading-relaxed">
+          <p className="text-gray-500 text-xs max-w-50 leading-relaxed">
             Select a conversation from the top or start a new one.
           </p>
         </div>

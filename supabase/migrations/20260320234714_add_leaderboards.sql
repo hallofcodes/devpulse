@@ -4,10 +4,10 @@ create table public.leaderboards (
   name text not null,
   slug text not null unique,
   description text,
-  is_public boolean default true,
-  owner_id uuid references auth.users(id) on delete cascade,
-  join_code text unique,
-  created_at timestamptz default now()
+  is_public boolean NOT NULL default true,
+  owner_id uuid NOT NULL references auth.users(id) on delete cascade,
+  join_code text not null unique,
+  created_at timestamptz NOT NULL default now()
 );
 
 alter table public.leaderboards enable row level security;
@@ -15,10 +15,10 @@ alter table public.leaderboards enable row level security;
 /* ---- Leaderboards Members ----- */
 create table public.leaderboard_members (
   id uuid primary key default gen_random_uuid(),
-  leaderboard_id uuid references public.leaderboards(id) on delete cascade,
-  user_id uuid references auth.users(id) on delete cascade,
-  role text default 'member', -- owner | member
-  joined_at timestamptz default now(),
+  leaderboard_id uuid NOT NULL references public.leaderboards(id) on delete cascade,
+  user_id uuid NOT NULL references auth.users(id) on delete cascade,
+  role text NOT NULL default 'member', -- owner | member
+  joined_at timestamptz NOT NULL default now(),
   unique (leaderboard_id, user_id)
 );
 

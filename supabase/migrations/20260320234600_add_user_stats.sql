@@ -1,17 +1,17 @@
 /* ---- User Stats ----- */
 create table public.user_stats (
   user_id uuid primary key references auth.users(id) on delete cascade,
-  total_seconds bigint not null,
-  daily_average bigint default 0,
-  languages jsonb not null,
-  operating_systems jsonb not null,
-  editors jsonb not null,
-  machines jsonb default '[]'::jsonb,
-  categories jsonb default '[]'::jsonb,
-  dependencies jsonb default '[]'::jsonb,
-  best_day jsonb default '{}'::jsonb,
-  daily_stats jsonb default '[]'::jsonb,
-  last_fetched_at timestamp with time zone default now()
+  total_seconds bigint NOT NULL default 0,
+  daily_average bigint NOT NULL default 0,
+  languages jsonb NOT NULL default '[]'::jsonb,
+  operating_systems jsonb NOT NULL default '[]'::jsonb,
+  editors jsonb NOT NULL default '[]'::jsonb,
+  machines jsonb NOT NULL default '[]'::jsonb,
+  categories jsonb NOT NULL default '[]'::jsonb,
+  dependencies jsonb NOT NULL default '[]'::jsonb,
+  best_day jsonb NOT NULL default '{}'::jsonb,
+  daily_stats jsonb NOT NULL default '[]'::jsonb,
+  last_fetched_at timestamp with time zone NOT NULL default now()
 );
 
 alter table public.user_stats enable row level security;

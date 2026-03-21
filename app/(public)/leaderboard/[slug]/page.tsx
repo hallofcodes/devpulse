@@ -1,5 +1,5 @@
 import { createClient } from "../../../lib/supabase/server";
-import LeaderboardTable from "../../../components/LeaderboardTable";
+import LeaderboardTable, { NonNullableMember } from "../../../components/LeaderboardTable";
 import LeaderboardHeader from "@/app/components/leaderboard/Header";
 import BackButton from "@/app/components/leaderboard/BackButton";
 import Footer from "@/app/components/layout/Footer";
@@ -56,7 +56,7 @@ export default async function LeaderboardPage(props: {
         <BackButton />
         <LeaderboardHeader leaderboard={leaderboard} isOwner={isOwner} />
         <LeaderboardTable
-          members={members || []}
+          members={members as NonNullableMember[]}
           ownerId={user?.id}
         />
       </div>

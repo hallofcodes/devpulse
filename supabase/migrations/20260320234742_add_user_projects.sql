@@ -1,8 +1,8 @@
 /* ---- User Projects Stats ----- */
 create table public.user_projects (
   user_id uuid primary key references auth.users(id) on delete cascade,
-  projects jsonb not null,
-  last_fetched_at timestamp with time zone default now()
+  projects jsonb default '[]'::jsonb,
+  last_fetched_at timestamp with time zone NOT NULL default now()
 );
 
 alter table public.user_projects enable row level security;

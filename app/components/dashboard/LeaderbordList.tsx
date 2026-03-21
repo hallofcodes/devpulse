@@ -7,8 +7,7 @@ export interface Leaderboard {
   id: string;
   name: string;
   slug: string;
-  join_code?: string;
-  owner_id?: string;
+  owner_id: string;
 };
 
 export interface LeaderboardMember {

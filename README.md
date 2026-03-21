@@ -5,6 +5,39 @@
 Measure and share your coding productivity with personalized leaderboards. Compare your progress with peers while keeping full control over privacy and leaderboard settings.
 
 ## Getting Started
+Install the dependencies:
+
+```bash
+npm install
+```
+
+## Supabase
+
+First by creating a supabase cloud project:
+
+- go to [Supabase Dashboard](https://app.supabase.com)
+- click `New Project`
+- choose:
+  - Organization → (create one if needed)
+  - Project Name → e.g. devpulse-waka
+  - Database Password → choose a secure one
+  - Region → pick the nearest location
+- Click Create new project
+- Wait a few moments for the database to be provisioned.
+
+## Setup Environment
+
+Copy the .env.example to .env
+
+```bash
+cp .env.example .env
+
+# Open .env and fill in the values for:
+# NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+## Development
 
 First, run the development server:
 
@@ -13,6 +46,41 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Database Migrations
+
+Login first (if you haven't):
+
+```bash
+npx supabase login
+```
+
+Link the cloud project to this local one:
+
+```bash
+npx supabase link
+```
+
+It'll show the list of project you have select your project.
+
+Push migrations to cloud:
+
+```bash
+npx supabase db push
+```
+
+Pull migrations from cloud:
+
+```bash
+npx supabase db pull
+```
+
+Updating types (if you ever changed migrations):
+
+```bash
+npx supabase gen types typescript --project-id <project-id> --schema public > app/supabase-types.ts
+```
+
 
 ## Learn More
 

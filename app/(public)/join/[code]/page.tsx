@@ -16,8 +16,6 @@ async function getLeaderboard(code: string) {
   return data;
 }
 
-
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { code } = await params;
   const leaderboard = await getLeaderboard(code);
@@ -31,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = `You're invited to join ${leaderboard.name}!`;
   const description =
-    leaderboard.description?.length > 0
+    leaderboard?.description && leaderboard.description.length > 0
       ? leaderboard.description
       : `Join the ${leaderboard.name} leaderboard on DevPulse and compete with other developers. Track your coding activity and climb the ranks!`;
 
@@ -57,4 +55,3 @@ export default async function JoinPage({ params }: Props) {
   const { code } = await params;
   redirect(`/join?id=${encodeURIComponent(code)}`);
 }
-

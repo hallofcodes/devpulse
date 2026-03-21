@@ -51,7 +51,7 @@ export async function generateMetadata({
 
   const title = `You're invited to join ${leaderboard.name}!`;
   const description =
-    leaderboard.description?.length > 0
+    leaderboard.description && leaderboard.description?.length > 0
       ? leaderboard.description
       : `Join the ${leaderboard.name} leaderboard on DevPulse and compete with other developers. Track your coding activity and climb the ranks!`;
 
@@ -96,9 +96,12 @@ export default async function JoinPage({ searchParams }: Props) {
               />
             </svg>
           </div>
-          <h1 className="text-xl font-bold text-white mb-2">Join a Leaderboard</h1>
+          <h1 className="text-xl font-bold text-white mb-2">
+            Join a Leaderboard
+          </h1>
           <p className="text-gray-400 text-sm mb-6">
-            Open an invite link like <span className="font-mono">/join?id=XXXXXXXX</span>.
+            Open an invite link like{" "}
+            <span className="font-mono">/join?id=XXXXXXXX</span>.
           </p>
           <Link href="/" className="btn-primary inline-block px-6 py-3 text-sm">
             Go to DevPulse
@@ -115,11 +118,23 @@ export default async function JoinPage({ searchParams }: Props) {
       <div className="min-h-screen flex items-center justify-center bg-[#0a0a1a] text-white grid-bg">
         <div className="glass-card p-10 text-center max-w-md mx-auto">
           <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-5">
-            <svg className="w-8 h-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-8 h-8 text-red-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </div>
-          <h1 className="text-xl font-bold text-white mb-2">Invite Not Found</h1>
+          <h1 className="text-xl font-bold text-white mb-2">
+            Invite Not Found
+          </h1>
           <p className="text-gray-400 text-sm mb-6">
             This invite link is invalid or has expired.
           </p>
@@ -163,7 +178,9 @@ export default async function JoinPage({ searchParams }: Props) {
           </div>
 
           <p className="text-xs uppercase tracking-[0.2em] text-indigo-400 font-semibold mb-3">
-            {alreadyMember ? "You\u2019re already a member of" : "You\u2019ve been invited to"}
+            {alreadyMember
+              ? "You\u2019re already a member of"
+              : "You\u2019ve been invited to"}
           </p>
 
           <h1 className="text-2xl md:text-3xl font-bold gradient-text mb-2">
@@ -178,14 +195,36 @@ export default async function JoinPage({ searchParams }: Props) {
 
           <div className="flex items-center justify-center gap-6 mt-6 mb-8">
             <div className="flex items-center gap-2 text-gray-400 text-sm">
-              <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+              <svg
+                className="w-4 h-4 text-indigo-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
+                />
               </svg>
-              <span>{memberCount} {memberCount === 1 ? "member" : "members"}</span>
+              <span>
+                {memberCount} {memberCount === 1 ? "member" : "members"}
+              </span>
             </div>
             <div className="flex items-center gap-2 text-gray-400 text-sm">
-              <svg className="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              <svg
+                className="w-4 h-4 text-purple-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
               </svg>
               <span>Leaderboard</span>
             </div>
@@ -201,7 +240,10 @@ export default async function JoinPage({ searchParams }: Props) {
           {!user && (
             <p className="text-[11px] text-gray-600 mt-6">
               Powered by{" "}
-              <Link href="/" className="text-indigo-400/70 hover:text-indigo-400 transition-colors">
+              <Link
+                href="/"
+                className="text-indigo-400/70 hover:text-indigo-400 transition-colors"
+              >
                 DevPulse
               </Link>{" "}
               &mdash; Track your coding activity &amp; compete
