@@ -63,6 +63,10 @@ export default function Chat({ user }: { user: User }) {
   const [showModal, setShowModal] = useState(false);
   const [search, setSearch] = useState("");
   const [allUsers, setAllUsers] = useState<ChatUser[]>([]);
+  const [badgesByUserId, setBadgesByUserId] = useState<
+    Record<string, { label: string; className: string }>
+  >({});
+  const badgeCacheRef = useRef<Record<string, { label: string; className: string }>>({});
   const channelRef = useRef<RealtimeChannel>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -71,6 +75,110 @@ export default function Chat({ user }: { user: User }) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const bucketName = process.env.NEXT_PUBLIC_SUPABASE_BUCKET_NAME || "";
+
+  const globalConversations = conversations.filter((c) => c.type === "global");
+  const privateConversations = conversations.filter((c) => c.type !== "global");
+
+  const getBadgeInfoFromHours = (hours: number) => {
+    if (hours >= 160)
+      return {
+        label: "MISSION IMPOSSIBLE",
+        className:
+          "bg-gradient-to-r from-fuchsia-500/20 via-pink-500/40 to-fuchsia-500/20 border-fuchsia-500/60 text-fuchsia-200",
+      };
+    if (hours >= 130)
+      return {
+        label: "GOD LEVEL",
+        className:
+          "bg-gradient-to-r from-fuchsia-500/20 via-pink-400/40 to-fuchsia-500/20 border-fuchsia-400/60 text-fuchsia-200",
+      };
+    if (hours >= 100)
+      return {
+        label: "STARLIGHT",
+        className:
+          "bg-gradient-to-r from-sky-500/15 via-cyan-400/35 to-sky-500/15 border-sky-400/50 text-cyan-200",
+      };
+    if (hours >= 50)
+      return {
+        label: "ELITE",
+        className:
+          "bg-gradient-to-r from-rose-500/15 via-red-400/35 to-rose-500/15 border-red-400/50 text-rose-200",
+      };
+    if (hours >= 20)
+      return {
+        label: "PRO",
+        className:
+          "bg-gradient-to-r from-indigo-500/15 via-violet-500/35 to-indigo-500/15 border-indigo-400/50 text-indigo-200",
+      };
+    if (hours >= 5)
+      return {
+        label: "NOVICE",
+        className:
+          "bg-gradient-to-r from-emerald-500/15 via-green-400/35 to-emerald-500/15 border-emerald-400/45 text-emerald-200",
+      };
+    if (hours >= 1)
+      return {
+        label: "NEWBIE",
+        className:
+          "bg-gradient-to-r from-lime-500/15 via-yellow-400/35 to-lime-500/15 border-lime-400/45 text-lime-200",
+      };
+
+    return {
+      label: "NONE",
+      className: "bg-white/[0.03] border-white/10 text-gray-300",
+    };
+  };
+
+  useEffect(() => {
+    const fetchBadgesForParticipants = async () => {
+      if (!conversations.length) return;
+
+      const participantIds = new Set<string>();
+      conversations.forEach((c) => {
+        c.users.forEach((u) => {
+          if (u.id) participantIds.add(u.id);
+        });
+      });
+      participantIds.add(user.id);
+
+      const ids = Array.from(participantIds).filter(Boolean);
+      if (ids.length === 0) return;
+
+      const cached: Record<string, { label: string; className: string }> = {};
+      const missingIds: string[] = [];
+      ids.forEach((id) => {
+        const hit = badgeCacheRef.current[id];
+        if (hit) cached[id] = hit;
+        else missingIds.push(id);
+      });
+
+      if (Object.keys(cached).length > 0) {
+        setBadgesByUserId((prev) => ({ ...prev, ...cached }));
+      }
+
+      if (missingIds.length === 0) return;
+
+      const { data } = await supabase
+        .from("top_user_stats")
+        .select("user_id, email, total_seconds")
+        .in("user_id", missingIds);
+
+      if (!data) return;
+
+      const next: Record<string, { label: string; className: string }> = {};
+      for (const row of data) {
+        if (!row.user_id || row.total_seconds === null) continue;
+        const hours = Math.round((row.total_seconds || 0) / 3600);
+        const badge = getBadgeInfoFromHours(hours);
+        next[row.user_id] = { label: badge.label, className: badge.className };
+      }
+
+      badgeCacheRef.current = { ...badgeCacheRef.current, ...next };
+      setBadgesByUserId((prev) => ({ ...prev, ...next }));
+    };
+
+    fetchBadgesForParticipants();
+  }, [conversations, user.id]);
 
   useEffect(() => {
     fetch(
@@ -86,9 +194,11 @@ export default function Chat({ user }: { user: User }) {
   useEffect(() => {
     if (textareaRef.current) {
       const el = textareaRef.current;
-      el.style.height = "auto";
-      el.style.height = `${Math.min(el.scrollHeight, 1.5 * 6 * 16)}px`;
-      // 1.5rem line-height * 6 lines * 16px per rem
+      const minHeight = 20;
+      const maxHeight = minHeight * 6;
+      el.style.height = `${minHeight}px`;
+      el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
+      el.style.overflowY = el.scrollHeight > maxHeight ? "auto" : "hidden";
     }
   }, [input]);
 
@@ -123,7 +233,6 @@ export default function Chat({ user }: { user: User }) {
           };
         });
 
-        // making sure global conversation is always first
         const sortedConvs = convs.sort((a, b) =>
           a.type === "global" ? -1 : b.type === "global" ? 1 : 0,
         );
@@ -162,14 +271,12 @@ export default function Chat({ user }: { user: User }) {
             .then(({ data }) => {
               if (!data || data.length === 0) return;
               const convo = data[0];
-              // Double check the user is part of the conversation (should always be true)
               if (
                 !convo.users.some(
                   (u: { user_id: string }) => u.user_id === user.id,
                 )
               )
                 return;
-              // Check if we already have this conversation in state
               if (conversations.some((c) => c.id === convo.id)) return;
 
               setConversations((prev) => [
@@ -409,25 +516,42 @@ export default function Chat({ user }: { user: User }) {
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="px-3 pt-3 flex border-neutral-700">
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex flex-col items-center min-w-15"
-        >
-          <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center">
-            <FontAwesomeIcon icon={faPlus} className="text-white" />
-          </div>
-          <span className="text-xs mt-1">New</span>
-        </button>
-
-        <div className="flex-1 flex gap-4 overflow-x-auto">
+      {/* ── Conversation bar: labels above icon rows so text + avatars align cleanly ── */}
+      <div className="flex items-stretch gap-3 px-3 py-2 border-b border-white/[0.06] bg-[#0a0a1a]/80 backdrop-blur-md flex-shrink-0">
+        {/* Global: pinned icons, label sits under the icon */}
+        <div className="flex-shrink-0 min-w-0">
           <Conversations
-            conversations={conversations}
+            conversations={globalConversations}
             user={user}
             conversationId={conversationId}
             setConversationId={setConversationId}
+            showLabel={true}
           />
         </div>
+
+        <div className="w-px self-stretch bg-white/[0.08] flex-shrink-0 my-1" />
+
+        {/* DMs: scrollable list, labels sit under each icon */}
+        <div className="flex-1 min-w-0 overflow-x-auto">
+          <div className="flex gap-2 items-start">
+            <Conversations
+              conversations={privateConversations}
+              user={user}
+              conversationId={conversationId}
+              setConversationId={setConversationId}
+              showLabel={true}
+            />
+          </div>
+        </div>
+
+        {/* + aligned with avatar row (bottom), not with section title */}
+        <button
+          onClick={() => setShowModal(true)}
+          className="flex-shrink-0 self-center w-8 h-8 rounded-full bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center hover:bg-indigo-500/25 transition"
+          title="New conversation"
+        >
+          <FontAwesomeIcon icon={faPlus} className="text-indigo-300 w-3 h-3" />
+        </button>
       </div>
 
       {conversationId ? (
@@ -437,15 +561,16 @@ export default function Chat({ user }: { user: User }) {
             user={user}
             conversations={conversations}
             bottomRef={bottomRef}
+            badgesByUserId={badgesByUserId}
           />
 
-          <div className="p-4 border-t border-neutral-700">
+          <div className="sticky bottom-0 z-20 p-3 border-t border-neutral-700 bg-[#0a0a1a]/70 backdrop-blur-md">
             {attachments.length > 0 && (
               <div className="mb-2 flex flex-wrap gap-2">
                 {attachments.map((file, index) => (
                   <div
                     key={index}
-                    className="bg-neutral-700 text-sm px-3 py-1 rounded flex items-center gap-2"
+                    className="bg-neutral-900/40 border border-white/10 text-xs px-2 py-1 rounded-full flex items-center gap-2"
                   >
                     {file.type.startsWith("image/") ? (
                       <Image
@@ -453,7 +578,7 @@ export default function Chat({ user }: { user: User }) {
                         alt={file.name}
                         width={20}
                         height={20}
-                        className="w-6 h-6 rounded object-cover"
+                        className="w-5 h-5 rounded object-cover border border-white/10"
                       />
                     ) : (
                       <FontAwesomeIcon
@@ -461,10 +586,10 @@ export default function Chat({ user }: { user: User }) {
                         className="w-4 h-4 text-gray-400"
                       />
                     )}
-                    <span className="truncate max-w-[120px]">{file.name}</span>
+                    <span className="truncate max-w-[110px]">{file.name}</span>
                     <button
                       onClick={() => removeAttachment(index)}
-                      className="text-red-400 hover:text-red-300"
+                      className="text-red-400 hover:text-red-300 rounded px-1"
                     >
                       ✕
                     </button>
@@ -473,7 +598,7 @@ export default function Chat({ user }: { user: User }) {
               </div>
             )}
 
-            <div className="bg-neutral-800 rounded flex">
+            <div className="rounded-2xl border border-white/10 bg-neutral-900/35/80 backdrop-blur-sm flex items-center gap-1 px-2 py-0.5 pr-0.5 shadow-[0_6px_18px_rgba(0,0,0,0.22)] overflow-hidden">
               <input
                 type="file"
                 ref={fileInputRef}
@@ -492,27 +617,30 @@ export default function Chat({ user }: { user: User }) {
                     sendMessage();
                   }
                 }}
-                className="flex-1 px-4 py-2 outline-none resize-none overflow-auto bg-neutral-800"
+                className="flex-1 outline-none resize-none overflow-y-auto bg-transparent text-gray-100 placeholder:text-gray-500 px-1 py-0.5 leading-5 max-h-[150px]"
                 placeholder="Message..."
                 rows={1}
                 style={{
-                  lineHeight: "1.5rem",
-                  maxHeight: "calc(1.5rem * 6)",
+                  lineHeight: "1.25rem",
+                  maxHeight: "calc(1.25rem * 6)",
                 }}
               />
 
               <button onClick={() => fileInputRef.current?.click()}>
                 <FontAwesomeIcon
                   icon={faFile}
-                  className="text-gray-500 hover:text-gray-300 transition mx-2"
+                  className="text-gray-500 hover:text-gray-200 transition p-1.5 rounded-xl hover:bg-white/5"
                 />
               </button>
 
               <button
                 onClick={sendMessage}
-                className="bg-indigo-500 px-4 rounded max-h-12"
+                className="h-9 w-10 rounded-r-xl rounded-l-lg bg-gradient-to-br from-indigo-500 to-violet-500 border border-indigo-300/25 flex items-center justify-center hover:brightness-110 transition shadow-[0_6px_14px_rgba(99,102,241,0.3)]"
               >
-                <FontAwesomeIcon icon={faPaperPlane} className="text-white" />
+                <FontAwesomeIcon
+                  icon={faPaperPlane}
+                  className="text-white text-[13px] drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]"
+                />
               </button>
             </div>
           </div>
