@@ -130,6 +130,11 @@ export default function Messages({
                 }`}
               >
                 <div className="flex items-center gap-1.5 mb-1 px-0.5">
+                  {isSelf && (
+                    <span className="text-[10px] text-gray-600">
+                      {timeAgo(msg.created_at)}
+                    </span>
+                  )}
                 <span
                   className={`text-[12px] font-semibold leading-none ${
                     isSelf ? "text-indigo-300" : "text-gray-200"
@@ -142,9 +147,11 @@ export default function Messages({
                 >
                   {badgeLabel}
                 </span>
-                <span className="text-[10px] text-gray-600 ml-1">
-                  {timeAgo(msg.created_at)}
-                </span>
+                  {!isSelf && (
+                    <span className="text-[10px] text-gray-600">
+                      {timeAgo(msg.created_at)}
+                    </span>
+                  )}
                 </div>
 
                 {msg.text && (
