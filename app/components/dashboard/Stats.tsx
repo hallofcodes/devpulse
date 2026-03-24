@@ -257,8 +257,8 @@ export default function Stats({ name = "User", email = "user@example.com" }: Sta
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
                 {email.charAt(0).toUpperCase()}
               </div>
-              <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors block">{name}</span>
-              <svg className={`w-4 h-4 text-gray-500 group-hover:text-white transition-transform duration-200 block ${profileOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors hidden sm:block">{name}</span>
+              <svg className={`w-4 h-4 text-gray-500 group-hover:text-white transition-transform duration-200 hidden sm:block ${profileOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
 
