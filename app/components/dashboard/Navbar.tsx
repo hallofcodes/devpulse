@@ -53,7 +53,6 @@ function Sidebar() {
           isMobile && !mobileHidden ? "cursor-pointer" : ""
         }`}
         onClick={() => {
-          // Mobile: clicking the rail icon closes the sidebar (not a drawer).
           if (isMobile && !mobileHidden) setMobileHidden(true);
         }}
       >
@@ -142,7 +141,7 @@ export default function DashboardLayout({
       setIsMobile(nextIsMobile);
 
       if (nextIsMobile) {
-        setCollapsed(true); // current mobile default: compact icon rail
+        setCollapsed(true);
       } else {
         setCollapsed(false);
         setMobileHidden(false);
@@ -158,7 +157,6 @@ export default function DashboardLayout({
     };
   }, []);
 
-  // Show floating reopen button when sidebar is hidden; keep it visible briefly after opening.
   useEffect(() => {
     if (!isMobile) return;
 
@@ -172,7 +170,6 @@ export default function DashboardLayout({
       return;
     }
 
-    // Sidebar is visible: hide the floating button after a short delay.
     reopenBtnHideTimeoutRef.current = window.setTimeout(() => {
       setReopenBtnVisible(false);
       reopenBtnHideTimeoutRef.current = null;
@@ -193,7 +190,6 @@ export default function DashboardLayout({
       <div className="min-h-screen bg-[#0a0a1a] text-white">
         <Sidebar />
 
-        {/* Collapse Toggle */}
         <button
           onClick={() => setCollapsed(!collapsed)}
           className={`hidden md:flex fixed z-50 top-[18px] transition-[left] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] w-6 h-6 rounded-full bg-[#0f0f28] border border-white/10 items-center justify-center hover:border-indigo-500/30 hover:text-indigo-400 text-gray-600 ${
@@ -206,7 +202,6 @@ export default function DashboardLayout({
           />
         </button>
 
-        {/* Mobile floating reopen button (assistive touch style) */}
         {isMobile && reopenBtnVisible && (
           <button
             ref={reopenBtnRef}
@@ -215,7 +210,6 @@ export default function DashboardLayout({
               setMobileHidden(false);
             }}
             onPointerDown={(e) => {
-              // Only allow dragging while the sidebar is hidden (button should reopen).
               if (!mobileHidden) return;
 
               const btn = reopenBtnRef.current;
@@ -287,7 +281,6 @@ export default function DashboardLayout({
           </button>
         )}
 
-        {/* Main Content */}
         <main
           className={`min-h-screen grid-bg relative transition-[margin-left] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-x-hidden ${
             isMobile && mobileHidden

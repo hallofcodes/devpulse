@@ -516,9 +516,7 @@ export default function Chat({ user }: { user: User }) {
 
   return (
     <div className="flex flex-col h-screen">
-      {/* ── Conversation bar: labels above icon rows so text + avatars align cleanly ── */}
       <div className="flex items-stretch gap-3 px-3 py-2 border-b border-white/[0.06] bg-[#0a0a1a]/80 backdrop-blur-md flex-shrink-0">
-        {/* Global: pinned icons, label sits under the icon */}
         <div className="flex-shrink-0 min-w-0">
           <Conversations
             conversations={globalConversations}
@@ -531,7 +529,6 @@ export default function Chat({ user }: { user: User }) {
 
         <div className="w-px self-stretch bg-white/[0.08] flex-shrink-0 my-1" />
 
-        {/* DMs: scrollable list, labels sit under each icon */}
         <div className="flex-1 min-w-0 overflow-x-auto">
           <div className="flex gap-2 items-start">
             <Conversations
@@ -544,7 +541,6 @@ export default function Chat({ user }: { user: User }) {
           </div>
         </div>
 
-        {/* + aligned with avatar row (bottom), not with section title */}
         <button
           onClick={() => setShowModal(true)}
           className="flex-shrink-0 self-center w-8 h-8 rounded-full bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center hover:bg-indigo-500/25 transition"
