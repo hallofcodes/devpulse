@@ -6,6 +6,52 @@ import Image from "next/image";
 import { timeAgo } from "@/app/utils/time";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLink } from "@fortawesome/free-solid-svg-icons";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Flexes - DevPulse",
+  description:
+    "Flex your coding projects and share your achievements with the DevPulse community. See what others are working on and get inspired!",
+  keywords: [
+    "DevPulse",
+    "coding flexes",
+    "developer projects",
+    "coding achievements",
+    "programming flexes",
+    "open source projects",
+    "developer community",
+    "coding inspiration",
+  ],
+  openGraph: {
+    title: "Flexes - DevPulse",
+    description:
+      "Flex your coding projects and share your achievements with the DevPulse community. See what others are working on and get inspired!",
+    url: "https://devpulse-waka.vercel.app/flex",
+    siteName: "DevPulse",
+    images: [
+      {
+        url: "https://devpulse-waka.vercel.app/images/devpulse.cover.png",
+        width: 1200,
+        height: 630,
+        alt: "DevPulse Cover Image",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Flexes - DevPulse",
+    description:
+      "Flex your coding projects and share your achievements with the DevPulse community. See what others are working on and get inspired!",
+    images: [
+      {
+        url: "https://devpulse-waka.vercel.app/images/devpulse.cover.png",
+        alt: "DevPulse Cover Image",
+      },
+    ],
+  },
+};
 
 export default async function Flexs() {
   const supabase = await createClient();

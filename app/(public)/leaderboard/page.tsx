@@ -3,6 +3,53 @@ import { createClient } from "../../lib/supabase/server";
 import Footer from "@/app/components/layout/Footer";
 import CTA from "@/app/components/layout/CTA";
 import Image from "next/image";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Leaderboards - DevPulse",
+  description:
+    "Explore the DevPulse leaderboards and see how you rank against other developers. Check out the top coders and get inspired to climb the ranks!",
+  keywords: [
+    "DevPulse",
+    "developer leaderboards",
+    "coding rankings",
+    "programming competition",
+    "developer stats",
+    "coding achievements",
+    "programming leaderboards",
+    "developer community",
+    "coding inspiration",
+  ],
+  openGraph: {
+    title: "Leaderboards - DevPulse",
+    description:
+      "Explore the DevPulse leaderboards and see how you rank against other developers. Check out the top coders and get inspired to climb the ranks!",
+    url: "https://devpulse-waka.vercel.app/leaderboard",
+    siteName: "DevPulse",
+    images: [
+      {
+        url: "https://devpulse-waka.vercel.app/images/devpulse.cover.png",
+        width: 1200,
+        height: 630,
+        alt: "DevPulse Cover Image",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Leaderboards - DevPulse",
+    description:
+      "Explore the DevPulse leaderboards and see how you rank against other developers. Check out the top coders and get inspired to climb the ranks!",
+    images: [
+      {
+        url: "https://devpulse-waka.vercel.app/images/devpulse.cover.png",
+        alt: "DevPulse Cover Image",
+      },
+    ],
+  },
+};
 
 export default async function Leaderboards() {
   const supabase = await createClient();

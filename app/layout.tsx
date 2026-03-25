@@ -50,7 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
         "DevPulse - Monitor Your Coding Activity and Compete on Leaderboards",
       description:
         "DevPulse is a platform that tracks your coding activity and allows you to compete with other developers on leaderboards. Sign up now to start monitoring your coding habits and see how you stack up against the competition!",
-      url: "https://devpulse-waka.vercel.app",
+      url: `https://devpulse-waka.vercel.app${h.get("x-pathname")}`,
       siteName: "DevPulse",
       images: [
         {

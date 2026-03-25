@@ -63,7 +63,7 @@ export async function generateMetadata({
       description,
       type: "website",
       siteName: "DevPulse",
-      url: `/join?id=${encodeURIComponent(code)}`,
+      url: `https://devpulse-waka.vercel.app/join?id=${encodeURIComponent(code)}`,
     },
     twitter: {
       card: "summary_large_image",
