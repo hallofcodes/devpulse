@@ -13,6 +13,9 @@ import {
   faMessage,
   faCrown,
   faDashboard,
+  faGlobe,
+  faEdit,
+  faCodeBranch,
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
@@ -47,6 +50,24 @@ function Sidebar({ role }: { role: string }) {
       href: "/dashboard/leaderboards",
       label: "Leaderboards",
       icon: faTrophy,
+      role: "user",
+    },
+    {
+      href: "https://hallofcodes.github.io/html-editor",
+      label: "HTML Editor",
+      icon: faEdit,
+      role: "user",
+    },
+    {
+      href: "https://github.com/hallofcodes/devpulse",
+      label: "Contribute on GitHub",
+      icon: faCodeBranch,
+      role: "user",
+    },
+    {
+      href: "https://hallofcodes.github.io",
+      label: "Hall of Codes",
+      icon: faGlobe,
       role: "user",
     },
   ];
@@ -105,6 +126,7 @@ function Sidebar({ role }: { role: string }) {
                       ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/15"
                       : "text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]"
                   }`}
+                  target={item.href.startsWith("http") ? "_blank" : undefined}
                   title={collapsed ? item.label : undefined}
                 >
                   <FontAwesomeIcon
