@@ -6,10 +6,16 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { Conversation, Message } from "../Chat";
 import { timeAgo } from "@/app/utils/time";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
-import { faDownload, faFile, faXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faDownload,
+  faFile,
+  faPause,
+  faPlay,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Player from "./Player";
 
@@ -198,6 +204,21 @@ export default function Messages({
           const avatarTranslateClass = isLongMessage
             ? "-translate-y-[4.5px]"
             : "-translate-y-[4px]";
+          const normalizedAttachments = (msg.attachments ?? [])
+            .map((att) => normalizeAttachment(att))
+            .filter(
+              (
+                att,
+              ): att is {
+                mimetype: string;
+                public_url: string;
+                filename: string;
+              } => !!att,
+            );
+          const isVoiceOnlyMessage =
+            !msg.text &&
+            normalizedAttachments.length > 0 &&
+            normalizedAttachments.every((att) => getAttachmentKind(att) === "audio");
 
           return (
             <div
@@ -221,7 +242,7 @@ export default function Messages({
                   isSelf ? "items-end" : "items-start"
                 }`}
               >
-                <div className="flex items-center gap-1.5 mb-1 px-0.5">
+                <div className={`flex items-center gap-1.5 ${isVoiceOnlyMessage ? "mb-0" : "mb-1"} px-0.5`}>
                   {isSelf && (
                     <span className="text-[10px] text-gray-600">
                       {timeAgo(msg.created_at)}
@@ -288,9 +309,9 @@ export default function Messages({
                   </div>
                 )}
 
-                {msg.attachments && msg.attachments.length > 0 && (
-                  <div className="mt-1.5 space-y-1.5">
-                    {msg.attachments.map((att, i) => (
+                {normalizedAttachments.length > 0 && (
+                  <div className={`${isVoiceOnlyMessage ? "mt-0" : "mt-1.5"} space-y-1.5`}>
+                    {normalizedAttachments.map((att, i) => (
                       <div key={i}>
                         {getAttachments(att, (payload) => setMediaViewer(payload))}
                       </div>
@@ -378,7 +399,9 @@ function getAttachments(
   },
   onOpenMedia: (payload: { type: "image" | "video"; url: string; filename: string }) => void,
 ) {
-  switch (attachment.mimetype.split("/")[0]) {
+  const kind = getAttachmentKind(attachment);
+
+  switch (kind) {
     case "image":
       return (
         <button
@@ -399,9 +422,6 @@ function getAttachments(
             width={520}
             height={320}
           />
-          <div className="absolute inset-x-0 bottom-0 px-2 py-1.5 bg-gradient-to-t from-black/70 to-transparent text-left">
-            <span className="text-[11px] text-gray-200">Tap to preview</span>
-          </div>
         </button>
       );
     case "video":
@@ -433,9 +453,10 @@ function getAttachments(
       );
     case "audio":
       return (
-        <audio controls className="w-full">
-          <source src={attachment.public_url} type={attachment.mimetype} />
-        </audio>
+        <AudioAttachmentPlayer
+          src={attachment.public_url}
+          type={attachment.mimetype || "audio/mpeg"}
+        />
       );
     default:
       return (
@@ -446,8 +467,319 @@ function getAttachments(
           className="inline-flex items-center gap-1.5 text-indigo-300 hover:text-indigo-200 hover:underline text-sm"
         >
           <FontAwesomeIcon icon={faFile} className="w-3 h-3" />
-          {attachment.filename}
+          {attachment.filename || "Open attachment"}
         </a>
       );
   }
+}
+
+function getAttachmentKind(attachment: {
+  mimetype: string;
+  filename: string;
+  public_url: string;
+}): "image" | "video" | "audio" | "file" {
+  const mime = (attachment.mimetype || "").toLowerCase();
+  const filename = (attachment.filename || "").toLowerCase();
+  const urlPath = (() => {
+    try {
+      return new URL(attachment.public_url || "", "https://x.local").pathname.toLowerCase();
+    } catch {
+      return (attachment.public_url || "").toLowerCase();
+    }
+  })();
+  const source = `${filename} ${urlPath}`;
+
+  if (mime.startsWith("image/")) return "image";
+  if (mime.startsWith("video/")) return "video";
+  if (mime.startsWith("audio/")) return "audio";
+
+  if (/\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/.test(source)) return "image";
+  if (/\.(mp4|webm|mov|m4v|avi|mkv)(\?|$)/.test(source)) return "video";
+  if (/\.(mp3|wav|ogg|m4a|aac|flac|weba|opus|amr)(\?|$)/.test(source)) return "audio";
+
+  // Mobile voice uploads can end up as generic binary mime.
+  if (
+    mime.includes("octet-stream") &&
+    (source.includes("audio") || source.includes("voice") || source.includes("record"))
+  ) {
+    return "audio";
+  }
+
+  // Favor voice-note UX for unknown media blobs unless clearly image/video.
+  if (!mime || mime.includes("octet-stream") || mime.includes("application/")) {
+    return "audio";
+  }
+
+  return "file";
+}
+
+function normalizeAttachment(raw: unknown): {
+  mimetype: string;
+  public_url: string;
+  filename: string;
+} | null {
+  if (!raw || typeof raw !== "object") return null;
+  const obj = raw as Record<string, unknown>;
+
+  const public_url = String(
+    obj.public_url ??
+      obj.publicUrl ??
+      obj.url ??
+      obj.file_url ??
+      obj.fileUrl ??
+      obj.path ??
+      "",
+  ).trim();
+  if (!public_url) return null;
+
+  const mimetype = String(
+    obj.mimetype ?? obj.mimeType ?? obj.content_type ?? obj.contentType ?? obj.type ?? "",
+  ).trim();
+  const filename = String(
+    obj.filename ??
+      obj.file_name ??
+      obj.fileName ??
+      obj.name ??
+      obj.original_name ??
+      obj.originalName ??
+      "attachment",
+  ).trim();
+
+  return {
+    mimetype,
+    public_url,
+    filename,
+  };
+}
+
+function AudioAttachmentPlayer({
+  src,
+  type,
+}: {
+  src: string;
+  type: string;
+}) {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [peaks, setPeaks] = useState<number[]>([]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+    const onTime = () => setCurrentTime(audio.currentTime || 0);
+    const onLoaded = () => setDuration(audio.duration || 0);
+    const onDuration = () => setDuration(audio.duration || 0);
+
+    audio.addEventListener("play", onPlay);
+    audio.addEventListener("pause", onPause);
+    audio.addEventListener("timeupdate", onTime);
+    audio.addEventListener("loadedmetadata", onLoaded);
+    audio.addEventListener("loadeddata", onLoaded);
+    audio.addEventListener("durationchange", onDuration);
+
+    return () => {
+      audio.removeEventListener("play", onPlay);
+      audio.removeEventListener("pause", onPause);
+      audio.removeEventListener("timeupdate", onTime);
+      audio.removeEventListener("loadedmetadata", onLoaded);
+      audio.removeEventListener("loadeddata", onLoaded);
+      audio.removeEventListener("durationchange", onDuration);
+    };
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !isPlaying) return;
+    let rafId = 0;
+    const tick = () => {
+      setCurrentTime(audio.currentTime || 0);
+      rafId = window.requestAnimationFrame(tick);
+    };
+    rafId = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(rafId);
+  }, [isPlaying]);
+
+  const togglePlay = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (audio.paused) await audio.play();
+    else audio.pause();
+  };
+
+  const seek = (value: number) => {
+    const audio = audioRef.current;
+    if (!audio || !duration) return;
+    audio.currentTime = value;
+    setCurrentTime(value);
+  };
+
+  const formatTime = (value: number) => {
+    if (!Number.isFinite(value) || value < 0) return "0:00";
+    const mins = Math.floor(value / 60);
+    const secs = Math.floor(value % 60)
+      .toString()
+      .padStart(2, "0");
+    return `${mins}:${secs}`;
+  };
+
+  const fallbackBars = useMemo(() => {
+    let seed = 0;
+    for (let i = 0; i < src.length; i += 1) seed = (seed * 31 + src.charCodeAt(i)) >>> 0;
+    return Array.from({ length: 42 }).map((_, i) => {
+      seed = (seed * 1664525 + 1013904223) >>> 0;
+      const noise = (seed % 1000) / 1000;
+      const wave = Math.abs(Math.sin((i + 1) * 0.62));
+      return Math.max(8, Math.round(8 + wave * 16 * (0.55 + noise * 0.45)));
+    });
+  }, [src]);
+
+  const waveData = useMemo(() => (peaks.length ? peaks : fallbackBars), [peaks, fallbackBars]);
+  const md3WaveData = useMemo(() => {
+    if (!waveData.length) return [];
+
+    // Smooth neighboring peaks so waveform looks cleaner (MD3-like, less jagged).
+    const smooth = waveData.map((v, i) => {
+      const a = waveData[Math.max(0, i - 1)] ?? v;
+      const b = v;
+      const c = waveData[Math.min(waveData.length - 1, i + 1)] ?? v;
+      const d = waveData[Math.min(waveData.length - 1, i + 2)] ?? c;
+      const weighted = a * 0.18 + b * 0.44 + c * 0.28 + d * 0.1;
+      return weighted;
+    });
+
+    const min = Math.min(...smooth);
+    const max = Math.max(...smooth);
+    const range = Math.max(1, max - min);
+
+    return smooth.map((v, i) => {
+      const normalized = (v - min) / range;
+      const shaped = Math.pow(normalized, 0.95);
+      // Gentle center emphasis like modern voice notes.
+      const pos = i / Math.max(1, smooth.length - 1);
+      const centerBoost = 0.88 + 0.18 * (1 - Math.abs(pos - 0.5) * 2);
+      return 7 + shaped * 10 * centerBoost;
+    });
+  }, [waveData]);
+  const progressPct = duration > 0 ? (currentTime / duration) * 100 : 0;
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || md3WaveData.length === 0) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const width = canvas.width;
+    const height = canvas.height;
+    const centerY = height / 2;
+    const compactData = md3WaveData.filter((_, i) => i % 2 === 0);
+    const barStep = width / compactData.length;
+    const gap = Math.max(2.8, barStep * 0.5);
+    const barWidth = Math.max(1.8, barStep - gap);
+
+    ctx.clearRect(0, 0, width, height);
+
+    compactData.forEach((value, index) => {
+      const x = index * barStep + gap / 2;
+      const barHeight = Math.max(7, Math.min(height * 0.72, value));
+      const y = centerY - barHeight / 2;
+      const isPlayed = (index / Math.max(1, compactData.length - 1)) * 100 <= progressPct;
+      ctx.fillStyle = isPlayed ? "#8b5cf6" : "rgba(226,232,240,0.35)";
+      const r = Math.min(barWidth / 2, barHeight / 2, 3);
+      ctx.beginPath();
+      ctx.roundRect(x, y, barWidth, barHeight, [r, r, r, r]);
+      ctx.fill();
+    });
+  }, [md3WaveData, progressPct]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const buildPeaks = async () => {
+      try {
+        const res = await fetch(src);
+        if (!res.ok) throw new Error(`peak fetch failed: ${res.status}`);
+        const arr = await res.arrayBuffer();
+        const audioContext = new (window.AudioContext ||
+          (window as typeof window & { webkitAudioContext?: typeof AudioContext })
+            .webkitAudioContext)();
+        const decoded = await audioContext.decodeAudioData(arr.slice(0));
+        const channel = decoded.getChannelData(0);
+        const bars = 48;
+        const blockSize = Math.max(1, Math.floor(channel.length / bars));
+        const rawPeaks: number[] = [];
+
+        for (let i = 0; i < bars; i += 1) {
+          const start = i * blockSize;
+          const end = Math.min(channel.length, start + blockSize);
+          let peak = 0;
+          for (let j = start; j < end; j += 1) peak = Math.max(peak, Math.abs(channel[j]));
+          rawPeaks.push(peak);
+        }
+
+        const maxPeak = Math.max(0.0001, ...rawPeaks);
+        const next = rawPeaks.map((p) => {
+          const normalized = p / maxPeak;
+          // Gamma-ish curve gives clearer separation for low-dynamic voice notes.
+          const shaped = Math.pow(normalized, 0.65);
+          return Math.max(8, Math.min(24, Math.round(8 + shaped * 16)));
+        });
+
+        await audioContext.close();
+        if (!cancelled) setPeaks(next);
+      } catch {
+        if (!cancelled) setPeaks([]);
+      }
+    };
+
+    void buildPeaks();
+    return () => {
+      cancelled = true;
+    };
+  }, [src]);
+
+  return (
+    <div className="w-full max-w-[430px]">
+      <audio ref={audioRef} preload="auto">
+        <source src={src} type={type || "audio/mpeg"} />
+      </audio>
+
+      <div className="px-0 py-1">
+        <div className="flex items-center gap-3 rounded-2xl bg-neutral-800/60 border border-white/10 text-gray-100 px-3.5 py-2.5">
+          <button
+            type="button"
+            onClick={togglePlay}
+            className="w-10 h-10 shrink-0 rounded-full bg-white/10 border border-white/15 text-gray-100 hover:bg-white/20 transition"
+            aria-label={isPlaying ? "Pause voice message" : "Play voice message"}
+          >
+            <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} className="w-4 h-4" />
+          </button>
+
+          <div className="relative flex-1 h-9 min-w-0">
+            <canvas
+              ref={canvasRef}
+              width={220}
+              height={40}
+              className="w-full h-9"
+              onClick={(e) => {
+                if (!duration) return;
+                const rect = e.currentTarget.getBoundingClientRect();
+                const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                seek(pct * duration);
+              }}
+            />
+          </div>
+
+          <span className="tabular-nums text-[13px] font-semibold tracking-wide text-gray-300 whitespace-nowrap">
+            {duration > 0 ? formatTime(Math.max(0, duration - currentTime)) : "0:00"}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 }
