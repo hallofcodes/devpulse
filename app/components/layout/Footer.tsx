@@ -23,6 +23,12 @@ export default function Footer() {
               Leaderboard
             </Link>
             <Link
+              href="/flex"
+              className="hover:text-gray-300 transition"
+            >
+              Flex
+            </Link>
+            <Link
               href="/legal/privacy"
               className="hover:text-gray-300 transition"
             >

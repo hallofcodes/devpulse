@@ -11,6 +11,7 @@ import {
   faChevronLeft,
   faChevronRight,
   faMessage,
+  faCrown,
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
@@ -29,6 +30,7 @@ function Sidebar() {
   const navItems: { href: string; label: string; icon: IconDefinition }[] = [
     { href: "/dashboard", label: "Dashboard", icon: faChartLine },
     { href: "/dashboard/chat", label: "Chat", icon: faMessage },
+    { href: "/dashboard/flex", label: "Flex", icon: faCrown },
     { href: "/dashboard/leaderboards", label: "Leaderboards", icon: faTrophy },
   ];
 
@@ -64,33 +66,33 @@ function Sidebar() {
 
       {!isMobile || !mobileHidden ? (
         <nav className="flex-1 px-3 py-5 space-y-1">
-        {!collapsed && (
-          <p className="text-[10px] uppercase tracking-[0.15em] text-gray-700 font-semibold px-3 mb-3">
-            Menu
-          </p>
-        )}
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-              collapsed ? "justify-center" : ""
-            } ${
-              pathname === item.href
-                ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/15"
-                : "text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]"
-            }`}
-            title={collapsed ? item.label : undefined}
-          >
-            <FontAwesomeIcon
-              icon={item.icon}
-              className={`w-4 h-4 shrink-0 ${
-                pathname === item.href ? "text-indigo-400" : "text-gray-600"
+          {!collapsed && (
+            <p className="text-[10px] uppercase tracking-[0.15em] text-gray-700 font-semibold px-3 mb-3">
+              Menu
+            </p>
+          )}
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                collapsed ? "justify-center" : ""
+              } ${
+                pathname === item.href
+                  ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/15"
+                  : "text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]"
               }`}
-            />
-            {!collapsed && item.label}
-          </Link>
-        ))}
+              title={collapsed ? item.label : undefined}
+            >
+              <FontAwesomeIcon
+                icon={item.icon}
+                className={`w-4 h-4 shrink-0 ${
+                  pathname === item.href ? "text-indigo-400" : "text-gray-600"
+                }`}
+              />
+              {!collapsed && item.label}
+            </Link>
+          ))}
         </nav>
       ) : null}
     </aside>
@@ -134,7 +136,6 @@ export default function DashboardLayout({
     height: 0,
   });
 
-
   useEffect(() => {
     const handleResize = () => {
       const nextIsMobile = window.innerWidth < 768;
@@ -142,6 +143,7 @@ export default function DashboardLayout({
 
       if (nextIsMobile) {
         setCollapsed(true);
+        setMobileHidden(true);
       } else {
         setCollapsed(false);
         setMobileHidden(false);
@@ -264,7 +266,9 @@ export default function DashboardLayout({
             }}
             className={[
               "md:hidden fixed z-50 transition-opacity duration-300",
-              mobileHidden ? "opacity-100 pointer-events-auto" : "opacity-100 pointer-events-none",
+              mobileHidden
+                ? "opacity-100 pointer-events-auto"
+                : "opacity-100 pointer-events-none",
               "rounded-full bg-[#0f0f28] border border-white/10 hover:border-indigo-500/30",
               "shadow-lg flex items-center justify-center",
             ].join(" ")}
