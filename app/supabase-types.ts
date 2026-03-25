@@ -182,6 +182,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_flexes: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_open_source: boolean
+          open_source_url: string
+          project_description: string
+          project_name: string
+          project_time: string
+          project_url: string
+          user_email: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_open_source?: boolean
+          open_source_url?: string
+          project_description: string
+          project_name: string
+          project_time: string
+          project_url: string
+          user_email: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_open_source?: boolean
+          open_source_url?: string
+          project_description?: string
+          project_name?: string
+          project_time?: string
+          project_url?: string
+          user_email?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_projects: {
         Row: {
           last_fetched_at: string
@@ -280,7 +322,10 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      flex_project: {
+        Args: { p_project: Json; p_user_id: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

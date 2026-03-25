@@ -66,7 +66,9 @@ export default function Chat({ user }: { user: User }) {
   const [badgesByUserId, setBadgesByUserId] = useState<
     Record<string, { label: string; className: string }>
   >({});
-  const badgeCacheRef = useRef<Record<string, { label: string; className: string }>>({});
+  const badgeCacheRef = useRef<
+    Record<string, { label: string; className: string }>
+  >({});
   const channelRef = useRef<RealtimeChannel>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -662,7 +664,7 @@ export default function Chat({ user }: { user: User }) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search user..."
-              className="w-full mb-3 px-3 py-2 rounded bg-neutral-800 outline-none"
+              className="w-full mb-3 px-3 py-2 bg-transparent text-gray-100 placeholder:text-gray-500 border border-neutral-800 rounded-xl outline-none"
             />
             <div className="space-y-2 max-h-60 overflow-y-auto">
               {allUsers
@@ -684,12 +686,14 @@ export default function Chat({ user }: { user: User }) {
                   </div>
                 ))}
             </div>
-            <button
-              onClick={() => setShowModal(false)}
-              className="mt-4 text-sm text-gray-500 hover:text-gray-300 transition"
-            >
-              Cancel
-            </button>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="mt-4 btn-secondary px-4 py-2 text-sm rounded-xl me-2"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
