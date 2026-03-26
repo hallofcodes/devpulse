@@ -1,28 +1,16 @@
 import { redirect } from "next/navigation";
-import { createClient } from "../../lib/supabase/server";
 import DashboardWithoutKey from "../../components/dashboard/WithoutKey";
 import Stats from "@/app/components/dashboard/Stats";
 import { Metadata } from "next";
+import { getUserWithProfile } from "@/app/lib/supabase/help/user";
 
 export const metadata: Metadata = {
   title: "Dashboard - DevPulse",
-  description: "Monitor your coding activity and manage your leaderboards.",
 };
 
 export default async function Dashboard() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const { user, profile } = await getUserWithProfile();
   if (!user) redirect("/login");
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("wakatime_api_key, email")
-    .eq("id", user.id)
-    .single();
 
   if (!profile?.wakatime_api_key) {
     return <DashboardWithoutKey email={profile?.email || user.email!} />;

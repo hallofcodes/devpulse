@@ -666,6 +666,13 @@ export default function Chat({ user }: { user: User }) {
               placeholder="Search user..."
               className="w-full mb-3 px-3 py-2 bg-transparent text-gray-100 placeholder:text-gray-500 border border-neutral-800 rounded-xl outline-none"
             />
+
+            {allUsers.length == 0 && (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <p className="text-gray-400">No users found.</p>
+              </div>
+            )}
+
             <div className="space-y-2 max-h-60 overflow-y-auto">
               {allUsers
                 .filter((u) =>

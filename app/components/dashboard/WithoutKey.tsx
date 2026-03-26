@@ -53,7 +53,7 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 md:p-8 space-y-6">
       <div data-aos="fade-up">
         <h1 className="text-2xl font-bold text-white">Connect Wakatime</h1>
         <p className="text-sm text-gray-600">
@@ -62,7 +62,7 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
         </p>
       </div>
 
-      <div className="glass-card p-6" data-aos="fade-up" data-aos-delay="100">
+      <div className="glass-card p-6 max-w-xl" data-aos="fade-up" data-aos-delay="100">
         <p className="text-gray-400 mb-8 text-sm">
           Welcome <span className="text-white font-medium">{email}</span>. Enter
           your WakaTime API key to activate your DevPulse dashboard.

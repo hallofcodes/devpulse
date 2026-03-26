@@ -5,7 +5,6 @@ import Footer from "@/app/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "Update Password - DevPulse",
-  description: "Update your DevPulse password to keep your account secure.",
 };
 
 export default async function UpdatePassword() {

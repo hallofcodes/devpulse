@@ -1,18 +1,16 @@
 import { Metadata } from "next";
-import { createClient } from "../../../lib/supabase/server";
 import UserProfile from "@/app/components/dashboard/Settings/Profile";
 import ResetPassword from "@/app/components/dashboard/Settings/ResetPassword";
+import { getUserWithProfile } from "@/app/lib/supabase/help/user";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Settings - DevPulse",
-  description:
-    "Manage your account settings and including your WakaTime API key.",
 };
 
 export default async function LeaderboardsPage() {
-  const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
+  const { user } = await getUserWithProfile();
+  if (!user) return redirect("/login?from=/dashboard/settings");
 
   return (
     <div className="p-6 md:p-8 space-y-6">

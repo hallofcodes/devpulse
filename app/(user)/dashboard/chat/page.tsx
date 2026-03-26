@@ -1,14 +1,16 @@
 import Chat from "@/app/components/Chat";
-import { createClient } from "@/app/lib/supabase/server";
+import { getUserWithProfile } from "@/app/lib/supabase/help/user";
+import { Metadata } from "next";
+import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Chat - DevPulse",
+};
 
 export default async function ChatPage() {
-  const supabase = await createClient();
+  const { user } = await getUserWithProfile();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return null;
+  if (!user) return redirect("/login?from=/dashboard/chat");
 
   return <Chat user={user} />;
 }

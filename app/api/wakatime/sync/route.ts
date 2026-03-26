@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "../../../lib/supabase/server";
+import { getUserWithProfile } from "@/app/lib/supabase/help/user";
 
 export async function GET(request: Request) {
   const supabase = await createClient();
+  const { user, profile } = await getUserWithProfile();
   const { searchParams } = new URL(request.url);
   const apiKey = searchParams.get("apiKey") || "";
   let profile$: { wakatime_api_key: string };
@@ -16,22 +18,11 @@ export async function GET(request: Request) {
 
   profile$ = { wakatime_api_key: apiKey };
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   if (!apiKey) {
-    // Get profile with API key
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("wakatime_api_key")
-      .eq("id", user.id)
-      .single();
-
     if (!profile?.wakatime_api_key) {
       return NextResponse.json({ error: "No API key found" }, { status: 400 });
     }
@@ -80,7 +71,7 @@ export async function GET(request: Request) {
       `https://wakatime.com/api/v1/users/current/summaries?start=${startStr}&end=${endStr}`,
       {
         headers: { Authorization: authHeader },
-      }
+      },
     ),
   ]);
 
@@ -129,34 +120,38 @@ export async function GET(request: Request) {
     }
   }
 
-  const { data: statsResult, error: statsError } = await supabase
-    .from("user_stats")
-    .upsert({
-      user_id: user.id,
-      total_seconds: Math.floor(wakaStats.total_seconds),
-      daily_average: Math.floor(wakaStats.daily_average || 0),
-      languages: wakaStats.languages,
-      operating_systems: wakaStats.operating_systems,
-      editors: wakaStats.editors,
-      machines: wakaStats.machines,
-      categories: wakaStats.categories,
-      dependencies: wakaStats.dependencies || [],
-      best_day: wakaStats.best_day || {},
-      daily_stats: daily_stats,
-      last_fetched_at: new Date().toISOString(),
-    })
-    .select()
-    .single();
-
-  const { data: projectsResult, error: projectsError } = await supabase
-    .from("user_projects")
-    .upsert({
-      user_id: user.id,
-      projects: wakaStats.projects,
-      last_fetched_at: new Date().toISOString(),
-    })
-    .select()
-    .single();
+  const [
+    { data: statsResult, error: statsError },
+    { data: projectsResult, error: projectsError },
+  ] = await Promise.all([
+    supabase
+      .from("user_stats")
+      .upsert({
+        user_id: user.id,
+        total_seconds: Math.floor(wakaStats.total_seconds),
+        daily_average: Math.floor(wakaStats.daily_average || 0),
+        languages: wakaStats.languages,
+        operating_systems: wakaStats.operating_systems,
+        editors: wakaStats.editors,
+        machines: wakaStats.machines,
+        categories: wakaStats.categories,
+        dependencies: wakaStats.dependencies || [],
+        best_day: wakaStats.best_day || {},
+        daily_stats: daily_stats,
+        last_fetched_at: new Date().toISOString(),
+      })
+      .select()
+      .single(),
+    supabase
+      .from("user_projects")
+      .upsert({
+        user_id: user.id,
+        projects: wakaStats.projects,
+        last_fetched_at: new Date().toISOString(),
+      })
+      .select()
+      .single(),
+  ]);
 
   const mergedResult = {
     ...statsResult,

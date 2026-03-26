@@ -1,13 +1,17 @@
 ﻿import DashboardWithKey from "../../../components/dashboard/WithKey";
 import LeaderboardsList from "@/app/components/dashboard/LeaderbordList";
+import { getUserWithProfile } from "@/app/lib/supabase/help/user";
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Leaderboards - DevPulse",
-  description: "Create, join, and manage your coding leaderboards.",
 };
 
-export default function LeaderboardsPage() {
+export default async function LeaderboardsPage() {
+  const { user } = await getUserWithProfile();
+  if (!user) return redirect("/login?from=/dashboard/settings");
+
   return (
     <div className="p-6 md:p-8 space-y-6 max-w-5xl mx-auto">
       <div className="border-b border-white/5 pb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
