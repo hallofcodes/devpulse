@@ -76,6 +76,7 @@ export default function Chat({ user }: { user: User }) {
   const creatingRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
   const bucketName = process.env.NEXT_PUBLIC_SUPABASE_BUCKET_NAME || "";
 
   const globalConversations = conversations.filter((c) => c.type === "global");
@@ -388,6 +389,45 @@ export default function Chat({ user }: { user: User }) {
     setAttachments((prev) => [...prev, ...files]);
   };
 
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDraggingOver(false);
+
+    const files = Array.from(e.dataTransfer.files || []);
+    if (!files.length) return;
+
+    setAttachments((prev) => [...prev, ...files]);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDraggingOver(true);
+  };
+
+  const onDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    setIsDraggingOver(false);
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
+    const items = e.clipboardData.items;
+    if (!items) return;
+
+    const files: File[] = [];
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+
+      if (item.kind === "file") {
+        const file = item.getAsFile();
+        if (file) files.push(file);
+      }
+    }
+
+    if (files.length) {
+      setAttachments((prev) => [...prev, ...files]);
+    }
+  };
+
   const removeAttachment = (index: number) => {
     setAttachments((prev) => prev.filter((_, i) => i !== index));
   };
@@ -596,7 +636,14 @@ export default function Chat({ user }: { user: User }) {
               </div>
             )}
 
-            <div className="rounded-2xl border border-white/10 bg-neutral-900/35/80 backdrop-blur-sm flex items-center gap-1 px-2 py-0.5 pr-0.5 shadow-[0_6px_18px_rgba(0,0,0,0.22)] overflow-hidden">
+            <div
+              onPaste={handlePaste}
+              tabIndex={0}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={onDragLeave}
+              className={`${isDraggingOver ? "border-white/50" : "border-white/10"} transition-all rounded-2xl border bg-neutral-900/35/80 backdrop-blur-sm flex items-center gap-1 px-2 py-0.5 pr-0.5 shadow-[0_6px_18px_rgba(0,0,0,0.22)] overflow-hidden`}
+            >
               <input
                 type="file"
                 ref={fileInputRef}
