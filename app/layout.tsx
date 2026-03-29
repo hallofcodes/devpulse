@@ -7,6 +7,7 @@ import DevToolsDetector from "./components/DevToolsDetector";
 import NextTopLoader from "nextjs-toploader";
 import { headers } from "next/headers";
 import NortonSafeweb from "./components/NortonSafeweb";
+import BrowserCheck from "./components/BrowserCheck";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -120,6 +121,7 @@ export default function RootLayout({
         {isProduction && (
           <>
             <DevToolsDetector />
+            <BrowserCheck />
           </>
         )}
       </body>
