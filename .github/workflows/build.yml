@@ -1,0 +1,60 @@
+name: Build Next.js App
+
+on:
+  push:
+    branches: ["master"]
+  pull_request_target:
+    branches: ["master"]
+  workflow_dispatch:
+
+env:
+  SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+  SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Generate types from remote
+        if: ${{ env.SUPABASE_PROJECT_ID && env.SUPABASE_ACCESS_TOKEN }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          npx supabase gen types typescript \
+            --project-id ${{ secrets.SUPABASE_PROJECT_ID }} \
+            > app/supabase-types.ts
+
+      # this will be suspended for now
+      # - name: Run migrations
+      #   env:
+      #     SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      #   run: |
+      #     npx supabase db push --project-id ${{ secrets.SUPABASE_PROJECT_ID }}
+
+      - name: Create .env file
+        if: ${{ env.NEXT_PUBLIC_SUPABASE_URL && env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" >> .env
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" >> .env
+          echo "NEXT_PUBLIC_HCAPTCHA_SITE_KEY=${{ secrets.NEXT_PUBLIC_HCAPTCHA_SITE_KEY }}" >> .env
+          echo "NEXT_PUBLIC_NORTON_SAFEWEB_SITE_VERIFICATION=${{ secrets.NEXT_PUBLIC_NORTON_SAFEWEB_SITE_VERIFICATION }}" >> .env
+
+      - name: Build project
+        if: ${{ env.NEXT_PUBLIC_SUPABASE_URL && env.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: npm run build
