@@ -180,7 +180,7 @@ function Sidebar({ role }: { role: string }) {
             if (!conversationIdsRef.current.has(row.conversation_id)) return;
             if (row.sender_id === userId) return;
 
-            setChatUnreadCount((prev) => prev + 1);
+            void refreshChatUnreadCount(userId);
           },
         )
         .on(
@@ -358,7 +358,7 @@ export default function DashboardLayout({
   role: string;
   children: React.ReactNode;
 }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [mobileHidden, setMobileHidden] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -397,7 +397,7 @@ export default function DashboardLayout({
         setCollapsed(true);
         setMobileHidden(true);
       } else {
-        setCollapsed(false);
+        setCollapsed(true);
         setMobileHidden(false);
       }
     };

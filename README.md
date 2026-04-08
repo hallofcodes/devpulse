@@ -48,37 +48,61 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Database Migrations
 
-Login first (if you haven't):
+For a brand-new Supabase project, use this flow from the repo root.
+
+This repository now uses a squashed baseline migration for fresh installs:
+
+- Active baseline: `supabase/migrations/20260407120000_baseline_fresh_setup.sql`
+
+- Historical migrations archive: `supabase/migrations_archive/`
+
+1. Login to Supabase CLI:
 
 ```bash
 npx supabase login
 ```
 
-Link the cloud project to this local one:
+2. Initialize local Supabase config (only if missing):
+
+```bash
+npx supabase init
+```
+
+3. Link this repo to your cloud project:
 
 ```bash
 npx supabase link
 ```
 
-It'll show the list of project you have select your project.
+You can select from the project list, or run `npx supabase link --project-ref <project-ref>`.
 
-Push migrations to cloud:
+4. Push all migrations to the new project:
 
 ```bash
 npx supabase db push
 ```
 
-Pull migrations from cloud:
+On a fresh project this applies only the single baseline migration.
+
+5. (Optional) Pull remote schema changes into migrations:
 
 ```bash
 npx supabase db pull
 ```
 
-Updating types (if you ever changed migrations):
+6. Regenerate Supabase TypeScript types after schema changes:
 
 ```bash
 npx supabase gen types typescript --project-id <project-id> --schema public > app/supabase-types.ts
 ```
+
+If you want to re-run the full migration chain on local development:
+
+```bash
+npx supabase db reset
+```
+
+If you need to inspect migration history, use the files in `supabase/migrations_archive/`.
 
 
 ## Learn More

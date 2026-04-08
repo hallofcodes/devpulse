@@ -2,11 +2,14 @@
 
 import {
   useCallback,
+  useRef,
+  useState,
   type Dispatch,
+  type MutableRefObject,
   type RefObject,
   type SetStateAction,
 } from "react";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { RealtimeChannel, SupabaseClient } from "@supabase/supabase-js";
 import { toast } from "react-toastify";
 import type { Database } from "@/app/supabase-types";
 import type { Message } from "@/app/components/Chat";
@@ -15,6 +18,7 @@ import { sanitizeTextWithBlocklist } from "@/app/utils/moderation";
 type UseChatMessageComposerParams = {
   supabase: SupabaseClient<Database>;
   userId: string;
+  channelRef: MutableRefObject<RealtimeChannel | null>;
   conversationId: string | null;
   input: string;
   attachments: File[];
@@ -31,6 +35,7 @@ type UseChatMessageComposerParams = {
 export function useChatMessageComposer({
   supabase,
   userId,
+  channelRef,
   conversationId,
   input,
   attachments,
@@ -43,11 +48,27 @@ export function useChatMessageComposer({
   stopTyping,
   markConversationAsRead,
 }: UseChatMessageComposerParams) {
+  const sendingMessageRef = useRef(false);
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
+
+  const createClientMessageId = useCallback(() => {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+      return crypto.randomUUID();
+    }
+
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  }, []);
+
   const sendMessage = useCallback(async () => {
+    if (sendingMessageRef.current) return;
     if ((!input.trim() && attachments.length === 0) || !conversationId) return;
+
+    sendingMessageRef.current = true;
+    setIsSendingMessage(true);
 
     const targetConversationId = conversationId;
     const originalText = input;
+    const originalAttachments = attachments;
     const outgoingText = sanitizeTextWithBlocklist(
       input.slice(0, 1000),
       badWords,
@@ -99,6 +120,8 @@ export function useChatMessageComposer({
         return;
       }
 
+      const clientMessageId = createClientMessageId();
+      const optimisticCreatedAt = new Date().toISOString();
       const optimisticMessageId = `temp-${Date.now()}-${Math.random()
         .toString(36)
         .slice(2, 8)}`;
@@ -111,10 +134,26 @@ export function useChatMessageComposer({
           sender_id: userId,
           text: outgoingText,
           attachments: validAttachments,
-          created_at: new Date().toISOString(),
+          created_at: optimisticCreatedAt,
           optimistic: true,
         },
       ]);
+
+      const activeChannel = channelRef.current;
+      if (activeChannel) {
+        void activeChannel.send({
+          type: "broadcast",
+          event: "message",
+          payload: {
+            client_message_id: clientMessageId,
+            conversation_id: targetConversationId,
+            sender_id: userId,
+            text: outgoingText,
+            attachments: validAttachments,
+            created_at: optimisticCreatedAt,
+          },
+        });
+      }
 
       setInput("");
       setAttachments([]);
@@ -132,11 +171,23 @@ export function useChatMessageComposer({
       });
 
       if (insertError) {
+        if (activeChannel) {
+          void activeChannel.send({
+            type: "broadcast",
+            event: "message_retract",
+            payload: {
+              client_message_id: clientMessageId,
+              conversation_id: targetConversationId,
+              sender_id: userId,
+            },
+          });
+        }
+
         setMessages((prev) =>
           prev.filter((message) => message.id !== optimisticMessageId),
         );
         setInput(originalText);
-        setAttachments(attachments);
+        setAttachments(originalAttachments);
         throw insertError;
       }
 
@@ -144,13 +195,18 @@ export function useChatMessageComposer({
     } catch (error) {
       console.error("Send message error:", error);
       toast.error("Failed to send message. Please try again.");
+    } finally {
+      sendingMessageRef.current = false;
+      setIsSendingMessage(false);
     }
   }, [
     attachments,
     badWords,
     bottomRef,
     bucketName,
+    channelRef,
     conversationId,
+    createClientMessageId,
     input,
     markConversationAsRead,
     setAttachments,
@@ -163,5 +219,6 @@ export function useChatMessageComposer({
 
   return {
     sendMessage,
+    isSendingMessage,
   };
 }

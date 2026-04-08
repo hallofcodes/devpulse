@@ -57,10 +57,26 @@ for update
 using (auth.uid() = owner_id);
 
 /* ---- Members Policies ----- */
-create policy "Users can see their own membership"
+create policy "Users can see memberships for visible leaderboards"
 on public.leaderboard_members
 for select
-using (user_id = auth.uid());
+using (
+  exists (
+    select 1
+    from public.leaderboards l
+    where l.id = leaderboard_members.leaderboard_id
+      and (
+        l.is_public = true
+        or l.owner_id = auth.uid()
+        or exists (
+          select 1
+          from public.leaderboard_members lm
+          where lm.leaderboard_id = l.id
+            and lm.user_id = auth.uid()
+        )
+      )
+  )
+);
 
 create policy "Users can join leaderboard"
 on public.leaderboard_members
@@ -77,7 +93,7 @@ on public.leaderboard_members
 for delete
 using (
   leaderboard_id IN (
-    select leaderboard_id
+    select id
     from public.leaderboards
     where owner_id = auth.uid()
   )

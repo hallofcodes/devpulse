@@ -169,6 +169,7 @@ export default function Chat({ user }: { user: User }) {
     supabase,
     userId: user.id,
     showModal,
+    globalConversationId: GLOBAL_CONVERSATION_ID,
   });
 
   const { badgesByUserId } = useChatBadges({
@@ -197,7 +198,6 @@ export default function Chat({ user }: { user: User }) {
     setConversations,
     setParticipantMetaByConversationId,
     setLastSeenByUserId,
-    setUnreadCountByConversationId,
     fetchUnreadCountsForConversations,
     markConversationAsRead,
   });
@@ -236,9 +236,10 @@ export default function Chat({ user }: { user: User }) {
 
   const bucketName = process.env.NEXT_PUBLIC_SUPABASE_BUCKET_NAME || "";
 
-  const { sendMessage } = useChatMessageComposer({
+  const { sendMessage, isSendingMessage } = useChatMessageComposer({
     supabase,
     userId: user.id,
+    channelRef,
     conversationId,
     input,
     attachments,
@@ -255,6 +256,7 @@ export default function Chat({ user }: { user: User }) {
   const { textareaRef, handleInputChange, handleInputKeyDown } =
     useChatInputBehavior({
       input,
+      isSendingMessage,
       conversationId,
       attachmentsCount: attachments.length,
       setInput,
@@ -263,10 +265,8 @@ export default function Chat({ user }: { user: User }) {
       maxChars: 1000,
     });
 
-  const totalUnreadCount = useMemo(
-    () => Object.values(unreadCountByConversationId).reduce((sum, count) => sum + count, 0),
-    [unreadCountByConversationId],
-  );
+  const canSendMessage =
+    !isSendingMessage && (input.trim().length > 0 || attachments.length > 0);
 
   const globalConversations = conversations.filter((c) => c.type === "global");
   const privateConversations = conversations
@@ -334,6 +334,15 @@ export default function Chat({ user }: { user: User }) {
       .reverse();
   }, [messages]);
 
+  // Performance optimization: Memoize the filtered messages to avoid O(N) string manipulation on every keystroke
+  // when typing a message (which triggers a re-render of Chat.tsx). This significantly improves typing latency
+  // in conversations with many messages.
+  const filteredMessages = useMemo(() => {
+    if (!messageSearch) return messages;
+    const lowerSearch = messageSearch.toLowerCase();
+    return messages.filter((m) => (m.text || "").toLowerCase().includes(lowerSearch));
+  }, [messages, messageSearch]);
+
   return (
     <>
       <MediaViewerModal
@@ -347,14 +356,7 @@ export default function Chat({ user }: { user: User }) {
       <div className={`w-full md:w-[300px] flex-shrink-0 border-r border-white/5 flex flex-col bg-[#0a0a1a] md:bg-transparent z-20 absolute md:relative h-full transition-transform duration-300 ${conversationId ? '-translate-x-full md:translate-x-0' : 'translate-x-0'}`}>
         <div className="p-5 border-b border-white/5">
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-gray-100 tracking-tight">Message category</h2>
-              {totalUnreadCount > 0 && (
-                <span className="min-w-[24px] h-6 px-2 rounded-full bg-rose-500/90 text-white text-[11px] font-bold flex items-center justify-center">
-                  {totalUnreadCount > 99 ? "99+" : totalUnreadCount}
-                </span>
-              )}
-            </div>
+            <h2 className="text-lg font-bold text-gray-100 tracking-tight">Message category</h2>
             <button
               onClick={() => setShowModal(true)}
               className="w-8 h-8 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center hover:bg-indigo-500/20 transition"
@@ -489,9 +491,7 @@ export default function Chat({ user }: { user: User }) {
 
             <div className="flex-1 flex flex-col overflow-hidden z-10 min-h-0">
               <Messages
-                messages={messages.filter((m) =>
-                  (m.text || "").toLowerCase().includes(messageSearch.toLowerCase())
-                )}
+                messages={filteredMessages}
                 user={user}
                 conversations={conversations}
                 bottomRef={bottomRef}
@@ -559,6 +559,7 @@ export default function Chat({ user }: { user: User }) {
               >
                 <button
                   onClick={() => fileInputRef.current?.click()}
+                  disabled={isSendingMessage}
                   className="w-10 h-10 mb-[2px] rounded-full bg-transparent hover:bg-white/10 flex items-center justify-center transition-all duration-300 flex-shrink-0 group"
                   title="Attach file"
                 >
@@ -589,15 +590,17 @@ export default function Chat({ user }: { user: User }) {
                 <div className="mb-[2px] pr-1">
                   <button
                     onClick={sendMessage}
-                    disabled={!input.trim() && attachments.length === 0}
+                    disabled={!canSendMessage}
                     className={`h-10 px-5 rounded-[20px] font-semibold text-[14px] flex items-center gap-2.5 transition-all duration-300 flex-shrink-0
-                      ${(input.trim() || attachments.length > 0)
+                      ${canSendMessage
                         ? "bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-400 hover:to-violet-400 text-white shadow-md shadow-indigo-500/25 active:scale-95" 
                         : "bg-white/5 text-gray-500 cursor-not-allowed"}
                     `}
                   >
-                    <span className="hidden sm:inline">Send</span>
-                    <FontAwesomeIcon icon={faPaperPlane} className={`w-[14px] h-[14px] transition-transform ${(input.trim() || attachments.length > 0) ? "translate-x-0.5" : ""}`} />
+                    <span className="hidden sm:inline">
+                      {isSendingMessage ? "Sending..." : "Send"}
+                    </span>
+                    <FontAwesomeIcon icon={faPaperPlane} className={`w-[14px] h-[14px] transition-transform ${canSendMessage ? "translate-x-0.5" : ""}`} />
                   </button>
                 </div>
               </div>

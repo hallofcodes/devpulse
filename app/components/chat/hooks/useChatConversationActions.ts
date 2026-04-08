@@ -34,6 +34,44 @@ type UseChatConversationActionsParams = {
   >;
 };
 
+function getErrorMessage(error: unknown): string {
+  if (!error) return "";
+
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  if (typeof error === "object") {
+    const candidate = error as {
+      message?: string;
+      details?: string;
+      hint?: string;
+      code?: string;
+      error_description?: string;
+    };
+
+    const composed = [
+      candidate.message,
+      candidate.details,
+      candidate.hint,
+      candidate.error_description,
+      candidate.code ? `code: ${candidate.code}` : undefined,
+    ]
+      .filter(Boolean)
+      .join(" | ");
+
+    if (composed) return composed;
+
+    try {
+      return JSON.stringify(error);
+    } catch {
+      return "";
+    }
+  }
+
+  return String(error);
+}
+
 export function useChatConversationActions({
   supabase,
   userId,
@@ -72,46 +110,68 @@ export function useChatConversationActions({
           return;
         }
 
-        const { data: conversationData } = await supabase
-          .from("conversations")
-          .insert({ type: "private" })
-          .select("*")
-          .single();
-
-        if (!conversationData) return;
-
-        const createdConversationId = conversationData.id;
+        const createdConversationId = crypto.randomUUID();
         const timestamp = new Date().toISOString();
 
-        await supabase.from("conversation_participants").upsert(
-          [
-            {
-              conversation_id: createdConversationId,
-              user_id: userId,
-              email: userEmail,
-              last_seen_at: timestamp,
-              last_read_at: timestamp,
-            },
-            {
-              conversation_id: createdConversationId,
-              user_id: otherUser.user_id,
-              email: otherUser.email,
-              last_seen_at: unseenPresenceIso,
-              last_read_at: unseenPresenceIso,
-            },
-          ],
-          {
-            onConflict: "conversation_id,user_id",
-            ignoreDuplicates: true,
-          },
-        );
+        const { error: conversationError } = await supabase
+          .from("conversations")
+          .insert({
+            id: createdConversationId,
+            type: "private",
+            created_at: timestamp,
+          });
+
+        if (conversationError) {
+          throw conversationError;
+        }
+
+        const normalizedSelfEmail =
+          userEmail && userEmail.trim().length > 0
+            ? userEmail
+            : `${userId}@user.local`;
+
+        const { error: selfParticipantError } = await supabase
+          .from("conversation_participants")
+          .insert({
+            conversation_id: createdConversationId,
+            user_id: userId,
+            email: normalizedSelfEmail,
+            last_seen_at: timestamp,
+            last_read_at: timestamp,
+          });
+
+        if (selfParticipantError && selfParticipantError.code !== "23505") {
+          await supabase
+            .from("conversations")
+            .delete()
+            .eq("id", createdConversationId);
+          throw selfParticipantError;
+        }
+
+        const { error: otherParticipantError } = await supabase
+          .from("conversation_participants")
+          .insert({
+            conversation_id: createdConversationId,
+            user_id: otherUser.user_id,
+            email: otherUser.email,
+            last_seen_at: unseenPresenceIso,
+            last_read_at: unseenPresenceIso,
+          });
+
+        if (otherParticipantError && otherParticipantError.code !== "23505") {
+          await supabase
+            .from("conversations")
+            .delete()
+            .eq("id", createdConversationId);
+          throw otherParticipantError;
+        }
 
         setConversationId(createdConversationId);
         setConversations((prev) => [
           ...prev,
           {
             id: createdConversationId,
-            created_at: conversationData.created_at,
+            created_at: timestamp,
             users: [
               { id: userId, email: userEmail ?? "" },
               { id: otherUser.user_id, email: otherUser.email ?? "" },
@@ -132,6 +192,12 @@ export function useChatConversationActions({
         }));
 
         setShowModal(false);
+      } catch (error) {
+        const errorMessage = getErrorMessage(error);
+        console.error("Failed to create conversation:", errorMessage, error);
+        toast.error(
+          errorMessage || "Could not start a direct message. Please try again.",
+        );
       } finally {
         creatingRef.current = false;
       }

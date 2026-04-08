@@ -9,12 +9,14 @@ type UseChatUserPickerParams = {
   supabase: SupabaseClient<Database>;
   userId: string;
   showModal: boolean;
+  globalConversationId: string;
 };
 
 export function useChatUserPicker({
   supabase,
   userId,
   showModal,
+  globalConversationId,
 }: UseChatUserPickerParams) {
   const [search, setSearch] = useState("");
   const [allUsers, setAllUsers] = useState<ChatUser[]>([]);
@@ -23,23 +25,32 @@ export function useChatUserPicker({
     if (!showModal) return;
 
     const fetchUsers = async () => {
-      const { data } = await supabase
-        .from("top_user_stats")
+      const { data, error } = await supabase
+        .from("conversation_participants")
         .select("user_id, email")
+        .eq("conversation_id", globalConversationId)
         .neq("user_id", userId);
+
+      if (error) {
+        console.error("Failed to load chat users:", error);
+        setAllUsers([]);
+        return;
+      }
 
       if (!data) return;
 
-      const users: ChatUser[] = data.filter(
+      const users: ChatUser[] = data
+        .filter(
         (user): user is { user_id: string; email: string } =>
           user.user_id !== null && user.email !== null,
-      );
+        )
+        .sort((a, b) => a.email.localeCompare(b.email));
 
       setAllUsers(users);
     };
 
     void fetchUsers();
-  }, [showModal, supabase, userId]);
+  }, [globalConversationId, showModal, supabase, userId]);
 
   const filteredUsers = useMemo(
     () =>

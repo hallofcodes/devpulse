@@ -45,7 +45,6 @@ type UseChatConversationsRealtimeParams = {
     SetStateAction<Record<string, ParticipantPresence>>
   >;
   setLastSeenByUserId: Dispatch<SetStateAction<Record<string, string | null>>>;
-  setUnreadCountByConversationId: Dispatch<SetStateAction<Record<string, number>>>;
   fetchUnreadCountsForConversations: (
     targetConversationIds: string[],
     readMap: Record<string, string | null>,
@@ -86,10 +85,29 @@ export function useChatConversationsRealtime({
   setConversations,
   setParticipantMetaByConversationId,
   setLastSeenByUserId,
-  setUnreadCountByConversationId,
   fetchUnreadCountsForConversations,
   markConversationAsRead,
 }: UseChatConversationsRealtimeParams) {
+  const refreshUnreadForConversation = useCallback(
+    async (targetConversationId: string) => {
+      const { data: participant } = await supabase
+        .from("conversation_participants")
+        .select("last_read_at")
+        .eq("conversation_id", targetConversationId)
+        .eq("user_id", userId)
+        .single();
+
+      await fetchUnreadCountsForConversations(
+        [targetConversationId],
+        {
+          [targetConversationId]: participant?.last_read_at ?? null,
+        },
+        "merge",
+      );
+    },
+    [fetchUnreadCountsForConversations, supabase, userId],
+  );
+
   const ensureGlobalConversationMembership = useCallback(async () => {
     if (!userId) return;
 
@@ -359,6 +377,8 @@ export function useChatConversationsRealtime({
               },
             }));
 
+            void refreshUnreadForConversation(row.conversation_id);
+
             return;
           }
 
@@ -372,7 +392,7 @@ export function useChatConversationsRealtime({
     return () => {
       channel.unsubscribe();
     };
-  }, [conversationIdsRef, setLastSeenByUserId, setParticipantMetaByConversationId, supabase, userId]);
+  }, [conversationIdsRef, refreshUnreadForConversation, setLastSeenByUserId, setParticipantMetaByConversationId, supabase, userId]);
 
   useEffect(() => {
     if (!userId) return;
@@ -397,10 +417,7 @@ export function useChatConversationsRealtime({
             return;
           }
 
-          setUnreadCountByConversationId((prev) => ({
-            ...prev,
-            [message.conversation_id]: (prev[message.conversation_id] ?? 0) + 1,
-          }));
+          void refreshUnreadForConversation(message.conversation_id);
         },
       )
       .subscribe();
@@ -411,8 +428,8 @@ export function useChatConversationsRealtime({
   }, [
     activeConversationIdRef,
     conversationIdsRef,
+    refreshUnreadForConversation,
     markConversationAsRead,
-    setUnreadCountByConversationId,
     supabase,
     userId,
   ]);

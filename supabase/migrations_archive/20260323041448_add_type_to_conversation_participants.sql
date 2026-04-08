@@ -1,5 +1,5 @@
 ALTER TABLE conversation_participants
-ADD COLUMN type text NOT NULL DEFAULT 'private';
+ADD COLUMN IF NOT EXISTS type text NOT NULL DEFAULT 'private';
 
 UPDATE conversation_participants
 SET type = 'global'

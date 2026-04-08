@@ -12,6 +12,7 @@ import {
 
 type UseChatInputBehaviorParams = {
   input: string;
+  isSendingMessage: boolean;
   conversationId: string | null;
   attachmentsCount: number;
   setInput: Dispatch<SetStateAction<string>>;
@@ -22,6 +23,7 @@ type UseChatInputBehaviorParams = {
 
 export function useChatInputBehavior({
   input,
+  isSendingMessage,
   conversationId,
   attachmentsCount,
   setInput,
@@ -59,6 +61,7 @@ export function useChatInputBehavior({
   const handleInputKeyDown = useCallback(
     (event: KeyboardEvent<HTMLTextAreaElement>) => {
       if (event.key !== "Enter" || event.shiftKey) return;
+      if (isSendingMessage) return;
 
       event.preventDefault();
 
@@ -66,7 +69,7 @@ export function useChatInputBehavior({
         sendMessage();
       }
     },
-    [attachmentsCount, input, sendMessage],
+    [attachmentsCount, input, isSendingMessage, sendMessage],
   );
 
   return {

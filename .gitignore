@@ -48,6 +48,8 @@ next-env.d.ts
 # supabase
 supabase/*
 !supabase/migrations
+!supabase/migrations_archive
+!supabase/migrations_archive/**
 
 
 yarn.lock
