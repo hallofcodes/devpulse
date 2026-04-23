@@ -323,6 +323,23 @@ export function useActiveConversationStream({
           }, 100);
         },
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "messages",
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload) => {
+          const deletedMessageId = payload.old.id as string | undefined;
+          if (!deletedMessageId) return;
+
+          setMessages((prev) =>
+            prev.filter((message) => message.id !== deletedMessageId),
+          );
+        },
+      )
       .subscribe();
 
     channelRef.current = channel;

@@ -8,14 +8,18 @@ import { Conversation, Message } from "../Chat";
 import { timeAgo } from "@/app/utils/time";
 import { type BadgeInfo, getBadgeInfoFromHours } from "@/app/utils/badge";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import {
+  faCopy,
   faFile,
   faPause,
   faPlay,
+  faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import MediaViewerModal, { type MediaViewerPayload } from "./MediaViewerModal";
+import { toast } from "react-toastify";
 
 export default function Messages({
   messages,
@@ -24,6 +28,7 @@ export default function Messages({
   bottomRef,
   badgesByUserId,
   onUserProfileClick,
+  onUnsendMessage,
 }: {
   messages: Message[];
   user: User;
@@ -31,11 +36,21 @@ export default function Messages({
   bottomRef: React.RefObject<HTMLDivElement | null>;
   badgesByUserId?: Record<string, BadgeInfo>;
   onUserProfileClick?: (targetUserId: string, targetEmail: string) => void;
+  onUnsendMessage?: (messageId: string) => Promise<void>;
 }) {
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [mediaViewer, setMediaViewer] = useState<MediaViewerPayload | null>(
     null,
   );
+  const [activeDesktopMenuMessageId, setActiveDesktopMenuMessageId] = useState<string | null>(null);
+  const desktopMenuOpenTimerRef = useRef<number | null>(null);
+  const longPressTimerRef = useRef<number | null>(null);
+  const desktopMenuCloseTimerRef = useRef<number | null>(null);
+  const [mobileActionMenu, setMobileActionMenu] = useState<{
+    messageId: string;
+    text: string;
+    isSelf: boolean;
+  } | null>(null);
   const fallbackBadge = useMemo(() => getBadgeInfoFromHours(1), []);
 
   const allMediaAttachments = useMemo(() => {
@@ -57,6 +72,91 @@ export default function Messages({
     return () => container.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (longPressTimerRef.current) {
+        window.clearTimeout(longPressTimerRef.current);
+      }
+      if (desktopMenuOpenTimerRef.current) {
+        window.clearTimeout(desktopMenuOpenTimerRef.current);
+      }
+      if (desktopMenuCloseTimerRef.current) {
+        window.clearTimeout(desktopMenuCloseTimerRef.current);
+      }
+    };
+  }, []);
+
+  const visibleDesktopMenuMessageId =
+    activeDesktopMenuMessageId &&
+    messages.some((message) => message.id === activeDesktopMenuMessageId)
+      ? activeDesktopMenuMessageId
+      : null;
+
+  const copyMessageText = async (messageText: string) => {
+    const trimmed = (messageText || "").trim();
+    if (!trimmed) {
+      toast.info("Nothing to copy.");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(trimmed);
+      toast.success("Message copied.");
+    } catch {
+      toast.error("Failed to copy message.");
+    }
+  };
+
+  const clearLongPress = () => {
+    if (!longPressTimerRef.current) return;
+    window.clearTimeout(longPressTimerRef.current);
+    longPressTimerRef.current = null;
+  };
+
+  const queueLongPressMenu = (
+    messageId: string,
+    messageText: string,
+    isSelf: boolean,
+  ) => {
+    clearLongPress();
+    longPressTimerRef.current = window.setTimeout(() => {
+      setMobileActionMenu({
+        messageId,
+        text: messageText,
+        isSelf,
+      });
+      longPressTimerRef.current = null;
+    }, 450);
+  };
+
+  const openDesktopMenu = (messageId: string) => {
+    if (desktopMenuOpenTimerRef.current) {
+      window.clearTimeout(desktopMenuOpenTimerRef.current);
+    }
+    if (desktopMenuCloseTimerRef.current) {
+      window.clearTimeout(desktopMenuCloseTimerRef.current);
+      desktopMenuCloseTimerRef.current = null;
+    }
+    // Delay open slightly for cleaner hover UX on desktop.
+    desktopMenuOpenTimerRef.current = window.setTimeout(() => {
+      setActiveDesktopMenuMessageId(messageId);
+      desktopMenuOpenTimerRef.current = null;
+    }, 180);
+  };
+
+  const closeDesktopMenu = (messageId: string) => {
+    if (desktopMenuOpenTimerRef.current) {
+      window.clearTimeout(desktopMenuOpenTimerRef.current);
+      desktopMenuOpenTimerRef.current = null;
+    }
+    if (desktopMenuCloseTimerRef.current) {
+      window.clearTimeout(desktopMenuCloseTimerRef.current);
+    }
+    // Small delay prevents accidental close while moving pointer to menu.
+    desktopMenuCloseTimerRef.current = window.setTimeout(() => {
+      setActiveDesktopMenuMessageId((prev) => (prev === messageId ? null : prev));
+      desktopMenuCloseTimerRef.current = null;
+    }, 120);
+  };
   return (
     <>
       <MediaViewerModal
@@ -69,6 +169,9 @@ export default function Messages({
         className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-3 space-y-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/30"
         id="chat-container"
       >
+        {visibleDesktopMenuMessageId && (
+          <div className="hidden md:block fixed inset-0 z-10 pointer-events-none bg-black/20 backdrop-blur-[2px]" />
+        )}
         {showScrollBtn && (
           <button
             onClick={() => bottomRef.current?.scrollIntoView({ behavior: "smooth" })}
@@ -89,6 +192,8 @@ export default function Messages({
 
         {messages.map((msg, idx) => {
           const isSelf = msg.sender_id === user.id;
+          const canCopyText = !!(msg.text || "").trim();
+          const hasDesktopActions = canCopyText || (isSelf && !!onUnsendMessage);
           const conversationRow = conversations.find(
             (c) => c.id === msg.conversation_id,
           );
@@ -129,12 +234,24 @@ export default function Messages({
             !msg.text &&
             normalizedAttachments.length > 0 &&
             normalizedAttachments.every((att) => getAttachmentKind(att) === "audio");
+          const isFocusedMobileMessage =
+            mobileActionMenu?.messageId === msg.id;
+          const shouldBlurForMobileActionMenu =
+            !!mobileActionMenu && !isFocusedMobileMessage;
 
           return (
             <div
               key={idx}
-              className={`group flex gap-2.5 items-end transition-colors ${
+              className={`group relative flex gap-2.5 items-end transition-colors ${
                 isSelf ? "justify-end" : "justify-start"
+              } ${
+                visibleDesktopMenuMessageId === msg.id ? "z-20" : "z-0"
+              } ${
+                shouldBlurForMobileActionMenu
+                  ? "md:blur-0 blur-[1.5px] opacity-45 scale-[0.995]"
+                  : "opacity-100 scale-100"
+              } ${
+                isFocusedMobileMessage ? "z-30" : ""
               }`}
             >
               {!isSelf && (
@@ -165,10 +282,59 @@ export default function Messages({
               )}
 
               <div
-                className={`flex flex-col min-w-0 w-full max-w-[680px] ${
+                className={`relative flex flex-col min-w-0 w-fit max-w-[680px] ${
                   isSelf ? "items-end" : "items-start"
                 }`}
               >
+                {hasDesktopActions && (
+                  <div
+                    className={`hidden md:flex absolute z-20 -top-8 ${
+                      isSelf ? "right-0" : "left-0"
+                    } ${
+                      visibleDesktopMenuMessageId === msg.id
+                        ? "opacity-100"
+                        : "opacity-0 pointer-events-none"
+                    } transition-opacity`}
+                    onMouseEnter={() => {
+                      if (!hasDesktopActions) return;
+                      openDesktopMenu(msg.id);
+                    }}
+                    onMouseLeave={() => {
+                      closeDesktopMenu(msg.id);
+                    }}
+                  >
+                    <div className="relative isolate flex items-center gap-1 rounded-xl border border-white/10 bg-[#0c0c1f]/95 backdrop-blur px-1.5 py-1 shadow-xl">
+                      {canCopyText && (
+                        <button
+                          type="button"
+                          onClick={() => void copyMessageText(msg.text || "")}
+                          className="px-2 py-1 rounded-lg text-[11px] text-gray-200 hover:bg-white/10 transition"
+                          title="Copy message"
+                        >
+                          Copy
+                        </button>
+                      )}
+                      {isSelf && onUnsendMessage && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActiveDesktopMenuMessageId(null);
+                            void onUnsendMessage(msg.id);
+                          }}
+                          className="px-2 py-1 rounded-lg text-[11px] text-red-300 hover:bg-red-500/15 transition"
+                          title="Unsend message"
+                        >
+                          Unsend
+                        </button>
+                      )}
+                      <span
+                        className={`absolute -bottom-1.5 -z-10 w-3 h-3 rotate-45 border-r border-b border-white/10 bg-[#0c0c1f]/95 ${
+                          isSelf ? "right-3" : "left-3"
+                        }`}
+                      />
+                    </div>
+                  </div>
+                )}
                 <div className={`flex items-center gap-1.5 ${isVoiceOnlyMessage ? "mb-0" : "mb-1"} px-0.5`}>
                   {isSelf && (
                     <span className="text-[10px] text-gray-600">
@@ -208,6 +374,16 @@ export default function Messages({
 
                 {msg.text && (
                   <div
+                    onMouseEnter={() => {
+                      if (!hasDesktopActions) return;
+                      openDesktopMenu(msg.id);
+                    }}
+                    onMouseLeave={() => {
+                      closeDesktopMenu(msg.id);
+                    }}
+                    onTouchStart={() => queueLongPressMenu(msg.id, msg.text || "", isSelf)}
+                    onTouchEnd={clearLongPress}
+                    onTouchMove={clearLongPress}
                     className={`px-5 py-3 text-[14px] leading-relaxed break-words break-all overflow-x-hidden ${
                       isSelf
                         ? "bg-indigo-600 border border-indigo-500/50 text-white rounded-2xl rounded-br-sm shadow-sm"
@@ -249,7 +425,16 @@ export default function Messages({
                 )}
 
                 {normalizedAttachments.length > 0 && (
-                  <div className={`${isVoiceOnlyMessage ? "mt-0" : "mt-1.5"} space-y-1.5`}>
+                  <div
+                    onMouseEnter={() => {
+                      if (!hasDesktopActions) return;
+                      openDesktopMenu(msg.id);
+                    }}
+                    onMouseLeave={() => {
+                      closeDesktopMenu(msg.id);
+                    }}
+                    className={`${isVoiceOnlyMessage ? "mt-0" : "mt-1.5"} space-y-1.5`}
+                  >
                     {normalizedAttachments.map((att, i) => (
                       <div key={i}>
                         {getAttachments(att, (payload) => setMediaViewer(payload))}
@@ -265,6 +450,56 @@ export default function Messages({
 
         <div ref={bottomRef} />
       </div>
+
+      {mobileActionMenu &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[9999] md:hidden"
+            onClick={() => setMobileActionMenu(null)}
+          >
+            <div className="absolute inset-0 bg-black/25" />
+            <div
+              className="absolute inset-x-0 bottom-0 border-t border-white/10 bg-[#0c0c1f]/96 backdrop-blur-xl px-3 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.9rem)] shadow-2xl rounded-t-[28px]"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="mx-auto w-full max-w-sm flex items-stretch gap-2">
+                {!!mobileActionMenu.text.trim() && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void copyMessageText(mobileActionMenu.text);
+                      setMobileActionMenu(null);
+                    }}
+                    className="flex-1 rounded-2xl px-2 py-2 text-gray-100 hover:bg-white/10 active:scale-[0.98] transition flex flex-col items-center justify-center gap-1"
+                  >
+                    <FontAwesomeIcon
+                      icon={faCopy}
+                      className="w-4 h-4 text-indigo-300"
+                    />
+                    <span className="text-[12px] font-semibold leading-tight">Copy</span>
+                  </button>
+                )}
+                {mobileActionMenu.isSelf && onUnsendMessage && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void onUnsendMessage(mobileActionMenu.messageId);
+                      setMobileActionMenu(null);
+                    }}
+                    className="flex-1 rounded-2xl px-2 py-2 text-red-200 hover:bg-white/10 active:scale-[0.98] transition flex flex-col items-center justify-center gap-1"
+                  >
+                    <FontAwesomeIcon
+                      icon={faTrashCan}
+                      className="w-4 h-4 text-red-300"
+                    />
+                    <span className="text-[12px] font-semibold leading-tight">Unsend</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }
