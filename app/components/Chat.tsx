@@ -343,6 +343,41 @@ export default function Chat({ user }: { user: User }) {
     return messages.filter((m) => (m.text || "").toLowerCase().includes(lowerSearch));
   }, [messages, messageSearch]);
 
+  const handleUnsendMessage = async (messageId: string) => {
+    if (!conversationId) return;
+    if (messageId.startsWith("temp-") || messageId.startsWith("live-")) {
+      toast.info("Please wait a moment and try again.");
+      return;
+    }
+
+    const removedMessage = messages.find((message) => message.id === messageId);
+    if (!removedMessage) return;
+
+    setMessages((prev) => prev.filter((message) => message.id !== messageId));
+
+    const { error } = await supabase
+      .from("messages")
+      .delete()
+      .eq("id", messageId)
+      .eq("sender_id", user.id);
+
+    if (error) {
+      setMessages((prev) => {
+        if (prev.some((message) => message.id === messageId)) return prev;
+        const next = [...prev, removedMessage];
+        next.sort(
+          (a, b) =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+        );
+        return next;
+      });
+      toast.error(error.message || "Unable to unsend message.");
+      return;
+    }
+
+    toast.success("Message unsent.");
+  };
+
   return (
     <>
       <MediaViewerModal
@@ -497,6 +532,7 @@ export default function Chat({ user }: { user: User }) {
                 bottomRef={bottomRef}
                 badgesByUserId={badgesByUserId}
                 onUserProfileClick={openPrivateChatFromGlobalProfile}
+                onUnsendMessage={handleUnsendMessage}
               />
             </div>
 

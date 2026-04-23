@@ -77,19 +77,37 @@ export default function JoinButton({
 
       if (!board) throw new Error("Invalid invite code");
 
+      const { data: existingMembership } = await supabase
+        .from("leaderboard_members")
+        .select("id")
+        .eq("leaderboard_id", board.id)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (existingMembership) {
+        return { alreadyMember: true };
+      }
+
       const { error } = await supabase.from("leaderboard_members").insert({
         leaderboard_id: board.id,
         user_id: user.id,
       });
 
       if (error) throw error;
-      return board;
+      return { alreadyMember: false };
     })();
 
     try {
       await toast.promise(joinPromise, {
         pending: "Joining leaderboard...",
-        success: "You're in! Welcome to the leaderboard.",
+        success: {
+          render({ data }) {
+            const payload = data as { alreadyMember: boolean };
+            return payload.alreadyMember
+              ? "You're already a member. Opening leaderboard..."
+              : "You're in! Welcome to the leaderboard.";
+          },
+        },
         error: {
           render({ data }) {
             const err = data as Error;

@@ -11,7 +11,7 @@ export interface Leaderboard {
 };
 
 export interface LeaderboardMember {
-  leaderboards: Leaderboard[];
+  leaderboards: Leaderboard | Leaderboard[] | null;
 };
 
 export default async function LeaderboardsList() {
@@ -31,15 +31,22 @@ export default async function LeaderboardsList() {
     supabase
       .from("leaderboard_members")
       .select("leaderboards(id, name, slug, owner_id)")
-      .eq("user_id", user.id)
-      .eq("role", "member"),
+      .eq("user_id", user.id),
   ]);
 
   const owned = ownResult.data || [];
   const joined = joinedResult.data || [];
 
   const joinedBoards =
-    joined?.flatMap((j) => j.leaderboards) || [];
+    joined
+      ?.flatMap((j) => {
+        if (!j.leaderboards) return [];
+        return Array.isArray(j.leaderboards) ? j.leaderboards : [j.leaderboards];
+      })
+      .filter((board) => board.owner_id !== user.id)
+      .filter(
+        (board, index, arr) => arr.findIndex((candidate) => candidate.id === board.id) === index
+      ) || [];
 
   const ownedCount = owned?.length || 0;
   const joinedCount = joinedBoards.length;

@@ -149,8 +149,8 @@ export default async function JoinPage({ searchParams }: Props) {
       .select("id")
       .eq("leaderboard_id", leaderboard.id)
       .eq("user_id", user.id)
-      .single();
-    alreadyMember = !!membership;
+      .maybeSingle();
+    alreadyMember = user.id === leaderboard.owner_id || !!membership;
   }
 
   return (
