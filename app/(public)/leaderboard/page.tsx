@@ -7,11 +7,11 @@ import { Metadata } from "next";
 import { getUserWithProfile } from "@/app/lib/supabase/help/user";
 
 export const metadata: Metadata = {
-  title: "Leaderboards - DevPulse",
+  title: "Leaderboards - Devpulse",
   description:
-    "Explore the DevPulse leaderboards and see how you rank against other developers. Check out the top coders and get inspired to climb the ranks!",
+    "Explore the Devpulse leaderboards and see how you rank against other developers. Check out the top coders and get inspired to climb the ranks!",
   keywords: [
-    "DevPulse",
+    "Devpulse",
     "developer leaderboards",
     "coding rankings",
     "programming competition",
@@ -22,17 +22,17 @@ export const metadata: Metadata = {
     "coding inspiration",
   ],
   openGraph: {
-    title: "Leaderboards - DevPulse",
+    title: "Leaderboards - Devpulse",
     description:
-      "Explore the DevPulse leaderboards and see how you rank against other developers. Check out the top coders and get inspired to climb the ranks!",
+      "Explore the Devpulse leaderboards and see how you rank against other developers. Check out the top coders and get inspired to climb the ranks!",
     url: "https://devpulse.hallofcodes.org/leaderboard",
-    siteName: "DevPulse",
+    siteName: "Devpulse",
     images: [
       {
         url: "https://devpulse.hallofcodes.org/images/devpulse.cover.png",
         width: 1200,
         height: 630,
-        alt: "DevPulse Cover Image",
+        alt: "Devpulse Cover Image",
       },
     ],
     locale: "en_US",
@@ -40,13 +40,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Leaderboards - DevPulse",
+    title: "Leaderboards - Devpulse",
     description:
-      "Explore the DevPulse leaderboards and see how you rank against other developers. Check out the top coders and get inspired to climb the ranks!",
+      "Explore the Devpulse leaderboards and see how you rank against other developers. Check out the top coders and get inspired to climb the ranks!",
     images: [
       {
         url: "https://devpulse.hallofcodes.org/images/devpulse.cover.png",
-        alt: "DevPulse Cover Image",
+        alt: "Devpulse Cover Image",
       },
     ],
   },
@@ -85,9 +85,9 @@ export default async function Leaderboards() {
         <BackButton href="/dashboard/leaderboards" />
 
         <div className="flex justify-center items-center gap-3 mb-8">
-          <Image src="/logo.svg" alt="DevPulse Logo" width={36} height={36} />
+          <Image src="/logo.svg" alt="Devpulse Logo" width={36} height={36} />
           <h1 className="text-3xl font-bold text-white">
-            DevPulse Leaderboards
+            Devpulse Leaderboards
           </h1>
         </div>
 

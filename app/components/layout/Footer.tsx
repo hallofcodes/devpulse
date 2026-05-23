@@ -7,11 +7,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-center md:text-left">
             <p className="font-semibold text-gray-300">
-              © {new Date().getFullYear()} DevPulse
-            </p>
-            <p className="text-gray-500 mt-1">
-              Built by{" "}
-              <span className="text-indigo-400 font-medium">Hall of Codes</span>
+              © {new Date().getFullYear()} Devpulse
             </p>
           </div>
 
@@ -22,10 +18,7 @@ export default function Footer() {
             >
               Leaderboard
             </Link>
-            <Link
-              href="/flex"
-              className="hover:text-gray-300 transition"
-            >
+            <Link href="/flex" className="hover:text-gray-300 transition">
               Flex
             </Link>
             <Link
@@ -54,7 +47,7 @@ export default function Footer() {
         <div className="my-6 border-t border-white/5" />
 
         <div className="text-center text-xs text-gray-600">
-          <p>Open-source project maintained by the DevPulse team.</p>
+          <Link href="https://www.hallofcodes.org">Hall of Codes</Link>
         </div>
       </div>
     </footer>

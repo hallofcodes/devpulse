@@ -1,33 +1,37 @@
-export const formatHours = (seconds: number) => {
+export function formatHours(seconds: number) {
   const safeSeconds = Number.isFinite(seconds) ? Math.max(0, seconds) : 0;
   const totalMinutes = Math.round(safeSeconds / 60);
   const hrs = Math.floor(totalMinutes / 60);
   const mins = totalMinutes % 60;
   if (hrs > 0) return `${hrs}h ${mins}m`;
   return `${mins}m`;
-};
+}
 
-export function timeAgo(timestamp: string): string {
-  const now = new Date();
-  const date = new Date(timestamp);
+export function timeAgo(timestamp: string) {
+  if (!timestamp) return null;
 
-  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  const timestampDate = Number(timestamp);
+  const now = Date.now();
+  const diffSeconds = Math.floor(now / 1000 - timestampDate);
 
-  if (seconds < 60) return "now";
+  if (diffSeconds < 60)
+    return `${diffSeconds} second${diffSeconds !== 1 ? "s" : ""} ago`;
 
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60)
-    return minutes === 1 ? "a minute ago" : `${minutes} minutes ago`;
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  if (diffMinutes < 60)
+    return `${diffMinutes} minute${diffMinutes !== 1 ? "s" : ""} ago`;
 
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return hours === 1 ? "an hour ago" : `${hours} hours ago`;
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24)
+    return `${diffHours} hour${diffHours !== 1 ? "s" : ""} ago`;
 
-  const days = Math.floor(hours / 24);
-  if (days < 30) return days === 1 ? "a day ago" : `${days} days ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 30) return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
 
-  const months = Math.floor(days / 30);
-  if (months < 12) return months === 1 ? "a month ago" : `${months} months ago`;
+  const diffMonths = Math.floor(diffDays / 30);
+  if (diffMonths < 12)
+    return `${diffMonths} month${diffMonths !== 1 ? "s" : ""} ago`;
 
-  const years = Math.floor(days / 365);
-  return years === 1 ? "a year ago" : `${years} years ago`;
+  const diffYears = Math.floor(diffMonths / 12);
+  return `${diffYears} year${diffYears !== 1 ? "s" : ""} ago`;
 }

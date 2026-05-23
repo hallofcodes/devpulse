@@ -57,7 +57,7 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
       <div data-aos="fade-up">
         <h1 className="text-2xl font-bold text-white">Connect Wakatime</h1>
         <p className="text-sm text-gray-600">
-          Connect your WakaTime account to DevPulse to visualize your coding
+          Connect your WakaTime account to Devpulse to visualize your coding
           activity
         </p>
       </div>
@@ -65,7 +65,7 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
       <div className="glass-card p-6 max-w-xl" data-aos="fade-up" data-aos-delay="100">
         <p className="text-gray-400 mb-8 text-sm">
           Welcome <span className="text-white font-medium">{email}</span>. Enter
-          your WakaTime API key to activate your DevPulse dashboard.
+          your WakaTime API key to activate your Devpulse dashboard.
         </p>
 
         <input

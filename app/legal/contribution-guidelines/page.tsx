@@ -3,9 +3,9 @@ import Nav from "@/app/components/layout/Nav";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contribution Guidelines - DevPulse",
+  title: "Contribution Guidelines - Devpulse",
   description:
-    "Read our Contribution Guidelines to understand how you can contribute to DevPulse.",
+    "Read our Contribution Guidelines to understand how you can contribute to Devpulse.",
 };
 
 export default function ContributionGuidelines() {
@@ -19,7 +19,7 @@ export default function ContributionGuidelines() {
         </h1>
 
         <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10">
-          Thank you for considering contributing to <strong>DevPulse</strong>!
+          Thank you for considering contributing to <strong>Devpulse</strong>!
           To help maintain the quality, stability, and integrity of our codebase
           (&quot;Hall of Codes&quot;), please read and follow these guidelines.
         </p>
@@ -30,7 +30,7 @@ export default function ContributionGuidelines() {
         <p className="mb-4">
           Please reach out to us before modifying any existing design or logic
           that is currently working or in active use. This ensures we avoid
-          conflicts and preserve the stability of DevPulse.
+          conflicts and preserve the stability of Devpulse.
         </p>
 
         <h2 className="text-xl font-semibold mt-6 mb-2">
@@ -52,14 +52,14 @@ export default function ContributionGuidelines() {
           Any PR that modifies existing, working code without prior discussion
           may not be merged. We reserve the right to reject contributions that
           conflict with ongoing development or compromise the stability of the
-          DevPulse.
+          Devpulse.
         </p>
 
         <h2 className="text-xl font-semibold mt-6 mb-2">
           4. Protecting the Hall of Codes
         </h2>
         <p className="mb-4">
-          Our codebase represents the core of <strong>DevPulse</strong>.
+          Our codebase represents the core of <strong>Devpulse</strong>.
           Contributors are expected to respect coding standards, write clean,
           maintainable code, and document changes clearly. Unauthorized
           modifications, destructive changes, or attempts to bypass review
@@ -68,7 +68,7 @@ export default function ContributionGuidelines() {
         </p>
 
         <p className="mb-4">
-          By contributing, you agree to follow these guidelines to keep DevPulse
+          By contributing, you agree to follow these guidelines to keep Devpulse
           stable, reliable, and enjoyable for all users.
         </p>
       </div>

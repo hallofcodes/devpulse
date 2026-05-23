@@ -4,11 +4,11 @@ import LoginForm from "@/app/components/auth/LoginForm";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Login - DevPulse",
+  title: "Login - Devpulse",
   description:
-    "Log in to your DevPulse account to monitor your coding activity and compete on leaderboards.",
+    "Log in to your Devpulse account to monitor your coding activity and compete on leaderboards.",
   keywords: [
-    "DevPulse",
+    "Devpulse",
     "login",
     "coding activity tracker",
     "developer leaderboards",
@@ -21,17 +21,17 @@ export const metadata: Metadata = {
     "productivity insights",
   ],
   openGraph: {
-    title: "Login - DevPulse",
+    title: "Login - Devpulse",
     description:
-      "Log in to your DevPulse account to monitor your coding activity and compete on leaderboards.",
+      "Log in to your Devpulse account to monitor your coding activity and compete on leaderboards.",
     url: "https://devpulse.hallofcodes.org/login",
-    siteName: "DevPulse",
+    siteName: "Devpulse",
     images: [
       {
         url: "https://devpulse.hallofcodes.org/images/devpulse.cover.png",
         width: 1200,
         height: 630,
-        alt: "DevPulse Cover Image",
+        alt: "Devpulse Cover Image",
       },
     ],
     locale: "en_US",
@@ -39,13 +39,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Login - DevPulse",
+    title: "Login - Devpulse",
     description:
-      "Log in to your DevPulse account to monitor your coding activity and compete on leaderboards.",
+      "Log in to your Devpulse account to monitor your coding activity and compete on leaderboards.",
     images: [
       {
         url: "https://devpulse.hallofcodes.org/images/devpulse.cover.png",
-        alt: "DevPulse Cover Image",
+        alt: "Devpulse Cover Image",
       },
     ],
   },
@@ -74,9 +74,9 @@ export default async function Login(props: {
             href="/"
             className="flex items-center gap-3 w-fit hover:opacity-80 transition"
           >
-            <Image src="/logo.svg" alt="DevPulse Logo" width={40} height={40} />
+            <Image src="/logo.svg" alt="Devpulse Logo" width={40} height={40} />
             <span className="text-2xl font-bold tracking-tight text-white">
-              DevPulse
+              Devpulse
             </span>
           </Link>
         </div>
@@ -126,7 +126,7 @@ export default async function Login(props: {
         </div>
 
         <div className="relative z-10 text-sm text-gray-500 font-medium">
-          &copy; {new Date().getFullYear()} DevPulse. All rights reserved.
+          &copy; {new Date().getFullYear()} Devpulse. All rights reserved.
         </div>
       </div>
 
@@ -136,8 +136,8 @@ export default async function Login(props: {
 
         <div className="w-full max-w-sm relative z-10">
           <div className="lg:hidden flex items-center justify-center gap-3 mb-10">
-            <Image src="/logo.svg" alt="DevPulse Logo" width={40} height={40} />
-            <h2 className="text-3xl font-bold text-white">DevPulse</h2>
+            <Image src="/logo.svg" alt="Devpulse Logo" width={40} height={40} />
+            <h2 className="text-3xl font-bold text-white">Devpulse</h2>
           </div>
 
           <div className="mb-8 text-left">

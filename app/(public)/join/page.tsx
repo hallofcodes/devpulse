@@ -36,15 +36,15 @@ export async function generateMetadata({
 
   if (!code) {
     return {
-      title: "Join - DevPulse",
-      description: "Open an invite link to join a DevPulse leaderboard.",
+      title: "Join - Devpulse",
+      description: "Open an invite link to join a Devpulse leaderboard.",
     };
   }
 
   const leaderboard = await getLeaderboard(code);
   if (!leaderboard) {
     return {
-      title: "Invite Not Found - DevPulse",
+      title: "Invite Not Found - Devpulse",
       description: "This invite link is invalid or has expired.",
     };
   }
@@ -53,16 +53,16 @@ export async function generateMetadata({
   const description =
     leaderboard.description && leaderboard.description?.length > 0
       ? leaderboard.description
-      : `Join the ${leaderboard.name} leaderboard on DevPulse and compete with other developers. Track your coding activity and climb the ranks!`;
+      : `Join the ${leaderboard.name} leaderboard on Devpulse and compete with other developers. Track your coding activity and climb the ranks!`;
 
   return {
-    title: `${title} - DevPulse`,
+    title: `${title} - Devpulse`,
     description,
     openGraph: {
       title,
       description,
       type: "website",
-      siteName: "DevPulse",
+      siteName: "Devpulse",
       url: `https://devpulse.hallofcodes.org/join?id=${encodeURIComponent(code)}`,
     },
     twitter: {
@@ -104,7 +104,7 @@ export default async function JoinPage({ searchParams }: Props) {
             <span className="font-mono">/join?id=XXXXXXXX</span>.
           </p>
           <Link href="/" className="btn-primary inline-block px-6 py-3 text-sm">
-            Go to DevPulse
+            Go to Devpulse
           </Link>
         </div>
       </div>
@@ -139,7 +139,7 @@ export default async function JoinPage({ searchParams }: Props) {
             This invite link is invalid or has expired.
           </p>
           <Link href="/" className="btn-primary inline-block px-6 py-3 text-sm">
-            Go to DevPulse
+            Go to Devpulse
           </Link>
         </div>
       </div>
@@ -173,7 +173,7 @@ export default async function JoinPage({ searchParams }: Props) {
         <div className="glass-card max-w-lg w-full p-8 md:p-10 text-center">
           <div className="flex justify-center mb-6">
             <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.15)]">
-              <Image src="/logo.svg" alt="DevPulse" width={36} height={36} />
+              <Image src="/logo.svg" alt="Devpulse" width={36} height={36} />
             </div>
           </div>
 
@@ -244,7 +244,7 @@ export default async function JoinPage({ searchParams }: Props) {
                 href="/"
                 className="text-indigo-400/70 hover:text-indigo-400 transition-colors"
               >
-                DevPulse
+                Devpulse
               </Link>{" "}
               &mdash; Track your coding activity &amp; compete
             </p>

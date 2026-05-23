@@ -101,9 +101,9 @@ function Sidebar({ role }: { role: string }) {
           if (isMobile && !mobileHidden) setMobileHidden(true);
         }}
       >
-        <Image src="/logo.svg" alt="DevPulse" width={26} height={26} />
+        <Image src="/logo.svg" alt="Devpulse" width={26} height={26} />
         {!collapsed && (
-          <span className="text-base font-bold gradient-text">DevPulse</span>
+          <span className="text-base font-bold gradient-text">Devpulse</span>
         )}
       </div>
 
@@ -336,7 +336,7 @@ export default function DashboardLayout({
             }}
             aria-label="Show sidebar"
           >
-            <Image src="/logo.svg" alt="DevPulse" width={16} height={16} />
+            <Image src="/logo.svg" alt="Devpulse" width={16} height={16} />
           </button>
         )}
 

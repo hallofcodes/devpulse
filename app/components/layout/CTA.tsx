@@ -11,7 +11,7 @@ export default function CTA() {
           Ready to track your coding productivity?
         </h2>
         <p className="text-gray-400 mb-8">
-          Join developers and teams competing on DevPulse.
+          Join developers and teams competing on Devpulse.
         </p>
         <Link href="/signup" className="btn-primary inline-block px-8 py-4">
           Create Free Account

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { checkRateLimit } from "../rate-limit";
+import { checkRateLimit } from "../../utils/rate-limit";
 
 export default function RateLimiter(
   request: NextRequest,

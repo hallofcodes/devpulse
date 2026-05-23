@@ -108,7 +108,7 @@ Contributions to devpulse are welcome! Please follow these guidelines:
 
 > Pull requests that modify existing working features without prior discussion may not be merged.
 
-Help us keep the codebase ("DevPulse") clean, stable, and maintainable.
+Help us keep the codebase ("Devpulse") clean, stable, and maintainable.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

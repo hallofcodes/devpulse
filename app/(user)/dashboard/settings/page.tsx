@@ -5,7 +5,7 @@ import { getUserWithProfile } from "@/app/lib/supabase/help/user";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Settings - DevPulse",
+  title: "Settings - Devpulse",
 };
 
 export default async function LeaderboardsPage() {

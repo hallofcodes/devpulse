@@ -28,7 +28,7 @@ export default async function Contributors() {
         <h2 className="text-2xl font-bold mb-4">Contributors</h2>
         <p className="text-gray-400 text-sm mb-8">
           A big thank you to all the amazing contributors who have helped make
-          DevPulse better! Your support and contributions are what drive this
+          Devpulse better! Your support and contributions are what drive this
           project forward.
         </p>
 

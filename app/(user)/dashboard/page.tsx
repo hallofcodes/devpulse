@@ -5,7 +5,7 @@ import { Metadata } from "next";
 import { getUserWithProfile } from "@/app/lib/supabase/help/user";
 
 export const metadata: Metadata = {
-  title: "Dashboard - DevPulse",
+  title: "Dashboard - Devpulse",
 };
 
 export default async function Dashboard() {

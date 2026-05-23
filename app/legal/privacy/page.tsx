@@ -3,9 +3,9 @@ import Nav from "@/app/components/layout/Nav";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy - DevPulse",
+  title: "Privacy Policy - Devpulse",
   description:
-    "Read our Privacy Policy to understand how we collect, use, and protect your information when you use DevPulse.",
+    "Read our Privacy Policy to understand how we collect, use, and protect your information when you use Devpulse.",
 };
 
 export default function Privacy() {
@@ -19,7 +19,7 @@ export default function Privacy() {
         </h1>
 
         <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10">
-          This Privacy Policy explains how <strong>DevPulse</strong>{" "}
+          This Privacy Policy explains how <strong>Devpulse</strong>{" "}
           (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) collects, uses,
           and protects your information when you use
           <strong> devpulse.hallofcodes.org</strong>.{" "}
@@ -58,7 +58,7 @@ export default function Privacy() {
 
         <h3 className="font-semibold mt-4">c. WakaTime API Key</h3>
         <p className="mb-4">
-          When you use DevPulse, you may provide your WakaTime API key. This key
+          When you use Devpulse, you may provide your WakaTime API key. This key
           is used solely to fetch your coding activity data from the WakaTime
           API and generate statistics. We do not use this key for any other
           purpose.
