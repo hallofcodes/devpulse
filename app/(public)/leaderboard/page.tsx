@@ -25,11 +25,11 @@ export const metadata: Metadata = {
     title: "Leaderboards - DevPulse",
     description:
       "Explore the DevPulse leaderboards and see how you rank against other developers. Check out the top coders and get inspired to climb the ranks!",
-    url: "https://devpulse-waka.vercel.app/leaderboard",
+    url: "https://devpulse.hallofcodes.org/leaderboard",
     siteName: "DevPulse",
     images: [
       {
-        url: "https://devpulse-waka.vercel.app/images/devpulse.cover.png",
+        url: "https://devpulse.hallofcodes.org/images/devpulse.cover.png",
         width: 1200,
         height: 630,
         alt: "DevPulse Cover Image",
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
       "Explore the DevPulse leaderboards and see how you rank against other developers. Check out the top coders and get inspired to climb the ranks!",
     images: [
       {
-        url: "https://devpulse-waka.vercel.app/images/devpulse.cover.png",
+        url: "https://devpulse.hallofcodes.org/images/devpulse.cover.png",
         alt: "DevPulse Cover Image",
       },
     ],

@@ -22,7 +22,7 @@ export default function Privacy() {
           This Privacy Policy explains how <strong>DevPulse</strong>{" "}
           (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) collects, uses,
           and protects your information when you use
-          <strong> devpulse-waka.vercel.app</strong>.{" "}
+          <strong> devpulse.hallofcodes.org</strong>.{" "}
         </p>
 
         <h2 className="text-xl font-semibold mt-6 mb-2">

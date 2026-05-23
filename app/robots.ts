@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api"],
     },
-    sitemap: "https://devpulse-waka.vercel.app/sitemap.xml",
+    sitemap: "https://devpulse.hallofcodes.org/sitemap.xml",
   };
 }

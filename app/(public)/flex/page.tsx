@@ -26,11 +26,11 @@ export const metadata: Metadata = {
     title: "Flexes - DevPulse",
     description:
       "Flex your coding projects and share your achievements with the DevPulse community. See what others are working on and get inspired!",
-    url: "https://devpulse-waka.vercel.app/flex",
+    url: "https://devpulse.hallofcodes.org/flex",
     siteName: "DevPulse",
     images: [
       {
-        url: "https://devpulse-waka.vercel.app/images/devpulse.cover.png",
+        url: "https://devpulse.hallofcodes.org/images/devpulse.cover.png",
         width: 1200,
         height: 630,
         alt: "DevPulse Cover Image",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
       "Flex your coding projects and share your achievements with the DevPulse community. See what others are working on and get inspired!",
     images: [
       {
-        url: "https://devpulse-waka.vercel.app/images/devpulse.cover.png",
+        url: "https://devpulse.hallofcodes.org/images/devpulse.cover.png",
         alt: "DevPulse Cover Image",
       },
     ],

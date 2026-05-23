@@ -22,7 +22,7 @@ export default function Terms() {
           These Terms of Service (&quot;Terms&quot;) govern your use of{" "}
           <strong>DevPulse</strong>
           (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) available at{" "}
-          <strong>devpulse-waka.vercel.app</strong>. By using this service, you
+          <strong>devpulse.hallofcodes.org</strong>. By using this service, you
           agree to these Terms.
         </p>
 

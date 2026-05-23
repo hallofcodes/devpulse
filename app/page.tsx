@@ -89,8 +89,8 @@ export default async function Home() {
     subOrganization: {
       "@type": "Organization",
       name: "DevPulse",
-      url: "https://devpulse-waka.vercel.app",
-      logo: "https://devpulse-waka.vercel.app/favicon.png",
+      url: "https://devpulse.hallofcodes.org",
+      logo: "https://devpulse.hallofcodes.org/favicon.png",
     },
   };
 
@@ -98,7 +98,7 @@ export default async function Home() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "DevPulse - Measure Your Coding Pulse",
-    url: "https://devpulse-waka.vercel.app",
+    url: "https://devpulse.hallofcodes.org",
     inLanguage: "en",
   };
 

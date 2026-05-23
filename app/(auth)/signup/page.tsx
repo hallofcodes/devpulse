@@ -11,11 +11,11 @@ export const metadata: Metadata = {
     title: "Sign Up - DevPulse",
     description:
       "Create a DevPulse account to monitor your coding activity and compete on leaderboards.",
-    url: "https://devpulse-waka.vercel.app/signup",
+    url: "https://devpulse.hallofcodes.org/signup",
     siteName: "DevPulse",
     images: [
       {
-        url: "https://devpulse-waka.vercel.app/images/devpulse.cover.png",
+        url: "https://devpulse.hallofcodes.org/images/devpulse.cover.png",
         width: 1200,
         height: 630,
         alt: "DevPulse Cover Image",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
       "Create a DevPulse account to monitor your coding activity and compete on leaderboards.",
     images: [
       {
-        url: "https://devpulse-waka.vercel.app/images/devpulse.cover.png",
+        url: "https://devpulse.hallofcodes.org/images/devpulse.cover.png",
         alt: "DevPulse Cover Image",
       },
     ],

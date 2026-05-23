@@ -2,7 +2,7 @@
   
 # devpulse
 
-Measure and share your coding productivity with personalized leaderboards. Compare your progress with peers while keeping full control over privacy and leaderboard settings.
+Measure and share your coding productivity with personalized leaderboards. Compare your progress with peers while keeping full control over privacy and leaderboard settings with project management features.
 
 ## Getting Started
 Install the dependencies:
@@ -18,7 +18,7 @@ First by creating a supabase cloud project:
 - click `New Project`
 - choose:
   - Organization → (create one if needed)
-  - Project Name → e.g. devpulse-waka
+  - Project Name → e.g. devpulse
   - Database Password → choose a secure one
   - Region → pick the nearest location
 - Click Create new project
