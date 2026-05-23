@@ -1,15 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBolt,
-  faFire,
-  faStar,
-  faGhost,
-  faMedal,
-  faCrown,
-  faSeedling,
-  faMinus,
-} from "@fortawesome/free-solid-svg-icons";
 import { Database } from "../supabase-types";
+import { BADGE_LEGEND_HOURS, getBadgeInfoFromHours } from "@/app/utils/badge";
 
 type LeaderboardMembersRow =
   Database["public"]["Views"]["leaderboard_members_view"]["Row"];
@@ -36,18 +27,6 @@ export type NonNullableMember = Omit<
   editors: { name: string }[];
 };
 
-
-const getBadgeInfo = (rank: number, hours: number) => {
-  if (hours >= 160) return { label: "MISSION IMPOSSIBLE", class: "badge-impossible", icon: faGhost };
-  if (hours >= 130) return { label: "GOD LEVEL", class: "badge-god", icon: faCrown };
-  if (hours >= 100) return { label: "STARLIGHT", class: "badge-starlight", icon: faStar };
-  if (hours >= 50) return { label: "ELITE", class: "badge-elite", icon: faFire };
-  if (hours >= 20) return { label: "PRO", class: "badge-pro", icon: faBolt };
-  if (hours >= 5) return { label: "NOVICE", class: "badge-novice", icon: faMedal };
-  if (hours >= 1) return { label: "NEWBIE", class: "badge-newbie", icon: faSeedling };
-  return { label: "NONE", class: "badge-none", icon: faMinus }; // 0 hours
-};
-
 function LeaderboardPodium({ topUsers }: { topUsers: { user_id: string; rank: number; email: string | null; hours: number; role: string | null; languages: string[]; os: string; editor: string; }[] }) {
   if (topUsers.length === 0) return null;
 
@@ -61,7 +40,7 @@ function LeaderboardPodium({ topUsers }: { topUsers: { user_id: string; rank: nu
               ? "text-gray-300 drop-shadow-[0_0_8px_rgba(209,213,219,0.4)]"
               : "text-amber-600 drop-shadow-[0_0_8px_rgba(217,119,6,0.4)]";
         
-        const badgeInfo = getBadgeInfo(user.rank, user.hours);
+        const badgeInfo = getBadgeInfoFromHours(user.hours);
         const initial = (user.email?.[0] || "?").toUpperCase();
 
         return (
@@ -81,7 +60,7 @@ function LeaderboardPodium({ topUsers }: { topUsers: { user_id: string; rank: nu
                     <div className="font-semibold text-white tracking-tight truncate max-w-[120px] sm:max-w-[140px]">
                       {user.email?.split("@")[0] || "Unknown"}
                     </div>
-                    <div className={`mt-1.5 badge-base ${badgeInfo.class}`}>
+                    <div className={`mt-1.5 badge-base ${badgeInfo.className}`}>
                       {badgeInfo.icon && (
                         <FontAwesomeIcon icon={badgeInfo.icon} className="w-2.5 h-2.5" />
                       )}
@@ -166,103 +145,7 @@ export default function LeaderboardTable({
 
   return (
     <div className="w-full flex flex-col xl:flex-row gap-6">
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        @keyframes shimmer-bg {
-          0% { background-position: 0% 50%; }
-          100% { background-position: 200% 50%; }
-        }
-        .badge-base {
-          padding: 0.125rem 0.375rem;
-          border-radius: 0.25rem;
-          font-size: 0.5rem;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.25rem;
-          line-height: normal;
-        }
-        .badge-impossible {
-          background: linear-gradient(90deg, rgba(255,0,102,0.15) 0%, rgba(255,51,153,0.8) 50%, rgba(255,0,102,0.15) 100%);
-          background-size: 200% auto;
-          animation: pulse-glow 1.5s infinite, shimmer-bg 1.5s linear infinite;
-          border: 1px solid rgba(255,0,102,0.8);
-          color: #ff99cc;
-          box-shadow: 0 0 15px rgba(255,0,102,0.6);
-        }
-        .badge-god {
-          background: linear-gradient(90deg, rgba(217,70,239,0.15) 0%, rgba(232,121,249,0.6) 50%, rgba(217,70,239,0.15) 100%);
-          background-size: 200% auto;
-          animation: shimmer-bg 2s linear infinite, glow-pulse 2s alternate infinite;
-          border: 1px solid rgba(217,70,239,0.6);
-          color: #f0abfc;
-          box-shadow: 0 0 10px rgba(217,70,239,0.4);
-        }
-        .badge-starlight {
-          background: linear-gradient(90deg, rgba(56,189,248,0.15) 0%, rgba(125,211,252,0.6) 50%, rgba(56,189,248,0.15) 100%);
-          background-size: 200% auto;
-          animation: shimmer-bg 2.5s linear infinite;
-          border: 1px solid rgba(56,189,248,0.5);
-          color: #bae6fd;
-          box-shadow: 0 0 10px rgba(56,189,248,0.3);
-        }
-        .badge-elite {
-          background: linear-gradient(90deg, rgba(239,68,68,0.15) 0%, rgba(248,113,113,0.6) 50%, rgba(239,68,68,0.15) 100%);
-          background-size: 200% auto;
-          animation: shimmer-bg 3s linear infinite;
-          border: 1px solid rgba(239,68,68,0.5);
-          color: #fca5a5;
-          box-shadow: 0 0 10px rgba(239,68,68,0.3);
-        }
-        .badge-pro {
-          background: linear-gradient(90deg, rgba(234,179,8,0.15) 0%, rgba(253,224,71,0.5) 50%, rgba(234,179,8,0.15) 100%);
-          background-size: 200% auto;
-          animation: shimmer-bg 4s linear infinite;
-          border: 1px solid rgba(234,179,8,0.5);
-          color: #fef08a;
-          box-shadow: 0 0 10px rgba(234,179,8,0.2);
-        }
-        .badge-master {
-          background: rgba(99,102,241,0.15);
-          border: 1px solid rgba(99,102,241,0.4);
-          color: #a5b4fc;
-        }
-        .badge-hustler {
-          background: rgba(59,130,246,0.15);
-          border: 1px solid rgba(59,130,246,0.4);
-          color: #93c5fd;
-        }
-        .badge-novice {
-          background: linear-gradient(90deg, rgba(16,185,129,0.1) 0%, rgba(52,211,153,0.3) 50%, rgba(16,185,129,0.1) 100%);
-          background-size: 200% auto;
-          animation: shimmer-bg 5s linear infinite;
-          border: 1px solid rgba(16,185,129,0.4);
-          color: #6ee7b7;
-        }
-        .badge-newbie {
-          background: rgba(107,114,128,0.15);
-          border: 1px solid rgba(107,114,128,0.4);
-          color: #d1d5db;
-        }
-        .badge-none {
-          background: rgba(55,65,81,0.15);
-          border: 1px dashed rgba(55,65,81,0.4);
-          color: #9ca3af;
-        }
-        @keyframes pulse-glow {
-          0%, 100% { box-shadow: 0 0 15px rgba(255,0,102,0.6); }
-          50% { box-shadow: 0 0 25px rgba(255,0,102,1); }
-        }
-        @keyframes glow-pulse {
-          0% { box-shadow: 0 0 5px rgba(217,70,239,0.4); }
-          100% { box-shadow: 0 0 15px rgba(217,70,239,0.8); }
-        }
-      `,
-        }}
-      />
+      
 
       <LeaderboardStats members={members} />
 
@@ -291,7 +174,7 @@ export default function LeaderboardTable({
             {ranked.slice(3).map((user) => {
               const isCurrentUser = user.user_id === ownerId;
               const pct = Math.max(2, (user.hours / maxHours) * 100);
-              const badgeInfo = getBadgeInfo(user.rank, user.hours);
+              const badgeInfo = getBadgeInfoFromHours(user.hours);
 
               return (
                 <div
@@ -337,7 +220,7 @@ export default function LeaderboardTable({
                           )}
                         </div>
                         <div className="flex flex-wrap items-center">
-                          <div className={`badge-base ${badgeInfo.class}`}>
+                          <div className={`badge-base ${badgeInfo.className}`}>
                             {badgeInfo.icon && (
                               <FontAwesomeIcon
                                 icon={badgeInfo.icon}
@@ -423,25 +306,16 @@ export default function LeaderboardTable({
           Rankings Legend
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-1 gap-2">
-          {[
-            { hours: 160, label: "MISSION IMPOSSIBLE" },
-            { hours: 130, label: "GOD LEVEL" },
-            { hours: 100, label: "STARLIGHT" },
-            { hours: 50, label: "ELITE" },
-            { hours: 20, label: "PRO" },
-            { hours: 5, label: "NOVICE" },
-            { hours: 1, label: "NEWBIE" },
-            { hours: 0, label: "none" },
-          ].map((item) => {
-            const b = getBadgeInfo(0, item.hours);
+          {BADGE_LEGEND_HOURS.map((hours) => {
+            const b = getBadgeInfoFromHours(hours);
             return (
-              <div key={item.hours} className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-white/[0.02] border border-white/5 hover:bg-white/[0.06] transition-colors gap-2">
-                <div className={`badge-base ${b.class} shrink-0 !text-[9px] !py-0.5 !px-2`}>
+              <div key={hours} className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-white/[0.02] border border-white/5 hover:bg-white/[0.06] transition-colors gap-2">
+                <div className={`badge-base ${b.className} shrink-0 !text-[9px] !py-0.5 !px-2`}>
                   {b.icon && <FontAwesomeIcon icon={b.icon} className="w-2.5 h-2.5" />}
                   {b.label}
                 </div>
                 <span className="text-[10px] text-gray-500 font-mono font-medium">
-                  {item.hours === 0 ? "0 hrs" : `${item.hours}+`}
+                  {hours === 0 ? "0 hrs" : `${hours}+`}
                 </span>
               </div>
             );

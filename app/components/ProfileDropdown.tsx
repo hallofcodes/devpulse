@@ -2,6 +2,7 @@
 
 import {
   faArrowRightFromBracket,
+  faChevronDown,
   faDashboard,
   faGear,
   faMessage,
@@ -63,19 +64,10 @@ export default function ProfileDropdown({
       <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors hidden sm:block">
         {name}
       </span>
-      <svg
+      <FontAwesomeIcon
+        icon={faChevronDown}
         className={`w-4 h-4 text-gray-500 group-hover:text-white transition-transform duration-200 hidden sm:block ${profileOpen ? "rotate-180" : ""}`}
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M19 9l-7 7-7-7"
-        />
-      </svg>
+      />
 
       {/* Dropdown Menu */}
       {profileOpen && (

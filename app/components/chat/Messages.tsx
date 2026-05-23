@@ -6,35 +6,16 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { Conversation, Message } from "../Chat";
 import { timeAgo } from "@/app/utils/time";
+import { type BadgeInfo, getBadgeInfoFromHours } from "@/app/utils/badge";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import Image from "next/image";
 import {
-  faDownload,
   faFile,
   faPause,
   faPlay,
-  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Player from "./Player";
-
-const RANK_BORDER: Record<string, { border: string; ring: string }> = {
-  "MISSION IMPOSSIBLE": {
-    border: "border-fuchsia-400",
-    ring: "ring-fuchsia-400/25",
-  },
-  "GOD LEVEL": { border: "border-fuchsia-400", ring: "ring-fuchsia-300/25" },
-  STARLIGHT: { border: "border-sky-400", ring: "ring-sky-300/25" },
-  ELITE: { border: "border-red-400", ring: "ring-red-300/25" },
-  PRO: { border: "border-indigo-400", ring: "ring-indigo-300/25" },
-  NOVICE: { border: "border-emerald-400", ring: "ring-emerald-300/25" },
-  NEWBIE: { border: "border-lime-400", ring: "ring-lime-300/25" },
-};
-const DEFAULT_RANK_BORDER = {
-  border: "border-indigo-400",
-  ring: "ring-indigo-300/20",
-};
+import MediaViewerModal, { type MediaViewerPayload } from "./MediaViewerModal";
 
 export default function Messages({
   messages,
@@ -42,24 +23,27 @@ export default function Messages({
   conversations,
   bottomRef,
   badgesByUserId,
+  onUserProfileClick,
 }: {
   messages: Message[];
   user: User;
   conversations: Conversation[];
   bottomRef: React.RefObject<HTMLDivElement | null>;
-  badgesByUserId?: Record<string, { label: string; className: string }>;
+  badgesByUserId?: Record<string, BadgeInfo>;
+  onUserProfileClick?: (targetUserId: string, targetEmail: string) => void;
 }) {
   const [showScrollBtn, setShowScrollBtn] = useState(false);
-  const [mediaViewer, setMediaViewer] = useState<{
-    type: "image" | "video";
-    url: string;
-    filename: string;
-  } | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
+  const [mediaViewer, setMediaViewer] = useState<MediaViewerPayload | null>(
+    null,
+  );
+  const fallbackBadge = useMemo(() => getBadgeInfoFromHours(1), []);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const allMediaAttachments = useMemo(() => {
+    return messages
+      .flatMap((m) => m.attachments || [])
+      .filter((a) => a?.mimetype?.startsWith("image/") || a?.mimetype?.startsWith("video/"))
+      .reverse();
+  }, [messages]);
 
   useEffect(() => {
     const container = document.getElementById("chat-container");
@@ -73,91 +57,16 @@ export default function Messages({
     return () => container.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleDownloadMedia = async () => {
-    if (!mediaViewer) return;
-    try {
-      const res = await fetch(mediaViewer.url);
-      if (!res.ok) throw new Error(`Download failed: ${res.status}`);
-      const blob = await res.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = blobUrl;
-      link.download = mediaViewer.filename || "media";
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(blobUrl);
-    } catch (err) {
-      console.error("Media download failed:", err);
-      window.open(mediaViewer.url, "_blank", "noopener,noreferrer");
-    }
-  };
-
   return (
     <>
-      {isMounted &&
-        mediaViewer &&
-        createPortal(
-          <div
-            className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-sm flex items-center justify-center p-0 sm:p-4"
-            onClick={() => setMediaViewer(null)}
-          >
-            <div
-              className="w-screen h-[100dvh] sm:w-full sm:h-auto sm:max-w-5xl sm:max-h-[90vh] rounded-none sm:rounded-2xl border-0 sm:border border-white/10 bg-[#0d0d18]/95 shadow-2xl overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div
-                className={`${
-                  mediaViewer.type === "video"
-                    ? "h-[100dvh] sm:h-[90vh] p-0 bg-black"
-                    : "h-[100dvh] sm:h-[90vh] p-0 bg-black/30"
-                } flex items-center justify-center`}
-              >
-                {mediaViewer.type === "image" ? (
-                  <div className="relative h-full w-full flex items-center justify-center">
-                    <Image
-                      src={mediaViewer.url}
-                      alt={mediaViewer.filename}
-                      className="h-full w-full object-contain"
-                      fill
-                    />
-                    <div className="absolute top-3 right-3 z-30 flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={handleDownloadMedia}
-                        className="w-8 h-8 rounded-md text-white/90 hover:text-white transition"
-                        aria-label="Download media"
-                      >
-                        <FontAwesomeIcon icon={faDownload} className="w-3 h-3" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setMediaViewer(null)}
-                        className="w-8 h-8 rounded-md text-white/90 hover:text-white transition"
-                        aria-label="Close viewer"
-                      >
-                        <FontAwesomeIcon icon={faXmark} className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <Player
-                    src={mediaViewer.url}
-                    autoPlay={true}
-                    immersive={true}
-                    className="w-full h-full"
-                    onDownload={handleDownloadMedia}
-                    onClose={() => setMediaViewer(null)}
-                  />
-                )}
-              </div>
-            </div>
-          </div>,
-          document.body,
-        )}
+      <MediaViewerModal
+        viewer={mediaViewer}
+        attachments={allMediaAttachments}
+        onChange={setMediaViewer}
+      />
 
       <div
-        className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-3 space-y-1"
+        className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-3 space-y-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/30"
         id="chat-container"
       >
         {showScrollBtn && (
@@ -173,7 +82,7 @@ export default function Messages({
 
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center pt-16">
-            <div className="text-3xl mb-3">💬</div>
+              <div className="text-3xl mb-3">💬</div>
             <p className="text-gray-500 text-sm">No messages yet. Say hello!</p>
           </div>
         )}
@@ -189,14 +98,14 @@ export default function Messages({
 
           const senderInitial = senderRow?.email?.[0]?.toUpperCase() ?? "?";
           const senderName = senderRow?.email?.split("@")?.[0] ?? "";
+          const canOpenPrivateChat =
+            !isSelf &&
+            conversationRow?.type === "global" &&
+            !!senderRow?.email;
 
-          const badge = badgesByUserId?.[msg.sender_id];
-          const badgeLabel = badge?.label ?? "NEWBIE";
-          const rankBorder = RANK_BORDER[badgeLabel] ?? DEFAULT_RANK_BORDER;
-
-          const badgePillClass =
-            badge?.className ??
-            `bg-white/[0.03] text-gray-300 ring-1 ${rankBorder.border} ${rankBorder.ring}`;
+          const badgeInfo = badgesByUserId?.[msg.sender_id] ?? fallbackBadge;
+          const badgeLabel = badgeInfo.label;
+          const badgePillClass = badgeInfo.className;
 
           // long msg? nudge avatar up, ez.
           const text = msg.text ?? "";
@@ -230,7 +139,24 @@ export default function Messages({
             >
               {!isSelf && (
                 <div
-                  className={`flex-shrink-0 ${avatarTranslateClass} w-8 h-8 rounded-full bg-neutral-700 border border-white/10 flex items-center justify-center aspect-square overflow-hidden`}
+                  role={canOpenPrivateChat ? "button" : undefined}
+                  tabIndex={canOpenPrivateChat ? 0 : undefined}
+                  onClick={() => {
+                    if (!canOpenPrivateChat || !senderRow?.email) return;
+                    onUserProfileClick?.(msg.sender_id, senderRow.email);
+                  }}
+                  onKeyDown={(event) => {
+                    if (!canOpenPrivateChat || !senderRow?.email) return;
+                    if (event.key !== "Enter" && event.key !== " ") return;
+                    event.preventDefault();
+                    onUserProfileClick?.(msg.sender_id, senderRow.email);
+                  }}
+                  title={canOpenPrivateChat ? "Start private chat" : undefined}
+                  className={`flex-shrink-0 ${avatarTranslateClass} w-8 h-8 rounded-full bg-neutral-700 border border-white/10 flex items-center justify-center aspect-square overflow-hidden ${
+                    canOpenPrivateChat
+                      ? "cursor-pointer hover:border-indigo-400/60 hover:bg-neutral-700/80"
+                      : ""
+                  }`}
                 >
                   <span className="text-xs font-semibold leading-none text-gray-200">
                     {senderInitial}
@@ -249,16 +175,28 @@ export default function Messages({
                       {timeAgo(msg.created_at)}
                     </span>
                   )}
+                {canOpenPrivateChat && senderRow?.email ? (
+                  <button
+                    type="button"
+                    onClick={() => onUserProfileClick?.(msg.sender_id, senderRow.email as string)}
+                    className="text-[12px] font-semibold leading-none text-gray-200 hover:text-indigo-300 transition"
+                    title="Start private chat"
+                  >
+                    {senderName}
+                  </button>
+                ) : (
+                  <span
+                    className={`text-[12px] font-semibold leading-none ${
+                      isSelf ? "text-indigo-300" : "text-gray-200"
+                    }`}
+                  >
+                    {senderName}
+                  </span>
+                )}
                 <span
-                  className={`text-[12px] font-semibold leading-none ${
-                    isSelf ? "text-indigo-300" : "text-gray-200"
-                  }`}
+                  className={`badge-base shrink-0 !text-[9px] !py-0.5 !px-2 ${badgePillClass}`}
                 >
-                  {senderName}
-                </span>
-                <span
-                  className={`text-[9px] px-1.5 py-0.5 rounded-full border leading-none ${badgePillClass}`}
-                >
+                  {badgeInfo.icon && <FontAwesomeIcon icon={badgeInfo.icon} className="w-2.5 h-2.5" />}
                   {badgeLabel}
                 </span>
                   {!isSelf && (
@@ -270,13 +208,13 @@ export default function Messages({
 
                 {msg.text && (
                   <div
-                    className={`px-3 py-2 rounded-2xl text-sm leading-relaxed border break-words break-all overflow-x-hidden ${
+                    className={`px-5 py-3 text-[14px] leading-relaxed break-words break-all overflow-x-hidden ${
                       isSelf
-                        ? "bg-indigo-500/15 border-indigo-400/25 text-gray-100"
-                        : "bg-neutral-800/60 border-white/8 text-gray-100"
+                        ? "bg-indigo-600 border border-indigo-500/50 text-white rounded-2xl rounded-br-sm shadow-sm"
+                        : "bg-[rgba(15,15,40,0.6)] border border-indigo-500/15 text-gray-200 rounded-2xl rounded-bl-sm"
                     }`}
                   >
-                    <div className="prose prose-invert prose-sm max-w-none break-words break-all whitespace-pre-wrap">
+                    <div className="prose prose-invert prose-sm max-w-none break-words break-all whitespace-pre-wrap leading-[1.6]">
                       <ReactMarkdown
                         components={{
                           code({ className, children, ...props }) {
@@ -784,3 +722,4 @@ function AudioAttachmentPlayer({
     </div>
   );
 }
+

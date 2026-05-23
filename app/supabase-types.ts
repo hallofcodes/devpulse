@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -10,26 +10,32 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.4"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
       conversation_participants: {
         Row: {
           conversation_id: string
-          email: string | null
+          email: string
+          last_read_at: string
+          last_seen_at: string
           type: string
           user_id: string
         }
         Insert: {
           conversation_id: string
-          email?: string | null
+          email: string
+          last_read_at?: string
+          last_seen_at?: string
           type?: string
           user_id: string
         }
         Update: {
           conversation_id?: string
-          email?: string | null
+          email?: string
+          last_read_at?: string
+          last_seen_at?: string
           type?: string
           user_id?: string
         }
@@ -45,17 +51,17 @@ export type Database = {
       }
       conversations: {
         Row: {
-          created_at: string
+          created_at: string | null
           id: string
           type: string
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           id?: string
           type?: string
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           id?: string
           type?: string
         }
@@ -98,7 +104,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
-          is_public: boolean | null
+          is_public: boolean
           join_code: string
           name: string
           owner_id: string
@@ -108,7 +114,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
-          is_public?: boolean | null
+          is_public?: boolean
           join_code: string
           name: string
           owner_id: string
@@ -118,7 +124,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
-          is_public?: boolean | null
+          is_public?: boolean
           join_code?: string
           name?: string
           owner_id?: string
@@ -185,10 +191,61 @@ export type Database = {
         }
         Relationships: []
       }
+      user_dashboard_snapshots: {
+        Row: {
+          active_days_7d: number
+          best_streak: number
+          consistency_percent: number
+          created_at: string
+          current_streak: number
+          id: number
+          peak_day: string | null
+          peak_day_seconds: number
+          snapshot_date: string
+          top_language: string | null
+          top_language_percent: number | null
+          total_seconds_7d: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active_days_7d?: number
+          best_streak?: number
+          consistency_percent?: number
+          created_at?: string
+          current_streak?: number
+          id?: number
+          peak_day?: string | null
+          peak_day_seconds?: number
+          snapshot_date: string
+          top_language?: string | null
+          top_language_percent?: number | null
+          total_seconds_7d?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active_days_7d?: number
+          best_streak?: number
+          consistency_percent?: number
+          created_at?: string
+          current_streak?: number
+          id?: number
+          peak_day?: string | null
+          peak_day_seconds?: number
+          snapshot_date?: string
+          top_language?: string | null
+          top_language_percent?: number | null
+          total_seconds_7d?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_flexes: {
         Row: {
           created_at: string
-          expires_at: string | null
+          expires_at: string
           id: string
           is_open_source: boolean
           open_source_url: string
@@ -197,11 +254,11 @@ export type Database = {
           project_time: string
           project_url: string
           user_email: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string
-          expires_at?: string | null
+          expires_at?: string
           id?: string
           is_open_source?: boolean
           open_source_url?: string
@@ -210,11 +267,11 @@ export type Database = {
           project_time: string
           project_url: string
           user_email: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string
-          expires_at?: string | null
+          expires_at?: string
           id?: string
           is_open_source?: boolean
           open_source_url?: string
@@ -223,24 +280,24 @@ export type Database = {
           project_time?: string
           project_url?: string
           user_email?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
       user_projects: {
         Row: {
           last_fetched_at: string
-          projects: Json
+          projects: Json | null
           user_id: string
         }
         Insert: {
           last_fetched_at?: string
-          projects: Json
+          projects?: Json | null
           user_id: string
         }
         Update: {
           last_fetched_at?: string
-          projects?: Json
+          projects?: Json | null
           user_id?: string
         }
         Relationships: []
@@ -267,11 +324,11 @@ export type Database = {
           daily_stats?: Json
           dependencies?: Json
           editors?: Json
-          languages: Json
+          languages?: Json
           last_fetched_at?: string
           machines?: Json
           operating_systems?: Json
-          total_seconds: number
+          total_seconds?: number
           user_id: string
         }
         Update: {
@@ -328,6 +385,10 @@ export type Database = {
       flex_project: {
         Args: { p_project: Json; p_user_id: string }
         Returns: string
+      }
+      is_conversation_member: {
+        Args: { target_conversation_id: string; target_user_id: string }
+        Returns: boolean
       }
     }
     Enums: {

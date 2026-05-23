@@ -1,9 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState, createContext, useContext } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  createContext,
+  useContext,
+} from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { createClient } from "@/app/lib/supabase/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChartLine,
@@ -19,10 +27,21 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
-const SidebarContext = createContext({
+const supabase = createClient();
+
+type SidebarContextValue = {
+  collapsed: boolean;
+  mobileHidden: boolean;
+  setMobileHidden: (value: boolean) => void;
+  isMobile: boolean;
+};
+
+const noopSetMobileHidden: SidebarContextValue["setMobileHidden"] = () => {};
+
+const SidebarContext = createContext<SidebarContextValue>({
   collapsed: false,
   mobileHidden: false,
-  setMobileHidden: (_value: boolean) => {},
+  setMobileHidden: noopSetMobileHidden,
   isMobile: false,
 });
 
@@ -30,6 +49,9 @@ function Sidebar({ role }: { role: string }) {
   const pathname = usePathname();
   const { collapsed, mobileHidden, setMobileHidden, isMobile } =
     useContext(SidebarContext);
+  const [chatUnreadCount, setChatUnreadCount] = useState(0);
+  const conversationIdsRef = useRef<Set<string>>(new Set());
+  const userIdRef = useRef<string | null>(null);
 
   const navItems: {
     href: string;
@@ -77,6 +99,174 @@ function Sidebar({ role }: { role: string }) {
     return true;
   };
 
+  const refreshChatUnreadCount = useCallback(async (userId: string) => {
+    const { data: participants } = await supabase
+      .from("conversation_participants")
+      .select("conversation_id, last_read_at")
+      .eq("user_id", userId);
+
+    if (!participants || participants.length === 0) {
+      conversationIdsRef.current = new Set();
+      setChatUnreadCount(0);
+      return;
+    }
+
+    const participantRows = participants as Array<{
+      conversation_id: string;
+      last_read_at: string | null;
+    }>;
+
+    conversationIdsRef.current = new Set(
+      participantRows.map((participant) => participant.conversation_id),
+    );
+
+    const unreadCounts = await Promise.all(
+      participantRows.map(async (participant) => {
+        let query = supabase
+          .from("messages")
+          .select("id", { count: "exact", head: true })
+          .eq("conversation_id", participant.conversation_id)
+          .neq("sender_id", userId);
+
+        if (participant.last_read_at) {
+          query = query.gt("created_at", participant.last_read_at);
+        }
+
+        const { count } = await query;
+        return count ?? 0;
+      }),
+    );
+
+    const totalUnread = unreadCounts.reduce((sum, count) => sum + count, 0);
+    setChatUnreadCount(totalUnread);
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const setupRealtime = async () => {
+      const { data } = await supabase.auth.getUser();
+      const userId = data.user?.id;
+
+      if (!userId) {
+        if (isMounted) {
+          setChatUnreadCount(0);
+        }
+        return;
+      }
+
+      if (!isMounted) {
+        return;
+      }
+
+      userIdRef.current = userId;
+      await refreshChatUnreadCount(userId);
+
+      const channel = supabase
+        .channel(`sidebar-chat-unread-${userId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "messages",
+          },
+          (payload) => {
+            const row = payload.new as {
+              conversation_id: string;
+              sender_id: string;
+            };
+
+            if (!conversationIdsRef.current.has(row.conversation_id)) return;
+            if (row.sender_id === userId) return;
+
+            void refreshChatUnreadCount(userId);
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "conversation_participants",
+            filter: `user_id=eq.${userId}`,
+          },
+          () => {
+            void refreshChatUnreadCount(userId);
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "conversation_participants",
+            filter: `user_id=eq.${userId}`,
+          },
+          () => {
+            void refreshChatUnreadCount(userId);
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "conversation_participants",
+            filter: `user_id=eq.${userId}`,
+          },
+          () => {
+            void refreshChatUnreadCount(userId);
+          },
+        )
+        .subscribe();
+
+      const intervalId = window.setInterval(() => {
+        if (userIdRef.current) {
+          void refreshChatUnreadCount(userIdRef.current);
+        }
+      }, 45_000);
+
+      const handleVisibility = () => {
+        if (document.visibilityState === "visible" && userIdRef.current) {
+          void refreshChatUnreadCount(userIdRef.current);
+        }
+      };
+
+      document.addEventListener("visibilitychange", handleVisibility);
+
+      const cleanup = () => {
+        window.clearInterval(intervalId);
+        document.removeEventListener("visibilitychange", handleVisibility);
+        channel.unsubscribe();
+      };
+
+      if (!isMounted) {
+        cleanup();
+        return;
+      }
+
+      return cleanup;
+    };
+
+    let cleanupFn: (() => void) | undefined;
+
+    void setupRealtime().then((cleanup) => {
+      cleanupFn = cleanup;
+    });
+
+    return () => {
+      isMounted = false;
+      if (cleanupFn) cleanupFn();
+    };
+  }, [refreshChatUnreadCount]);
+
+  useEffect(() => {
+    if (userIdRef.current) {
+      void refreshChatUnreadCount(userIdRef.current);
+    }
+  }, [pathname, refreshChatUnreadCount]);
+
   return (
     <aside
       className={`fixed top-0 left-0 h-full z-50 flex flex-col overflow-hidden transition-[width] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
@@ -119,7 +309,7 @@ function Sidebar({ role }: { role: string }) {
               {getAuthorization(item.role, role) && (
                 <Link
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                     collapsed ? "justify-center" : ""
                   } ${
                     pathname === item.href
@@ -138,6 +328,17 @@ function Sidebar({ role }: { role: string }) {
                     }`}
                   />
                   {!collapsed && item.label}
+                  {item.href === "/dashboard/chat" && chatUnreadCount > 0 && (
+                    <span
+                      className={`bg-rose-500/90 text-white text-[10px] font-bold rounded-full min-w-[20px] h-5 px-1.5 flex items-center justify-center ${
+                        collapsed
+                          ? "absolute -top-1 -right-1"
+                          : "ml-auto"
+                      }`}
+                    >
+                      {chatUnreadCount > 99 ? "99+" : chatUnreadCount}
+                    </span>
+                  )}
                 </Link>
               )}
             </div>
@@ -157,7 +358,7 @@ export default function DashboardLayout({
   role: string;
   children: React.ReactNode;
 }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [mobileHidden, setMobileHidden] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -196,7 +397,7 @@ export default function DashboardLayout({
         setCollapsed(true);
         setMobileHidden(true);
       } else {
-        setCollapsed(false);
+        setCollapsed(true);
         setMobileHidden(false);
       }
     };

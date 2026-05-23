@@ -6,12 +6,17 @@ import { Database } from "../supabase-types";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faClock,
   faCode,
+  faEllipsis,
   faExternalLink,
+  faPencil,
   faPlus,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { timeAgo } from "../utils/time";
+import { useBadWords } from "@/app/hooks/useBadWords";
+import { hasBlocklistedWord } from "@/app/utils/moderation";
+import { toast } from "react-toastify";
 
 const supabase = createClient();
 
@@ -25,6 +30,20 @@ export interface Projects {
   open_source_url?: string;
 }
 
+type UserFlexRow = Database["public"]["Tables"]["user_flexes"]["Row"];
+
+function toEditableFlex(row: UserFlexRow): Projects {
+  return {
+    name: row.project_name ?? "",
+    text: row.project_time ?? "",
+    project_description: row.project_description ?? "",
+    project_url: row.project_url ?? "",
+    project_time: row.project_time ?? "",
+    is_open_source: row.is_open_source ?? false,
+    open_source_url: row.open_source_url ?? "",
+  };
+}
+
 export default function Flex({ user }: { user: User }) {
   const [loading, setLoading] = useState(false);
   const [flexes, setFlexes] = useState<Projects[]>([]);
@@ -32,33 +51,90 @@ export default function Flex({ user }: { user: User }) {
   const [userFlexes, setUserFlexes] = useState<
     Database["public"]["Tables"]["user_flexes"]["Row"][]
   >([]);
+  const [editingFlexId, setEditingFlexId] = useState<string | null>(null);
+  const [activeMenuFlexId, setActiveMenuFlexId] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [search, setSearch] = useState("");
+  const { badWords } = useBadWords();
+
+  useEffect(() => {
+    const handleDocumentClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.closest("[data-flex-menu]")) {
+        return;
+      }
+
+      setActiveMenuFlexId(null);
+    };
+
+    document.addEventListener("click", handleDocumentClick);
+    return () => {
+      document.removeEventListener("click", handleDocumentClick);
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!flex) return;
 
-    const { data, error } = await supabase
-      .from("user_flexes")
-      .insert({
-        user_id: user.id,
-        user_email: user.email!,
-        project_name: flex.name,
-        project_description: flex.project_description,
-        project_url: flex.project_url,
-        project_time: flex.text,
-        is_open_source: flex.is_open_source,
-        open_source_url: flex.open_source_url,
-      })
-      .select()
-      .single();
+    const normalizedProjectName = flex.name.trim();
+    const normalizedProjectDescription = (flex.project_description || "").trim();
+
+    if (!normalizedProjectName) {
+      toast.error("Project name cannot be empty.");
+      return;
+    }
+
+    const containsBadWords =
+      hasBlocklistedWord(normalizedProjectName, badWords) ||
+      hasBlocklistedWord(normalizedProjectDescription, badWords);
+
+    if (containsBadWords) {
+      toast.error("No bad words allowed. Please remove them before submitting.");
+      return;
+    }
+
+    const payload = {
+      project_name: normalizedProjectName,
+      project_description: normalizedProjectDescription,
+      project_url: flex.project_url,
+      project_time: flex.text,
+      is_open_source: flex.is_open_source,
+      open_source_url: flex.is_open_source ? (flex.open_source_url ?? "") : "",
+    };
+
+    const { data, error } = editingFlexId
+      ? await supabase
+          .from("user_flexes")
+          .update(payload)
+          .eq("id", editingFlexId)
+          .eq("user_id", user.id)
+          .select()
+          .single()
+      : await supabase
+          .from("user_flexes")
+          .insert({
+            user_id: user.id,
+            user_email: user.email!,
+            ...payload,
+          })
+          .select()
+          .single();
 
     if (error) {
       console.error("Error submitting flex:", error);
+      toast.error("Failed to submit flex. Please try again.");
     } else {
-      setUserFlexes((prev) => [data, ...prev]);
+      setUserFlexes((prev) =>
+        editingFlexId
+          ? prev.map((existingFlex) =>
+              existingFlex.id === editingFlexId ? data : existingFlex,
+            )
+          : [data, ...prev],
+      );
       setFlex(null);
+      setEditingFlexId(null);
+      toast.success(editingFlexId ? "Flex updated!" : "Flex submitted!");
     }
   };
 
@@ -68,6 +144,28 @@ export default function Flex({ user }: { user: User }) {
 
     const diffMs = expiresAt.getTime() - now.getTime();
     return Math.max(Math.floor(diffMs / (1000 * 60 * 60)), 0) + "hr";
+  };
+
+  const handleDeleteFlex = async (flexId: string) => {
+    const { error } = await supabase
+      .from("user_flexes")
+      .delete()
+      .eq("id", flexId)
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error deleting flex:", error);
+      toast.error("Failed to delete flex. Please try again.");
+      return;
+    }
+
+    setUserFlexes((prev) => prev.filter((item) => item.id !== flexId));
+    if (editingFlexId === flexId) {
+      setFlex(null);
+      setEditingFlexId(null);
+    }
+    setActiveMenuFlexId(null);
+    toast.success("Flex deleted.");
   };
 
   useEffect(() => {
@@ -132,7 +230,10 @@ export default function Flex({ user }: { user: User }) {
 
         <div className="flex items-center gap-2 sm:gap-6 shrink-0">
           <button
-            onClick={() => setShowModal(true)}
+            onClick={() => {
+              setEditingFlexId(null);
+              setShowModal(true);
+            }}
             className="btn-secondary px-4 py-2 text-sm flex items-center gap-2 whitespace-nowrap transition-colors rounded-xl"
           >
             <FontAwesomeIcon icon={faPlus} className="w-3.5 h-3.5" />
@@ -157,7 +258,7 @@ export default function Flex({ user }: { user: User }) {
               <input
                 type="text"
                 value={flex.name || ""}
-                disabled
+                onChange={(e) => setFlex({ ...flex, name: e.target.value })}
                 className="w-full mt-4 px-3 py-2 bg-transparent text-gray-100 placeholder:text-gray-500 border border-neutral-800 rounded-xl outline-none"
               />
 
@@ -207,7 +308,11 @@ export default function Flex({ user }: { user: User }) {
 
               <div className="flex justify-end mt-4">
                 <button
-                  onClick={() => setFlex(null)}
+                  type="button"
+                  onClick={() => {
+                    setFlex(null);
+                    setEditingFlexId(null);
+                  }}
                   className="mt-4 btn-secondary px-4 py-2 text-sm rounded-xl me-2"
                 >
                   Cancel
@@ -216,7 +321,7 @@ export default function Flex({ user }: { user: User }) {
                   type="submit"
                   className="mt-4 btn-primary px-4 py-2 text-sm rounded-xl"
                 >
-                  Submit Flex
+                  {editingFlexId ? "Save Flex" : "Submit Flex"}
                 </button>
               </div>
             </form>
@@ -238,13 +343,58 @@ export default function Flex({ user }: { user: User }) {
             <div key={f.id} className="glass-card p-4 flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold">{f.project_name}</h3>
-                <span className="text-sm">
-                  <FontAwesomeIcon
-                    icon={faClock}
-                    className="w-3 h-3 text-gray-400 me-1"
-                  />
-                  {f.project_time}
-                </span>
+                <div className="flex flex-col items-end">
+                  <div className="relative" data-flex-menu>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setActiveMenuFlexId((prev) =>
+                          prev === f.id ? null : f.id,
+                        )
+                      }
+                      className="p-1 -m-1 text-gray-500 hover:text-gray-300 transition-colors leading-none"
+                      title="Flex actions"
+                      aria-label="Open flex actions"
+                      aria-haspopup="menu"
+                      aria-expanded={activeMenuFlexId === f.id}
+                    >
+                      <FontAwesomeIcon icon={faEllipsis} className="w-3.5 h-3.5" />
+                    </button>
+
+                    {activeMenuFlexId === f.id && (
+                      <div
+                        role="menu"
+                        className="absolute right-0 mt-1 w-24 rounded-lg border border-white/10 bg-[#0F0F23]/95 backdrop-blur-xl shadow-xl py-1 z-20"
+                      >
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            setEditingFlexId(f.id);
+                            setFlex(toEditableFlex(f));
+                            setActiveMenuFlexId(null);
+                          }}
+                          className="w-full text-left px-3 py-1.5 text-xs text-gray-300 hover:bg-white/10 flex items-center gap-2"
+                        >
+                          <FontAwesomeIcon icon={faPencil} className="w-3 h-3" />
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => void handleDeleteFlex(f.id)}
+                          className="w-full text-left px-3 py-1.5 text-xs text-red-300 hover:bg-red-500/10 flex items-center gap-2"
+                        >
+                          <FontAwesomeIcon icon={faTrash} className="w-3 h-3" />
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <span className="mt-1 text-sm text-gray-300 leading-none">
+                    {f.project_time}
+                  </span>
+                </div>
               </div>
               <p className="text-sm text-gray-400">{f.project_description}</p>
               <a
@@ -305,7 +455,8 @@ export default function Flex({ user }: { user: User }) {
                   <div
                     key={idx}
                     onClick={() => {
-                      setFlex(u);
+                      setEditingFlexId(null);
+                      setFlex({ ...u, open_source_url: u.open_source_url || "" });
                       setShowModal(false);
                     }}
                     className="flex items-center gap-3 p-2 rounded hover:bg-neutral-800 cursor-pointer"

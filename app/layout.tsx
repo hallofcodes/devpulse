@@ -99,7 +99,7 @@ export default function RootLayout({
   const isProduction = env === "production";
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta
           name="google-site-verification"
@@ -110,6 +110,7 @@ export default function RootLayout({
         <NortonSafeweb />
       </head>
       <body
+        suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NextTopLoader showSpinner={false} />

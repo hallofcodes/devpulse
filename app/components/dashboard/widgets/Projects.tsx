@@ -1,7 +1,13 @@
 import { formatHours } from "@/app/utils/time";
 import { StatsData } from "../Stats";
 
-export default function Projects({ stats }: { stats: StatsData }) {
+export default function Projects({
+  stats,
+  animated,
+}: {
+  stats: StatsData;
+  animated: boolean;
+}) {
   const totalProjectSeconds = (stats.projects || []).reduce(
     (acc, curr) => acc + curr.total_seconds,
     0
@@ -36,8 +42,8 @@ export default function Projects({ stats }: { stats: StatsData }) {
                     </div>
                     <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-indigo-500 rounded-full transition-all duration-1000 ease-out"
-                        style={{ width: `${percent}%` }}
+                        className="h-full bg-indigo-500 rounded-full transition-all duration-[2000ms] ease-in-out"
+                        style={{ width: animated ? `${percent}%` : "0%" }}
                       />
                     </div>
                   </div>

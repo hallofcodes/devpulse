@@ -62,17 +62,27 @@ export default function ResetPassword({ user }: { user: User }) {
 
   return (
     <>
-      <form onSubmit={handleResetPassword} className="glass-card p-6">
-        <h3 className="text-xs font-semibold text-indigo-400 uppercase tracking-widest mb-5">
-          Reset Password
+      <form
+        onSubmit={handleResetPassword}
+        className="glass-card p-5 border-t-4 border-violet-500/40"
+      >
+        <h3 className="text-xs font-semibold text-violet-300 uppercase tracking-widest mb-4">
+          Security
         </h3>
 
-        <p className="text-gray-400 mb-4 text-sm">
-          You will receive an email with instructions to reset your password.
-        </p>
+        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3.5 mb-3.5">
+          <p className="text-sm text-white font-semibold mb-0.5">Reset Password</p>
+          <p className="text-xs md:text-sm text-gray-400">
+            Send a secure reset link to <span className="text-gray-300">{email}</span>.
+          </p>
+        </div>
 
-        <button type="submit" disabled={loading} className="btn-primary">
-          Send Reset Email
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn-primary !px-4 !py-2 text-sm leading-none"
+        >
+          {loading ? "Preparing..." : "Send Reset Link"}
         </button>
       </form>
 

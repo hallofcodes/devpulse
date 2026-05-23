@@ -11,6 +11,13 @@ import TopLeaderboard, {
 import ContributeCard from "./components/landing-page/ContributeCard";
 import VibeCoders from "./components/landing-page/VibeCoders";
 import Nav from "./components/layout/Nav";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBolt,
+  faLock,
+  faStar,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -128,13 +135,10 @@ export default async function Home() {
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-colors text-xs font-semibold uppercase tracking-widest mb-8 group"
               data-aos="fade-right"
             >
-              <svg
+              <FontAwesomeIcon
+                icon={faStar}
                 className="w-4 h-4 text-yellow-400 group-hover:scale-110 transition-transform"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-              </svg>
+              />
               Star on GitHub
             </a>
 
@@ -311,61 +315,19 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <FeatureCard
-              icon={
-                <svg
-                  className="w-6 h-6 text-indigo-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                  />
-                </svg>
-              }
+              icon={<FontAwesomeIcon icon={faLock} className="w-6 h-6 text-indigo-400" />}
               title="Private & Public Boards"
               description="Create private boards for your engineering team or open public leaderboards to compete with the entire community."
               delay="0"
             />
             <FeatureCard
-              icon={
-                <svg
-                  className="w-6 h-6 text-purple-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              }
+              icon={<FontAwesomeIcon icon={faBolt} className="w-6 h-6 text-purple-400" />}
               title="Real-Time Integrations"
               description="Sync your WakaTime data automatically via custom proxy APIs. No manual entry, just pure coding time."
               delay="100"
             />
             <FeatureCard
-              icon={
-                <svg
-                  className="w-6 h-6 text-blue-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                </svg>
-              }
+              icon={<FontAwesomeIcon icon={faUsers} className="w-6 h-6 text-blue-400" />}
               title="Team Collaboration"
               description="Invite teammates, compare daily averages, dissect language usage, and foster a healthy culture of productivity."
               delay="200"

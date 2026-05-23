@@ -2,6 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import LoginForm from "@/app/components/auth/LoginForm";
 import { Metadata } from "next";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 
 export const metadata: Metadata = {
   title: "Login - Devpulse",
@@ -63,7 +65,15 @@ export default async function Login(props: {
       : undefined;
 
   return (
-    <div className="min-h-screen flex bg-[#0a0a1a] text-white">
+    <div className="min-h-screen flex bg-[#0a0a1a] text-white relative">
+      <Link
+        href="/"
+        className="absolute top-5 left-5 sm:top-6 sm:left-6 z-40 inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+      >
+        <FontAwesomeIcon icon={faChevronLeft} className="w-4 h-4" />
+        Back
+      </Link>
+
       {/* Left Side - Visual / Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 md:p-16 xl:p-24 border-r border-white/5 bg-gradient-to-br from-[#0a0a1a] to-[#0a0a1a] overflow-hidden">
         {/* Background elements */}

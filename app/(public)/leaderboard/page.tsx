@@ -5,6 +5,8 @@ import CTA from "@/app/components/layout/CTA";
 import Image from "next/image";
 import { Metadata } from "next";
 import { getUserWithProfile } from "@/app/lib/supabase/help/user";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 export const metadata: Metadata = {
   title: "Leaderboards - Devpulse",
@@ -109,19 +111,7 @@ export default async function Leaderboards() {
                 </div>
                 <span className="text-gray-500 text-sm group-hover:text-indigo-400 transition flex items-center gap-2">
                   View{" "}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                    />
-                  </svg>
+                  <FontAwesomeIcon icon={faArrowRight} className="w-4 h-4" />
                 </span>
               </a>
             ),

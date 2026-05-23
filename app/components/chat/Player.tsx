@@ -80,6 +80,23 @@ export default function Player({
   const [settingsArrowX, setSettingsArrowX] = useState<number | null>(null);
   const hintTimeoutRef = useRef<number | null>(null);
 
+  const hideHint = () => {
+    if (hintTimeoutRef.current !== null) {
+      window.clearTimeout(hintTimeoutRef.current);
+      hintTimeoutRef.current = null;
+    }
+    setActiveHint(null);
+    setHintPos(null);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (hintTimeoutRef.current !== null) {
+        window.clearTimeout(hintTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const progress = useMemo(() => {
     if (!duration) return 0;
     return Math.min(100, (currentTime / duration) * 100);
@@ -149,7 +166,24 @@ export default function Player({
     if (isSeeking) return;
     const id = setTimeout(() => setShowUi(false), 1800);
     return () => clearTimeout(id);
-  }, [playing, showUi, currentTime, isSeeking]);
+  }, [playing, showUi, isSeeking]);
+
+  useEffect(() => {
+    if (!isSeeking) return;
+
+    const stopSeeking = () => setIsSeeking(false);
+    window.addEventListener("mouseup", stopSeeking);
+    window.addEventListener("touchend", stopSeeking);
+    window.addEventListener("pointerup", stopSeeking);
+    window.addEventListener("pointercancel", stopSeeking);
+
+    return () => {
+      window.removeEventListener("mouseup", stopSeeking);
+      window.removeEventListener("touchend", stopSeeking);
+      window.removeEventListener("pointerup", stopSeeking);
+      window.removeEventListener("pointercancel", stopSeeking);
+    };
+  }, [isSeeking]);
 
   useEffect(() => {
     const showUiFunction = () => {
@@ -189,11 +223,6 @@ export default function Player({
     return { menuCenterX, arrowX };
   };
 
-  const hideHint = () => {
-    if (hintTimeoutRef.current) window.clearTimeout(hintTimeoutRef.current);
-    setActiveHint(null);
-    setHintPos(null);
-  };
 
   useLayoutEffect(() => {
     if (!showSettings) return;
@@ -391,9 +420,15 @@ export default function Player({
         below: placement === "below",
       });
     }
-    if (hintTimeoutRef.current) window.clearTimeout(hintTimeoutRef.current);
+    if (hintTimeoutRef.current !== null) {
+      window.clearTimeout(hintTimeoutRef.current);
+    }
     setActiveHint(label);
-    hintTimeoutRef.current = window.setTimeout(() => setActiveHint(null), 1200);
+    hintTimeoutRef.current = window.setTimeout(() => {
+      setActiveHint(null);
+      setHintPos(null);
+      hintTimeoutRef.current = null;
+    }, 1200);
   };
 
   const getVolumeHintLabel = () => {
@@ -420,7 +455,7 @@ export default function Player({
       maxWidth: "1100px",
       maxHeight: "78vh",
     };
-  }, [videoRatio]);
+  }, [immersive, videoRatio]);
 
   return (
     <div

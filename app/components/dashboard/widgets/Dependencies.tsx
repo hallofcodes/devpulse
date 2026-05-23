@@ -3,7 +3,13 @@ import { StatsData } from "../Stats";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBoxOpen } from "@fortawesome/free-solid-svg-icons";
 
-export default function Dependencies({ stats }: { stats: StatsData }) {
+export default function Dependencies({
+  stats,
+  animated,
+}: {
+  stats: StatsData;
+  animated: boolean;
+}) {
   const dependenciesList = stats.dependencies || [];
 
   return (
@@ -33,8 +39,8 @@ export default function Dependencies({ stats }: { stats: StatsData }) {
               </div>
               <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-cyan-500 rounded-full transition-all duration-1000 ease-out"
-                  style={{ width: `${dep.percent}%` }}
+                  className="h-full bg-cyan-500 rounded-full transition-all duration-[2000ms] ease-in-out"
+                  style={{ width: animated ? `${dep.percent}%` : "0%" }}
                 />
               </div>
             </div>

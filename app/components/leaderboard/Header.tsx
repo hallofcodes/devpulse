@@ -11,6 +11,9 @@ import { Database } from "@/app/supabase-types";
 import Banner from "./Banner";
 import BackButton from "./BackButton";
 import InviteFriendsButton from "./InviteFriendsButton";
+import { useBadWords } from "@/app/hooks/useBadWords";
+import { sanitizeTextWithBlocklist } from "@/app/utils/moderation";
+import { toKebabSlug } from "@/app/utils/slug";
 
 type LeaderboardRow = Database["public"]["Tables"]["leaderboards"]["Row"];
 
@@ -25,20 +28,29 @@ export default function LeaderboardHeader({
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(leaderboard.name);
   const [description, setDescription] = useState(leaderboard.description || "");
+  const { badWords } = useBadWords();
 
   const handleEdit = async () => {
+    const sanitizedName = sanitizeTextWithBlocklist(name, badWords, "[redacted]");
+    const sanitizedDescription = sanitizeTextWithBlocklist(
+      description,
+      badWords,
+      "[redacted]",
+    );
+
     const editLeaderboard: Promise<LeaderboardRow> = new Promise(
       async (resolve, reject) => {
         try {
           const supabase = await createClient();
-          const slug = name
-            .toLowerCase()
-            .replace(/\s+/g, "-")
-            .replace(/[^\w-]+/g, "");
+          const slug = toKebabSlug(sanitizedName, "leaderboard");
 
           const { data, error } = await supabase
             .from("leaderboards")
-            .update({ name, slug, description })
+            .update({
+              name: sanitizedName,
+              slug,
+              description: sanitizedDescription,
+            })
             .eq("id", leaderboard.id)
             .select()
             .single();

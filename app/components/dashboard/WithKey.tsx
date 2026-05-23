@@ -4,7 +4,15 @@ import { useState } from "react";
 import { createClient } from "../../lib/supabase/client";
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faUsers, faTimes } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faShareNodes,
+  faTimes,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
+import { useBadWords } from "@/app/hooks/useBadWords";
+import { sanitizeTextWithBlocklist } from "@/app/utils/moderation";
+import { toKebabSlug } from "@/app/utils/slug";
 
 type ModalState = "create" | "join" | "share" | null;
 
@@ -15,6 +23,7 @@ export default function DashboardWithKey() {
   const [activeModal, setActiveModal] = useState<ModalState>(null);
   const [createdCode, setCreatedCode] = useState("");
   const [copied, setCopied] = useState<"code" | "url" | null>(null);
+  const { badWords } = useBadWords();
 
   const createLeaderboard = async () => {
     if (leaderboardName.trim().length === 0)
@@ -24,6 +33,16 @@ export default function DashboardWithKey() {
     if (leaderboardName.length > 50)
       return toast.error("Leaderboard name must be under 50 characters.");      
 
+    const sanitizedLeaderboardName = sanitizeTextWithBlocklist(
+      leaderboardName.trim(),
+      badWords,
+      "[redacted]",
+    );
+
+    if (sanitizedLeaderboardName.length === 0) {
+      return toast.error("Please enter a leaderboard name.");
+    }
+
     const createLeaderboard = new Promise<{ join_code: string }>(async (resolve, reject) => {
       try {
         const { data: userData } = await supabase.auth.getUser();
@@ -32,15 +51,12 @@ export default function DashboardWithKey() {
         if (!user) return;
 
         const joinCode = crypto.randomUUID().slice(0, 8);
-        const slug = leaderboardName
-          .toLowerCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^\w-]+/g, "");
+        const slug = toKebabSlug(sanitizedLeaderboardName, "leaderboard");
 
         const { data, error } = await supabase
           .from("leaderboards")
           .insert({
-            name: leaderboardName,
+            name: sanitizedLeaderboardName,
             description: "",
             slug,
             owner_id: user.id,
@@ -168,9 +184,7 @@ export default function DashboardWithKey() {
                 <div className="flex items-start justify-between p-6 pb-4 border-b border-white/5 relative z-10">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                      </svg>
+                      <FontAwesomeIcon icon={faShareNodes} className="w-5 h-5" />
                     </div>
                     <div className="flex flex-col">
                       <h3 className="text-lg font-bold text-white tracking-tight">
