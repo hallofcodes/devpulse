@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!leaderboard) {
     return {
-      title: "Invite Not Found - DevPulse",
+      title: "Invite Not Found - Devpulse",
       description: "This invite link is invalid or has expired.",
     };
   }
@@ -31,16 +31,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description =
     leaderboard?.description && leaderboard.description.length > 0
       ? leaderboard.description
-      : `Join the ${leaderboard.name} leaderboard on DevPulse and compete with other developers. Track your coding activity and climb the ranks!`;
+      : `Join the ${leaderboard.name} leaderboard on Devpulse and compete with other developers. Track your coding activity and climb the ranks!`;
 
   return {
-    title: `${title} - DevPulse`,
+    title: `${title} - Devpulse`,
     description,
     openGraph: {
       title,
       description,
       type: "website",
-      siteName: "DevPulse",
+      siteName: "Devpulse",
       url: `/join?id=${encodeURIComponent(code)}`,
     },
     twitter: {

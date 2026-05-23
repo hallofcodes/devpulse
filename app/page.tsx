@@ -95,17 +95,17 @@ export default async function Home() {
     ],
     subOrganization: {
       "@type": "Organization",
-      name: "DevPulse",
-      url: "https://devpulse-waka.vercel.app",
-      logo: "https://devpulse-waka.vercel.app/favicon.png",
+      name: "Devpulse",
+      url: "https://devpulse.hallofcodes.org",
+      logo: "https://devpulse.hallofcodes.org/favicon.png",
     },
   };
 
   const webSite = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "DevPulse - Measure Your Coding Pulse",
-    url: "https://devpulse-waka.vercel.app",
+    name: "Devpulse - Measure Your Coding Pulse",
+    url: "https://devpulse.hallofcodes.org",
     inLanguage: "en",
   };
 
@@ -308,7 +308,7 @@ export default async function Home() {
               data-aos="fade-up"
               data-aos-delay="100"
             >
-              DevPulse integrates seamlessly with your tools to provide
+              Devpulse integrates seamlessly with your tools to provide
               accurate, transparent metrics.
             </p>
           </div>

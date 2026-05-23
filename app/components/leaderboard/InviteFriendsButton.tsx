@@ -12,8 +12,8 @@ export default function InviteFriendsButton({ joinCode, leaderboardName }: { joi
         : window.location.href; // fallback
 
       const message = leaderboardName
-        ? `Join my coding leaderboard "${leaderboardName}" on DevPulse!\n\nTrack metrics, compete with fellow developers, and showcase your engineering skills.\n\nJoin here: ${inviteUrl}`
-        : `Join my coding leaderboard on DevPulse!\n\nJoin here: ${inviteUrl}`;
+        ? `Join my coding leaderboard "${leaderboardName}" on Devpulse!\n\nTrack metrics, compete with fellow developers, and showcase your engineering skills.\n\nJoin here: ${inviteUrl}`
+        : `Join my coding leaderboard on Devpulse!\n\nJoin here: ${inviteUrl}`;
 
       navigator.clipboard.writeText(message);
       toast.success("Invite message copied to clipboard!");

@@ -12,6 +12,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (error) return [];
 
   return data.map((leaderboard) => ({
-    url: `https://devpulse-waka.vercel.app/leaderboard/${leaderboard.slug}`,
+    url: `https://devpulse.hallofcodes.org/leaderboard/${leaderboard.slug}`,
   }));
 }

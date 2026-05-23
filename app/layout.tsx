@@ -23,13 +23,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const h = await headers();
 
   return {
-    metadataBase: new URL("https://devpulse-waka.vercel.app"),
+    metadataBase: new URL("https://devpulse.hallofcodes.org"),
     title:
-      "DevPulse - Monitor Your Coding Activity and Compete on Leaderboards",
+      "Devpulse - Monitor Your Coding Activity and Compete on Leaderboards",
     description:
-      "DevPulse is a platform that tracks your coding activity and allows you to compete with other developers on leaderboards. Sign up now to start monitoring your coding habits and see how you stack up against the competition!",
+      "Devpulse is a platform that tracks your coding activity and allows you to compete with other developers on leaderboards. Sign up now to start monitoring your coding habits and see how you stack up against the competition!",
     keywords: [
-      "DevPulse",
+      "Devpulse",
       "coding activity tracker",
       "developer leaderboards",
       "WakaTime integration",
@@ -41,24 +41,24 @@ export async function generateMetadata(): Promise<Metadata> {
       "productivity insights",
     ],
     alternates: {
-      canonical: `https://devpulse-waka.vercel.app${h.get("x-pathname")}`,
+      canonical: `https://devpulse.hallofcodes.org${h.get("x-pathname")}`,
       types: {
-        "application/xml": "https://devpulse-waka.vercel.app/sitemap.xml",
+        "application/xml": "https://devpulse.hallofcodes.org/sitemap.xml",
       },
     },
     openGraph: {
       title:
-        "DevPulse - Monitor Your Coding Activity and Compete on Leaderboards",
+        "Devpulse - Monitor Your Coding Activity and Compete on Leaderboards",
       description:
-        "DevPulse is a platform that tracks your coding activity and allows you to compete with other developers on leaderboards. Sign up now to start monitoring your coding habits and see how you stack up against the competition!",
-      url: `https://devpulse-waka.vercel.app${h.get("x-pathname")}`,
-      siteName: "DevPulse",
+        "Devpulse is a platform that tracks your coding activity and allows you to compete with other developers on leaderboards. Sign up now to start monitoring your coding habits and see how you stack up against the competition!",
+      url: `https://devpulse.hallofcodes.org${h.get("x-pathname")}`,
+      siteName: "Devpulse",
       images: [
         {
-          url: "https://devpulse-waka.vercel.app/images/devpulse.cover.png",
+          url: "https://devpulse.hallofcodes.org/images/devpulse.cover.png",
           width: 1200,
           height: 630,
-          alt: "DevPulse Cover Image",
+          alt: "Devpulse Cover Image",
         },
       ],
       locale: "en_US",
@@ -67,13 +67,13 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: "summary_large_image",
       title:
-        "DevPulse - Monitor Your Coding Activity and Compete on Leaderboards",
+        "Devpulse - Monitor Your Coding Activity and Compete on Leaderboards",
       description:
-        "DevPulse is a platform that tracks your coding activity and allows you to compete with other developers on leaderboards. Sign up now to start monitoring your coding habits and see how you stack up against the competition!",
+        "Devpulse is a platform that tracks your coding activity and allows you to compete with other developers on leaderboards. Sign up now to start monitoring your coding habits and see how you stack up against the competition!",
       images: [
         {
-          url: "https://devpulse-waka.vercel.app/images/devpulse.cover.png",
-          alt: "DevPulse Cover Image",
+          url: "https://devpulse.hallofcodes.org/images/devpulse.cover.png",
+          alt: "Devpulse Cover Image",
         },
       ],
     },
@@ -106,7 +106,7 @@ export default function RootLayout({
           content="9BoujBl0viqXOwAOwv8uJM-JkJo7gDrt_f1ID9NabRI"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="hostname" content="devpulse-waka.vercel.app" />
+        <meta name="hostname" content="devpulse.hallofcodes.org" />
         <NortonSafeweb />
       </head>
       <body

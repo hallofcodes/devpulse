@@ -5,7 +5,7 @@ import { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Leaderboards - DevPulse",
+  title: "Leaderboards - Devpulse",
 };
 
 export default async function LeaderboardsPage() {

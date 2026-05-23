@@ -7,6 +7,15 @@ const HEADLESS_PATTERNS = [
   "Puppeteer",
   "Playwright",
   "Chrome-Lighthouse",
+  "Selenium",
+  "WebKitTestRunner",
+  "HeadlessFirefox",
+  "HeadlessSafari",
+  "HeadlessEdge",
+  "HeadlessOpera",
+  "HeadlessBrowser",
+  "curl",
+  "wget",
 ] as const;
 
 // block bots, pass through real browsers

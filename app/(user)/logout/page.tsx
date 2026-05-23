@@ -2,7 +2,7 @@ import LogoutForm from "@/app/components/auth/Logout";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Logout - DevPulse",
+  title: "Logout - Devpulse",
 };
 
 export default async function Logout() {

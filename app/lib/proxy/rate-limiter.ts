@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { checkRateLimit } from "../rate-limit";
+import { checkRateLimit } from "../../utils/rate-limit";
 
 export default function RateLimiter(
   request: NextRequest,
@@ -15,7 +15,7 @@ export default function RateLimiter(
   const allowedOrigins =
     process.env.NODE_ENV === "development"
       ? [/^http:\/\/localhost:\d+$/, /^http:\/\/127\.0\.0\.1:\d+$/]
-      : [/^https?:\/\/devpulse-waka\.vercel\.app(:\d+)?$/];
+      : [/^https?:\/\/devpulse\.hallofcodes\.org(:\d+)?$/];
 
   const isOriginAllowed =
     !origin || allowedOrigins.some((pattern) => pattern.test(origin));

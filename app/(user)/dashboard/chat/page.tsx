@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Chat - DevPulse",
+  title: "Chat - Devpulse",
 };
 
 export default async function ChatPage() {

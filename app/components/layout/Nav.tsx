@@ -14,8 +14,8 @@ export default async function Nav() {
           className="flex items-center gap-3 hover:opacity-80 transition"
           data-aos="fade-down"
         >
-          <Image src="/logo.svg" alt="DevPulse Logo" width={36} height={36} />
-          <span className="text-xl font-bold tracking-tight">DevPulse</span>
+          <Image src="/logo.svg" alt="Devpulse Logo" width={36} height={36} />
+          <span className="text-xl font-bold tracking-tight">Devpulse</span>
         </Link>
 
         {user ? (

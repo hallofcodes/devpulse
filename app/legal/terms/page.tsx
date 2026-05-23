@@ -3,9 +3,9 @@ import Nav from "@/app/components/layout/Nav";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service - DevPulse",
+  title: "Terms of Service - Devpulse",
   description:
-    "Read our Terms of Service to understand the rules and guidelines for using DevPulse.",
+    "Read our Terms of Service to understand the rules and guidelines for using Devpulse.",
 };
 
 export default function Terms() {
@@ -20,9 +20,9 @@ export default function Terms() {
 
         <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10">
           These Terms of Service (&quot;Terms&quot;) govern your use of{" "}
-          <strong>DevPulse</strong>
+          <strong>Devpulse</strong>
           (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) available at{" "}
-          <strong>devpulse-waka.vercel.app</strong>. By using this service, you
+          <strong>devpulse.hallofcodes.org</strong>. By using this service, you
           agree to these Terms.
         </p>
 
@@ -30,7 +30,7 @@ export default function Terms() {
           1. Use of the Service
         </h2>
         <p className="mb-4">
-          DevPulse provides tools to visualize and analyze your coding activity
+          Devpulse provides tools to visualize and analyze your coding activity
           using third-party integrations such as WakaTime and GitHub. You agree
           to use the service only for lawful purposes and in compliance with all
           applicable laws.
@@ -51,7 +51,7 @@ export default function Terms() {
           3. Third-Party Services
         </h2>
         <p className="mb-2">
-          DevPulse relies on third-party services, including:
+          Devpulse relies on third-party services, including:
         </p>
         <ul className="list-disc ml-6 mb-4">
           <li>Vercel (hosting)</li>
@@ -100,7 +100,7 @@ export default function Terms() {
           7. Limitation of Liability
         </h2>
         <p className="mb-4">
-          DevPulse is provided &quot;as is&quot; without warranties of any kind.
+          Devpulse is provided &quot;as is&quot; without warranties of any kind.
           We are not liable for any damages, including loss of data, arising
           from your use of the service.
         </p>
