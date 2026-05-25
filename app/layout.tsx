@@ -1,13 +1,12 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import AOSWrapper from "./components/AOSWrapper";
 import DevToolsDetector from "./components/DevToolsDetector";
 import NextTopLoader from "nextjs-toploader";
-import { headers } from "next/headers";
 import NortonSafeweb from "./components/common/metadata/NortonSafeweb";
 import BrowserCheck from "./components/BrowserCheck";
+import { Metadata } from "next/types";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,6 +17,8 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+export const revalidate = 43200; // 12 hours (in seconds)
 
 export async function generateMetadata(): Promise<Metadata> {
   return {

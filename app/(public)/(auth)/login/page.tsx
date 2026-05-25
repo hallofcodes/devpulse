@@ -1,9 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import LoginForm from "@/app/components/auth/LoginForm";
-import { Metadata } from "next";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { Metadata } from "next/types";
 
 export const metadata: Metadata = {
   title: "Login - Devpulse",

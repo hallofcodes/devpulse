@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import { Metadata } from "next/types";
 import { createClient } from "../../lib/supabase/server";
 import JoinButton from "../../components/JoinButton";
 import Footer from "@/app/components/layout/Footer";

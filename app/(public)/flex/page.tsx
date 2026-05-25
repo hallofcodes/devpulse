@@ -1,12 +1,12 @@
 import { createClient } from "../../lib/supabase/server";
 import Footer from "@/app/components/layout/Footer";
-import CTA from "@/app/components/layout/CTA";
+import CTA from "@/app/components/common/ui/CTA";
 import BackButton from "@/app/components/leaderboard/BackButton";
 import Image from "next/image";
 import { timeAgo } from "@/app/utils/time";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLink } from "@fortawesome/free-solid-svg-icons";
-import { Metadata } from "next";
+import { Metadata } from "next/types";
 
 export const metadata: Metadata = {
   title: "Flexes - Devpulse",

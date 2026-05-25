@@ -1,6 +1,6 @@
 import Image from "next/image";
 import UpdatePasswordForm from "@/app/components/auth/UpdatePasswordForm";
-import { Metadata } from "next";
+import { Metadata } from "next/types";
 import Footer from "@/app/components/layout/Footer";
 
 export const metadata: Metadata = {

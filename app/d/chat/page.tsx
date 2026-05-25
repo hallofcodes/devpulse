@@ -1,6 +1,6 @@
 import Chat from "@/app/components/Chat";
 import { getUserWithProfile } from "@/app/lib/supabase/help/user";
-import { Metadata } from "next";
+import { Metadata } from "next/types";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {

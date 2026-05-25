@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import { Metadata } from "next/types";
 import UserProfile from "@/app/components/dashboard/Settings/Profile";
 import ResetPassword from "@/app/components/dashboard/Settings/ResetPassword";
 import WakaTimeKey from "@/app/components/dashboard/Settings/WakaTimeKey";

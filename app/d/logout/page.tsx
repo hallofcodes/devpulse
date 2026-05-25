@@ -1,5 +1,5 @@
 import LogoutForm from "@/app/components/auth/Logout";
-import { Metadata } from "next";
+import { Metadata } from "next/types";
 
 export const metadata: Metadata = {
   title: "Logout - Devpulse",

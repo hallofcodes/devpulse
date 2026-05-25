@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import DashboardWithoutKey from "../components/dashboard/WithoutKey";
 import Stats from "@/app/components/dashboard/Stats";
-import { Metadata } from "next";
+import { Metadata } from "next/types";
 import { getUserWithProfile } from "@/app/lib/supabase/help/user";
 
 export const metadata: Metadata = {
