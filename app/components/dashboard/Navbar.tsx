@@ -15,6 +15,7 @@ import {
   faEdit,
   faCodeBranch,
   faBars,
+  faProjectDiagram,
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import NavProfileDropdown from "../common/NavProfileDropdown";
@@ -29,35 +30,42 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
-    href: "/dashboard/admin",
+    href: "/d/admin",
     label: "Dashboard",
     icon: faDashboard,
     role: "admin",
     category: "admin",
   },
   {
-    href: "/dashboard",
+    href: "/d",
     label: "Dashboard",
     icon: faChartLine,
     role: "user",
     category: "dev",
   },
   {
-    href: "/dashboard/chat",
+    href: "/d/chat",
     label: "Chat",
     icon: faMessage,
     role: "user",
     category: "dev",
   },
   {
-    href: "/dashboard/flex",
+    href: "/d/kanban",
+    label: "Kanban",
+    icon: faProjectDiagram,
+    role: "user",
+    category: "dev",
+  },
+  {
+    href: "/d/flex",
     label: "Flex",
     icon: faCrown,
     role: "user",
     category: "dev",
   },
   {
-    href: "/dashboard/leaderboards",
+    href: "/d/leaderboards",
     label: "Leaderboards",
     icon: faTrophy,
     role: "user",

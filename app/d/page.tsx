@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import DashboardWithoutKey from "../../components/dashboard/WithoutKey";
+import DashboardWithoutKey from "../components/dashboard/WithoutKey";
 import Stats from "@/app/components/dashboard/Stats";
 import { Metadata } from "next";
 import { getUserWithProfile } from "@/app/lib/supabase/help/user";

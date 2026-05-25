@@ -129,7 +129,7 @@ export default async function Home() {
           {/* Left text */}
           <div className="w-full lg:w-1/2 text-center lg:text-left z-10">
             <a
-              href="https://github.com/mrepol742/devpulse"
+              href="https://github.com/hallofcodes/devpulse"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-colors text-xs font-semibold uppercase tracking-widest mb-8 group"
@@ -315,19 +315,34 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <FeatureCard
-              icon={<FontAwesomeIcon icon={faLock} className="w-6 h-6 text-indigo-400" />}
+              icon={
+                <FontAwesomeIcon
+                  icon={faLock}
+                  className="w-6 h-6 text-indigo-400"
+                />
+              }
               title="Private & Public Boards"
               description="Create private boards for your engineering team or open public leaderboards to compete with the entire community."
               delay="0"
             />
             <FeatureCard
-              icon={<FontAwesomeIcon icon={faBolt} className="w-6 h-6 text-purple-400" />}
+              icon={
+                <FontAwesomeIcon
+                  icon={faBolt}
+                  className="w-6 h-6 text-purple-400"
+                />
+              }
               title="Real-Time Integrations"
               description="Sync your WakaTime data automatically via custom proxy APIs. No manual entry, just pure coding time."
               delay="100"
             />
             <FeatureCard
-              icon={<FontAwesomeIcon icon={faUsers} className="w-6 h-6 text-blue-400" />}
+              icon={
+                <FontAwesomeIcon
+                  icon={faUsers}
+                  className="w-6 h-6 text-blue-400"
+                />
+              }
               title="Team Collaboration"
               description="Invite teammates, compare daily averages, dissect language usage, and foster a healthy culture of productivity."
               delay="200"

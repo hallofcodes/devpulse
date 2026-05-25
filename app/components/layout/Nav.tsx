@@ -28,6 +28,7 @@ export default async function Nav() {
             }
             name={user.user_metadata?.name || user.email!.split("@")[0]}
             email={user.email!}
+            type="navbar"
           />
         ) : (
           <div

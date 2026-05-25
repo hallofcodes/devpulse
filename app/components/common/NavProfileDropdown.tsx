@@ -2,10 +2,10 @@
 
 import {
   faArrowRightFromBracket,
-  faChevronDown,
   faDashboard,
   faGear,
   faMessage,
+  faProjectDiagram,
   faRankingStar,
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
@@ -72,7 +72,7 @@ export default function NavProfileDropdown({
       </div>
 
       <Link
-        href="/logout"
+        href="/d/logout"
         className={`${type === "sidebar" ? "flex" : "hidden"} items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors mt-1 rounded`}
         onClick={() => setProfileOpen(false)}
       >
@@ -92,7 +92,7 @@ export default function NavProfileDropdown({
           {showDashboardLink && (
             <>
               <Link
-                href="/dashboard"
+                href="/d"
                 className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/[0.03] transition-colors"
                 onClick={() => setProfileOpen(false)}
               >
@@ -100,15 +100,23 @@ export default function NavProfileDropdown({
                 Dashboard
               </Link>
               <Link
-                href="/dashboard/leaderboards"
+                href="/d/chat"
                 className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/[0.03] transition-colors"
                 onClick={() => setProfileOpen(false)}
               >
-                <FontAwesomeIcon icon={faRankingStar} className="w-4 h-4" />
-                Leaderboards
+                <FontAwesomeIcon icon={faMessage} className="w-4 h-4" />
+                Chat
               </Link>
               <Link
-                href="/dashboard/flex"
+                href="/d/kanban"
+                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/[0.03] transition-colors"
+                onClick={() => setProfileOpen(false)}
+              >
+                <FontAwesomeIcon icon={faProjectDiagram} className="w-4 h-4" />
+                Kanban
+              </Link>
+              <Link
+                href="/d/flex"
                 className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/[0.03] transition-colors"
                 onClick={() => setProfileOpen(false)}
               >
@@ -116,17 +124,17 @@ export default function NavProfileDropdown({
                 Flex
               </Link>
               <Link
-                href="/dashboard/chat"
+                href="/d/leaderboards"
                 className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/[0.03] transition-colors"
                 onClick={() => setProfileOpen(false)}
               >
-                <FontAwesomeIcon icon={faMessage} className="w-4 h-4" />
-                Chat
+                <FontAwesomeIcon icon={faRankingStar} className="w-4 h-4" />
+                Leaderboards
               </Link>
             </>
           )}
           <Link
-            href="/dashboard/settings"
+            href="/d/settings"
             className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/[0.03] transition-colors"
             onClick={() => setProfileOpen(false)}
           >
@@ -135,7 +143,7 @@ export default function NavProfileDropdown({
           </Link>
           {type === "navbar" && (
             <Link
-              href="/logout"
+              href="/d/logout"
               className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors mt-1"
               onClick={() => setProfileOpen(false)}
             >

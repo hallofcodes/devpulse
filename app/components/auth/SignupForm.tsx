@@ -5,12 +5,7 @@ import { createClient } from "../../lib/supabase/client";
 import { toast } from "react-toastify";
 import { useSearchParams } from "next/navigation";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faGithub,
-  faGoogle,
-  faMicrosoft,
-} from "@fortawesome/free-brands-svg-icons";
+import Oauth2 from "./Oauth2";
 
 export default function AuthPage() {
   const supabase = createClient();
@@ -32,16 +27,6 @@ export default function AuthPage() {
   const handleSignup = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setShowCaptcha(true);
-  };
-
-  const handleOAuthSignUp = async (provider: "google" | "azure" | "github") => {
-    document.cookie = `devpulse_redirect=${encodeURIComponent(redirectTo)}; path=/; max-age=600; samesite=lax`;
-    await supabase.auth.signInWithOAuth({
-      provider: provider,
-      options: {
-        redirectTo: `${location.origin}/api/auth/callback`,
-      },
-    });
   };
 
   const handleCaptchaVerify = async (token: string) => {
@@ -90,15 +75,13 @@ export default function AuthPage() {
     });
   };
 
-  const handleGoogleSignUp = () => handleOAuthSignUp("google");
-  const handleMicrosoftSignUp = () => handleOAuthSignUp("azure");
-  const handleGitHubSignUp = () => handleOAuthSignUp("github");
-
   return (
     <>
       <form onSubmit={handleSignup} className="space-y-4">
         <input
           type="email"
+          name="email"
+          autoComplete="email"
           placeholder="Email"
           className="input-field"
           value={email}
@@ -108,6 +91,8 @@ export default function AuthPage() {
 
         <input
           type="password"
+          name="password"
+          autoComplete="new-password"
           placeholder="Password"
           className="input-field"
           value={password}
@@ -117,6 +102,8 @@ export default function AuthPage() {
 
         <input
           type="password"
+          name="confirmPassword"
+          autoComplete="new-password"
           placeholder="Confirm Password"
           className="input-field"
           value={confirmPassword}
@@ -140,32 +127,7 @@ export default function AuthPage() {
           <span className="text-sm text-gray-500">Or continue with</span>
         </div>
 
-        <div className="flex flex-row-321 gap-3">
-          <button
-            type="button"
-            onClick={handleGoogleSignUp}
-            className="flex items-center justify-center w-full py-3 rounded-lg bg-white border border-gray-300 hover:bg-gray-100 transition-colors shadow-sm"
-          >
-            <FontAwesomeIcon icon={faGoogle} className="h-5 w-5 mr-2 text-red-500" />
-            <span className="font-medium text-gray-700">Google</span>
-          </button>
-          <button
-            type="button"
-            onClick={handleMicrosoftSignUp}
-            className="flex items-center justify-center w-full py-3 rounded-lg bg-[#f3f3f3] border border-gray-300 hover:bg-gray-200 transition-colors shadow-sm"
-          >
-            <FontAwesomeIcon icon={faMicrosoft} className="h-5 w-5 mr-2 text-sky-600" />
-            <span className="font-medium text-gray-700">Microsoft</span>
-          </button>
-          <button
-            type="button"
-            onClick={handleGitHubSignUp}
-            className="flex items-center justify-center w-full py-3 rounded-lg bg-[#f3f3f3] border border-gray-300 hover:bg-gray-200 transition-colors shadow-sm"
-          >
-            <FontAwesomeIcon icon={faGithub} className="h-5 w-5 mr-2 text-gray-800" />
-            <span className="font-medium text-gray-700"> GitHub</span>
-          </button>
-        </div>
+        <Oauth2 supabase={supabase} redirectTo={redirectTo} />
       </form>
 
       {showCaptcha && (

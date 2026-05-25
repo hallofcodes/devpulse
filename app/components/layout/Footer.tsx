@@ -47,7 +47,9 @@ export default function Footer() {
         <div className="my-6 border-t border-white/5" />
 
         <div className="text-center text-xs text-gray-600">
-          <Link href="https://www.hallofcodes.org">Hall of Codes</Link>
+          <Link href="https://www.hallofcodes.org">
+            Made with ❤️ by Hall of Codes
+          </Link>
         </div>
       </div>
     </footer>

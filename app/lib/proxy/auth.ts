@@ -48,7 +48,7 @@ export default async function Auth(req: NextRequest) {
 
   const { pathname } = req.nextUrl;
 
-  const protectedRoutes = ["/dashboard", "/update-password", "/logout"];
+  const protectedRoutes = ["/d", "/d/update-password", "/d/logout"];
   const isProtectedRoute = protectedRoutes.some((route) => {
     const regex = new RegExp(`^${route}(/.*)?$`);
     return regex.test(pathname);
