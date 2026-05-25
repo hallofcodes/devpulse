@@ -77,15 +77,6 @@ export default function Privacy() {
           your experience.
         </p>
 
-        <h3 className="font-semibold mt-4">e. Sentry</h3>
-        <p className="mb-4">
-          We use Sentry for error monitoring. While only error-related features
-          are enabled, Sentry may still collect certain information, including
-          personally identifiable information (PII), stack traces, and request
-          data. This information is used solely to help diagnose errors and
-          improve the reliability and performance of the application.
-        </p>
-
         <h2 className="text-xl font-semibold mt-6 mb-2">
           2. How We Use Your Information
         </h2>

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default async function LeaderboardsPage() {
   const { user } = await getUserWithProfile();
-  if (!user) return redirect("/login?from=/dashboard/settings");
+  if (!user) return redirect("/login?from=/settings");
 
   return (
     <div className="p-6 md:p-8 space-y-6 max-w-5xl mx-auto">

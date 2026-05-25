@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default async function ChatPage() {
   const { user } = await getUserWithProfile();
 
-  if (!user) return redirect("/login?from=/dashboard/chat");
+  if (!user) return redirect("/login?from=/chat");
 
   return <Chat user={user} />;
 }
