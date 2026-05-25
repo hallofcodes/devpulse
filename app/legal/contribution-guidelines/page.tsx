@@ -1,6 +1,6 @@
 import Footer from "@/app/components/layout/Footer";
 import Nav from "@/app/components/layout/Nav";
-import { Metadata } from "next";
+import { Metadata } from "next/types";
 
 export const metadata: Metadata = {
   title: "Contribution Guidelines - Devpulse",

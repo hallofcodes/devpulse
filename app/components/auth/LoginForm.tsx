@@ -6,12 +6,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faGithub,
-  faGoogle,
-  faMicrosoft,
-} from "@fortawesome/free-brands-svg-icons";
+import Oauth2 from "./Oauth2";
 
 export default function LoginForm() {
   const supabase = createClient();
@@ -33,16 +28,6 @@ export default function LoginForm() {
   const handleLogin = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setShowCaptcha(true);
-  };
-
-  const handleOAuthSignIn = async (provider: "google" | "azure" | "github") => {
-    document.cookie = `devpulse_redirect=${encodeURIComponent(redirectTo)}; path=/; max-age=600; samesite=lax`;
-    await supabase.auth.signInWithOAuth({
-      provider: provider,
-      options: {
-        redirectTo: `${location.origin}/api/auth/callback`,
-      },
-    });
   };
 
   const handleCaptchaVerify = async (token: string) => {
@@ -84,15 +69,13 @@ export default function LoginForm() {
     });
   };
 
-  const handleGoogleSignIn = () => handleOAuthSignIn("google");
-  const handleMicrosoftSignIn = () => handleOAuthSignIn("azure");
-  const handleGitHubSignIn = () => handleOAuthSignIn("github");
-
   return (
     <>
       <form onSubmit={handleLogin} className="space-y-4">
         <input
           type="email"
+          name="email"
+          autoComplete="email"
           placeholder="Email"
           className="input-field"
           onChange={(e) => setEmail(e.target.value)}
@@ -101,6 +84,8 @@ export default function LoginForm() {
 
         <input
           type="password"
+          name="password"
+          autoComplete="new-password"
           placeholder="Password"
           className="input-field"
           onChange={(e) => setPassword(e.target.value)}
@@ -123,34 +108,7 @@ export default function LoginForm() {
           <span className="text-sm text-gray-500">Or continue with</span>
         </div>
 
-        <div className="flex flex-row-321 gap-3">
-          <button
-            type="button"
-            onClick={handleGoogleSignIn}
-            className="flex items-center justify-center w-full py-3 rounded-lg bg-white border border-gray-300 hover:bg-gray-100 transition-colors shadow-sm"
-          >
-            <FontAwesomeIcon icon={faGoogle} className="h-5 w-5 mr-2 text-red-500" />
-            <span className="font-medium text-gray-700">Google</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handleMicrosoftSignIn}
-            className="flex items-center justify-center w-full py-3 rounded-lg bg-[#f3f3f3] border border-gray-300 hover:bg-gray-200 transition-colors shadow-sm"
-          >
-            <FontAwesomeIcon icon={faMicrosoft} className="h-5 w-5 mr-2 text-sky-600" />
-            <span className="font-medium text-gray-700">Microsoft</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handleGitHubSignIn}
-            className="flex items-center justify-center w-full py-3 rounded-lg bg-[#f3f3f3] border border-gray-300 hover:bg-gray-200 transition-colors shadow-sm"
-          >
-            <FontAwesomeIcon icon={faGithub} className="h-5 w-5 mr-2 text-gray-800" />
-            <span className="font-medium text-gray-700"> GitHub</span>
-          </button>
-        </div>
+        <Oauth2 supabase={supabase} redirectTo={redirectTo} />
       </form>
 
       {showCaptcha && (

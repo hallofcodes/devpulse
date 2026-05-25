@@ -1,13 +1,12 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import AOSWrapper from "./components/AOSWrapper";
 import DevToolsDetector from "./components/DevToolsDetector";
 import NextTopLoader from "nextjs-toploader";
-import { headers } from "next/headers";
-import NortonSafeweb from "./components/NortonSafeweb";
+import NortonSafeweb from "./components/common/metadata/NortonSafeweb";
 import BrowserCheck from "./components/BrowserCheck";
+import { Metadata } from "next/types";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,9 +18,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const h = await headers();
+export const revalidate = 43200; // 12 hours (in seconds)
 
+export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL("https://devpulse.hallofcodes.org"),
     title:
@@ -41,7 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
       "productivity insights",
     ],
     alternates: {
-      canonical: `https://devpulse.hallofcodes.org${h.get("x-pathname")}`,
+      canonical: "https://devpulse.hallofcodes.org",
       types: {
         "application/xml": "https://devpulse.hallofcodes.org/sitemap.xml",
       },
@@ -51,7 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
         "Devpulse - Monitor Your Coding Activity and Compete on Leaderboards",
       description:
         "Devpulse is a platform that tracks your coding activity and allows you to compete with other developers on leaderboards. Sign up now to start monitoring your coding habits and see how you stack up against the competition!",
-      url: `https://devpulse.hallofcodes.org${h.get("x-pathname")}`,
+      url: "https://devpulse.hallofcodes.org",
       siteName: "Devpulse",
       images: [
         {
@@ -99,21 +98,21 @@ export default function RootLayout({
   const isProduction = env === "production";
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable}`}
+      data-scroll-behavior="smooth"
+    >
       <head>
         <meta
           name="google-site-verification"
           content="9BoujBl0viqXOwAOwv8uJM-JkJo7gDrt_f1ID9NabRI"
         />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="hostname" content="devpulse.hallofcodes.org" />
         <NortonSafeweb />
       </head>
-      <body
-        suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <NextTopLoader showSpinner={false} />
+      <body className="antialiased">
+        <NextTopLoader showSpinner={false} color="#7873f5" />
         <AOSWrapper />
         {children}
         <ToastContainer

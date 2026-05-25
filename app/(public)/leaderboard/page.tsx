@@ -1,9 +1,9 @@
 import BackButton from "@/app/components/leaderboard/BackButton";
 import { createClient } from "../../lib/supabase/server";
 import Footer from "@/app/components/layout/Footer";
-import CTA from "@/app/components/layout/CTA";
+import CTA from "@/app/components/common/ui/CTA";
 import Image from "next/image";
-import { Metadata } from "next";
+import { Metadata } from "next/types";
 import { getUserWithProfile } from "@/app/lib/supabase/help/user";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: "Leaderboards - Devpulse",
   description:
     "Explore the Devpulse leaderboards and see how you rank against other developers. Check out the top coders and get inspired to climb the ranks!",
+  alternates: {
+    canonical: "https://devpulse.hallofcodes.org/leaderboard",
+  },
   keywords: [
     "Devpulse",
     "developer leaderboards",

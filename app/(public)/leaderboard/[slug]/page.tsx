@@ -4,7 +4,7 @@ import LeaderboardTable, {
 } from "../../../components/LeaderboardTable";
 import LeaderboardHeader from "@/app/components/leaderboard/Header";
 import Footer from "@/app/components/layout/Footer";
-import CTA from "@/app/components/layout/CTA";
+import CTA from "@/app/components/common/ui/CTA";
 import { getUserWithProfile } from "@/app/lib/supabase/help/user";
 
 export default async function LeaderboardPage(props: {

@@ -12,11 +12,17 @@ export default async function Layout({
 
   const email = profile?.email || user.email!;
   const name = user?.user_metadata?.name || email.split("@")[0];
+  const prefferedAvatar =
+    user?.user_metadata?.avatar_url ||
+    user?.user_metadata?.picture ||
+    user?.user_metadata?.avatar ||
+    null;
 
   return (
     <DashboardLayout
       email={email}
       name={name}
+      avatar={prefferedAvatar}
       role={profile?.role || "user"}
     >
       {children}

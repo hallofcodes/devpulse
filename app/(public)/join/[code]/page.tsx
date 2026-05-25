@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import { Metadata } from "next/types";
 import { createClient } from "../../../lib/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -24,6 +24,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: "Invite Not Found - Devpulse",
       description: "This invite link is invalid or has expired.",
+      alternates: {
+        canonical: `https://devpulse.hallofcodes.org/join`,
+      },
     };
   }
 

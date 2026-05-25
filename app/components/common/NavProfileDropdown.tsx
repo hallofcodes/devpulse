@@ -2,10 +2,10 @@
 
 import {
   faArrowRightFromBracket,
-  faChevronDown,
   faDashboard,
   faGear,
   faMessage,
+  faProjectDiagram,
   faRankingStar,
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
@@ -15,14 +15,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-export default function ProfileDropdown({
+export default function NavProfileDropdown({
   avatar,
   name,
   email,
+  type,
 }: {
   avatar: string | null;
   name: string;
   email: string;
+  type: "navbar" | "sidebar";
 }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -44,7 +46,7 @@ export default function ProfileDropdown({
 
   return (
     <div
-      className="relative flex items-center gap-2 sm:gap-3 pl-2 sm:pl-4 cursor-pointer group"
+      className="relative flex items-center gap-2 cursor-pointer"
       ref={profileRef}
       onClick={() => setProfileOpen(!profileOpen)}
     >
@@ -61,18 +63,26 @@ export default function ProfileDropdown({
           {email.charAt(0).toUpperCase()}
         </div>
       )}
-      <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors hidden sm:block">
-        {name}
-      </span>
-      <FontAwesomeIcon
-        icon={faChevronDown}
-        className={`w-4 h-4 text-gray-500 group-hover:text-white transition-transform duration-200 hidden sm:block ${profileOpen ? "rotate-180" : ""}`}
-      />
+
+      <div
+        className={`${type === "sidebar" ? "flex-1" : "hidden"} items-center gap-2`}
+      >
+        <p className="text-sm font-semibold text-white truncate">{name}</p>
+        <p className="text-xs text-gray-500 truncate">{email}</p>
+      </div>
+
+      <Link
+        href="/d/logout"
+        className={`${type === "sidebar" ? "flex" : "hidden"} items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors mt-1 rounded`}
+        onClick={() => setProfileOpen(false)}
+      >
+        <FontAwesomeIcon icon={faArrowRightFromBracket} className="w-4 h-4" />
+      </Link>
 
       {/* Dropdown Menu */}
       {profileOpen && (
         <div
-          className="absolute right-0 top-full mt-3 w-48 rounded-xl glass-card py-2 shadow-xl border border-gray-800/60 z-[100] animate-in fade-in slide-in-from-top-2 duration-200"
+          className={`${type === "sidebar" ? "left-0 bottom-full slide-in-from-bottom-2" : "right-0 top-full slide-in-from-top-2"} absolute mt-3 w-48 rounded-xl glass-card py-2 shadow-xl border border-gray-800/60 z-[100] animate-in fade-in duration-200`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="px-4 py-2 border-b border-gray-800/60 mb-2 md:hidden">
@@ -82,7 +92,7 @@ export default function ProfileDropdown({
           {showDashboardLink && (
             <>
               <Link
-                href="/dashboard"
+                href="/d"
                 className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/[0.03] transition-colors"
                 onClick={() => setProfileOpen(false)}
               >
@@ -90,15 +100,23 @@ export default function ProfileDropdown({
                 Dashboard
               </Link>
               <Link
-                href="/dashboard/leaderboards"
+                href="/d/chat"
                 className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/[0.03] transition-colors"
                 onClick={() => setProfileOpen(false)}
               >
-                <FontAwesomeIcon icon={faRankingStar} className="w-4 h-4" />
-                Leaderboards
+                <FontAwesomeIcon icon={faMessage} className="w-4 h-4" />
+                Chat
               </Link>
               <Link
-                href="/dashboard/flex"
+                href="/d/kanban"
+                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/[0.03] transition-colors"
+                onClick={() => setProfileOpen(false)}
+              >
+                <FontAwesomeIcon icon={faProjectDiagram} className="w-4 h-4" />
+                Kanban
+              </Link>
+              <Link
+                href="/d/flex"
                 className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/[0.03] transition-colors"
                 onClick={() => setProfileOpen(false)}
               >
@@ -106,34 +124,36 @@ export default function ProfileDropdown({
                 Flex
               </Link>
               <Link
-                href="/dashboard/chat"
+                href="/d/leaderboards"
                 className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/[0.03] transition-colors"
                 onClick={() => setProfileOpen(false)}
               >
-                <FontAwesomeIcon icon={faMessage} className="w-4 h-4" />
-                Chat
+                <FontAwesomeIcon icon={faRankingStar} className="w-4 h-4" />
+                Leaderboards
               </Link>
             </>
           )}
           <Link
-            href="/dashboard/settings"
+            href="/d/settings"
             className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/[0.03] transition-colors"
             onClick={() => setProfileOpen(false)}
           >
             <FontAwesomeIcon icon={faGear} className="w-4 h-4" />
             Settings
           </Link>
-          <Link
-            href="/logout"
-            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors mt-1"
-            onClick={() => setProfileOpen(false)}
-          >
-            <FontAwesomeIcon
-              icon={faArrowRightFromBracket}
-              className="w-4 h-4"
-            />
-            Logout
-          </Link>
+          {type === "navbar" && (
+            <Link
+              href="/d/logout"
+              className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors mt-1"
+              onClick={() => setProfileOpen(false)}
+            >
+              <FontAwesomeIcon
+                icon={faArrowRightFromBracket}
+                className="w-4 h-4"
+              />
+              Logout
+            </Link>
+          )}
         </div>
       )}
     </div>

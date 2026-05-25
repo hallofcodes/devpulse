@@ -1,6 +1,6 @@
 import Dashboard from "@/app/components/admin/Dashbord";
 import { getUserWithProfile } from "@/app/lib/supabase/help/user";
-import { Metadata } from "next";
+import { Metadata } from "next/types";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {

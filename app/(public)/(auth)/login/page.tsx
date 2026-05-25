@@ -1,19 +1,33 @@
 import Link from "next/link";
 import Image from "next/image";
-import SignupForm from "@/app/components/auth/SignupForm";
-import { Metadata } from "next";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import LoginForm from "@/app/components/auth/LoginForm";
+import { Metadata } from "next/types";
 
 export const metadata: Metadata = {
-  title: "Sign Up - Devpulse",
+  title: "Login - Devpulse",
   description:
-    "Create a Devpulse account to monitor your coding activity and compete on leaderboards.",
+    "Log in to your Devpulse account to monitor your coding activity and compete on leaderboards.",
+  keywords: [
+    "Devpulse",
+    "login",
+    "coding activity tracker",
+    "developer leaderboards",
+    "WakaTime integration",
+    "coding stats",
+    "programming habits",
+    "developer competition",
+    "flex your projects",
+    "coding streaks",
+    "productivity insights",
+  ],
+  alternates: {
+    canonical: "https://devpulse.hallofcodes.org/login",
+  },
   openGraph: {
-    title: "Sign Up - Devpulse",
+    title: "Login - Devpulse",
     description:
-      "Create a Devpulse account to monitor your coding activity and compete on leaderboards.",
-    url: "https://devpulse.hallofcodes.org/signup",
+      "Log in to your Devpulse account to monitor your coding activity and compete on leaderboards.",
+    url: "https://devpulse.hallofcodes.org/login",
     siteName: "Devpulse",
     images: [
       {
@@ -28,9 +42,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sign Up - Devpulse",
+    title: "Login - Devpulse",
     description:
-      "Create a Devpulse account to monitor your coding activity and compete on leaderboards.",
+      "Log in to your Devpulse account to monitor your coding activity and compete on leaderboards.",
     images: [
       {
         url: "https://devpulse.hallofcodes.org/images/devpulse.cover.png",
@@ -40,7 +54,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function Signup(props: {
+export default async function Login(props: {
   searchParams?: Promise<{ redirect?: string }>;
 }) {
   const redirectParam = (await props.searchParams)?.redirect;
@@ -53,14 +67,6 @@ export default async function Signup(props: {
 
   return (
     <div className="min-h-screen flex bg-[#0a0a1a] text-white relative">
-      <Link
-        href="/"
-        className="absolute top-5 left-5 sm:top-6 sm:left-6 z-40 inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
-      >
-        <FontAwesomeIcon icon={faChevronLeft} className="w-4 h-4" />
-        Back
-      </Link>
-
       {/* Left Side - Visual / Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 md:p-16 xl:p-24 border-r border-white/5 bg-gradient-to-br from-[#0a0a1a] to-[#0a0a1a] overflow-hidden">
         {/* Background elements */}
@@ -80,11 +86,11 @@ export default async function Signup(props: {
 
         <div className="relative z-10 max-w-md">
           <h1 className="text-4xl font-extrabold mb-5 leading-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-            Start measuring your coding pulse.
+            Welcome back to your dashboard.
           </h1>
           <p className="text-gray-400 text-lg leading-relaxed mb-8">
-            Join thousands of developers tracking their progress, competing on
-            leaderboards, and leveling up their skills.
+            Access your personalized coding metrics, compare your stats, and
+            keep your productivity streak alive.
           </p>
 
           <div className="glass-card border border-white/5 rounded-2xl p-5 bg-white/5 backdrop-blur-md shadow-2xl">
@@ -93,29 +99,29 @@ export default async function Signup(props: {
               <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
               <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
               <span className="ml-2 text-xs font-mono text-gray-500">
-                setup.ts
+                devpulse-auth.ts
               </span>
             </div>
             <div className="space-y-1.5 font-mono text-sm">
               <div className="flex">
-                <span className="text-purple-400 mr-2">const</span>
-                <span className="text-blue-400">dev</span>
-                <span className="text-gray-200 mx-2">=</span>
-                <span className="text-indigo-400 mr-2">new</span>
-                <span className="text-yellow-200">Developer</span>
-                <span className="text-gray-200">();</span>
+                <span className="text-indigo-400 mr-2">import</span>
+                <span className="text-gray-200">{"{ Metrics }"}</span>
+                <span className="text-indigo-400 mx-2">from</span>
+                <span className="text-green-400">
+                  &apos;@devpulse/core&apos;
+                </span>
+                <span className="text-gray-400">;</span>
               </div>
               <div className="flex mt-2">
-                <span className="text-blue-400">dev</span>
+                <span className="text-purple-400 mr-2">await</span>
+                <span className="text-blue-400">Metrics</span>
                 <span className="text-gray-200">.</span>
-                <span className="text-yellow-200">connect</span>
-                <span className="text-gray-200">(</span>
-                <span className="text-green-400">&apos;wakatime&apos;</span>
-                <span className="text-gray-200">);</span>
+                <span className="text-yellow-200">syncToday</span>
+                <span className="text-gray-200">();</span>
               </div>
               <div className="flex mt-3">
                 <span className="text-emerald-400/80">
-                  {"// Your journey begins here. 🚀"}
+                  {"// Connection established. Ready to track. ⚡"}
                 </span>
               </div>
             </div>
@@ -132,33 +138,34 @@ export default async function Signup(props: {
         <div className="absolute inset-0 grid-bg opacity-20 lg:hidden" />
 
         <div className="w-full max-w-sm relative z-10">
-          <div className="lg:hidden flex items-center justify-center gap-3 mb-10">
+          <Link
+            href="/"
+            className="lg:hidden flex items-center justify-center gap-3 mb-10"
+          >
             <Image src="/logo.svg" alt="Devpulse Logo" width={40} height={40} />
             <h2 className="text-3xl font-bold text-white">Devpulse</h2>
-          </div>
+          </Link>
 
           <div className="mb-8 text-left">
-            <h2 className="text-3xl font-bold text-white mb-2">
-              Create an account
-            </h2>
+            <h2 className="text-3xl font-bold text-white mb-2">Log in</h2>
             <p className="text-gray-400">
-              Start tracking your coding stats today.
+              Enter your credentials to access your account.
             </p>
           </div>
 
-          <SignupForm />
+          <LoginForm />
 
           <p className="mt-8 text-center text-sm text-gray-400">
-            Already have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               href={
                 redirectTo
-                  ? `/login?redirect=${encodeURIComponent(redirectTo)}`
-                  : "/login"
+                  ? `/signup?redirect=${encodeURIComponent(redirectTo)}`
+                  : "/signup"
               }
               className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors underline-offset-4 hover:underline"
             >
-              Log in
+              Sign up
             </Link>
           </p>
         </div>
