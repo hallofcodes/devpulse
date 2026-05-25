@@ -24,6 +24,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: "Invite Not Found - Devpulse",
       description: "This invite link is invalid or has expired.",
+      alternates: {
+        canonical: `https://devpulse.hallofcodes.org/join`,
+      },
     };
   }
 

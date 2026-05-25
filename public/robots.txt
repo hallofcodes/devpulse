@@ -1,0 +1,11 @@
+# hello my dear crawlers
+
+User-Agent: *
+Allow: /
+Disallow: /api
+Allow: /leaderboard$
+Disallow: /leaderboard/
+Allow: /join$
+Disallow: /join/
+
+Sitemap: https://www.hallofcodes.org/sitemap.xml

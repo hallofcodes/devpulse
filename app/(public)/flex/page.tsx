@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: "Flexes - Devpulse",
   description:
     "Flex your coding projects and share your achievements with the Devpulse community. See what others are working on and get inspired!",
+  alternates: {
+    canonical: "https://devpulse.hallofcodes.org/flex",
+  },
   keywords: [
     "Devpulse",
     "coding flexes",

@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: "Leaderboards - Devpulse",
   description:
     "Explore the Devpulse leaderboards and see how you rank against other developers. Check out the top coders and get inspired to climb the ranks!",
+  alternates: {
+    canonical: "https://devpulse.hallofcodes.org/leaderboard",
+  },
   keywords: [
     "Devpulse",
     "developer leaderboards",

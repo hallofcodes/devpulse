@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { createClient } from "../../lib/supabase/server";
-import JoinButton from "./[code]/JoinButton";
+import JoinButton from "../../components/JoinButton";
 import Footer from "@/app/components/layout/Footer";
 import Image from "next/image";
 import Link from "next/link";
@@ -45,6 +45,9 @@ export async function generateMetadata({
     return {
       title: "Join - Devpulse",
       description: "Open an invite link to join a Devpulse leaderboard.",
+      alternates: {
+        canonical: "https://devpulse.hallofcodes.org/join",
+      },
     };
   }
 
@@ -53,6 +56,9 @@ export async function generateMetadata({
     return {
       title: "Invite Not Found - Devpulse",
       description: "This invite link is invalid or has expired.",
+      alternates: {
+        canonical: "https://devpulse.hallofcodes.org/join",
+      },
     };
   }
 
@@ -65,6 +71,9 @@ export async function generateMetadata({
   return {
     title: `${title} - Devpulse`,
     description,
+    alternates: {
+      canonical: `https://devpulse.hallofcodes.org/join?id=${encodeURIComponent(code)}`,
+    },
     openGraph: {
       title,
       description,
@@ -184,7 +193,10 @@ export default async function JoinPage({ searchParams }: Props) {
 
           <div className="flex items-center justify-center gap-6 mt-6 mb-8">
             <div className="flex items-center gap-2 text-gray-400 text-sm">
-              <FontAwesomeIcon icon={faUsers} className="w-4 h-4 text-indigo-400" />
+              <FontAwesomeIcon
+                icon={faUsers}
+                className="w-4 h-4 text-indigo-400"
+              />
               <span>
                 {memberCount} {memberCount === 1 ? "member" : "members"}
               </span>

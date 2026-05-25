@@ -5,7 +5,6 @@ export default async function Auth(req: NextRequest) {
   const response = NextResponse.next({
     request: { headers: req.headers },
   });
-  response.headers.set("x-pathname", req.nextUrl.pathname);
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

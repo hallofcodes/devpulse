@@ -10,7 +10,6 @@ export async function proxy(req: NextRequest) {
   const response = NextResponse.next({
     request: { headers: req.headers },
   });
-  response.headers.set("x-pathname", req.nextUrl.pathname);
 
   const headlessResponse = headlessBrowserCheck(req);
   if (headlessResponse) return headlessResponse;

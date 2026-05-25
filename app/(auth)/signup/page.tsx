@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: "Sign Up - Devpulse",
   description:
     "Create a Devpulse account to monitor your coding activity and compete on leaderboards.",
+  alternates: {
+    canonical: "https://devpulse.hallofcodes.org/signup",
+  },
   openGraph: {
     title: "Sign Up - Devpulse",
     description:

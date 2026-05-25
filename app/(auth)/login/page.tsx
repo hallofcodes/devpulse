@@ -22,6 +22,9 @@ export const metadata: Metadata = {
     "coding streaks",
     "productivity insights",
   ],
+  alternates: {
+    canonical: "https://devpulse.hallofcodes.org/login",
+  },
   openGraph: {
     title: "Login - Devpulse",
     description:

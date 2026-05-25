@@ -20,8 +20,6 @@ const geistMono = Geist_Mono({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const h = await headers();
-
   return {
     metadataBase: new URL("https://devpulse.hallofcodes.org"),
     title:
@@ -41,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
       "productivity insights",
     ],
     alternates: {
-      canonical: `https://devpulse.hallofcodes.org${h.get("x-pathname")}`,
+      canonical: "https://devpulse.hallofcodes.org",
       types: {
         "application/xml": "https://devpulse.hallofcodes.org/sitemap.xml",
       },
@@ -51,7 +49,7 @@ export async function generateMetadata(): Promise<Metadata> {
         "Devpulse - Monitor Your Coding Activity and Compete on Leaderboards",
       description:
         "Devpulse is a platform that tracks your coding activity and allows you to compete with other developers on leaderboards. Sign up now to start monitoring your coding habits and see how you stack up against the competition!",
-      url: `https://devpulse.hallofcodes.org${h.get("x-pathname")}`,
+      url: "https://devpulse.hallofcodes.org",
       siteName: "Devpulse",
       images: [
         {
