@@ -16,7 +16,6 @@ import Machines from "./widgets/Machines";
 import Categories from "./widgets/Categories";
 import Dependencies from "./widgets/Dependencies";
 import CodingConsistencyHeatmap from "./widgets/CodingConsistencyHeatmap";
-import NavProfileDropdown from "../common/NavProfileDropdown";
 
 export interface StatsData {
   total_seconds: number;
@@ -33,17 +32,7 @@ export interface StatsData {
   last_fetched_at?: string;
 }
 
-interface StatsProps {
-  name?: string;
-  email?: string;
-  avatar: string | null;
-}
-
-export default function Stats({
-  name = "User",
-  email = "user@example.com",
-  avatar = null,
-}: StatsProps) {
+export default function Stats() {
   const toDateKey = (value: string) => value.slice(0, 10);
   const parseDateKeyLocal = (dateKey: string) => {
     const [y, m, d] = dateKey.split("-").map(Number);
@@ -120,8 +109,12 @@ export default function Stats({
   );
 
   useEffect(() => {
-    // Always fetch fresh data on first load so refresh reflects live values.
-    void fetchStats(true);
+    // Defer to avoid synchronous setState inside effect.
+    const timeout = window.setTimeout(() => {
+      void fetchStats(true);
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
   }, [fetchStats]);
 
   useEffect(() => {

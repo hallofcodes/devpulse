@@ -15,14 +15,5 @@ export default async function Dashboard() {
   if (!profile?.wakatime_api_key) {
     return <DashboardWithoutKey email={profile?.email || user.email!} />;
   }
-
-  const email = profile?.email || user.email!;
-  const name = user?.user_metadata?.name || email.split("@")[0];
-  const prefferedAvatar =
-    user?.user_metadata?.avatar_url ||
-    user?.user_metadata?.picture ||
-    user?.user_metadata?.avatar ||
-    null;
-
-  return <Stats name={name} email={email} avatar={prefferedAvatar} />;
+  return <Stats />;
 }

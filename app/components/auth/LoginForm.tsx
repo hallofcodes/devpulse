@@ -6,12 +6,6 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faGithub,
-  faGoogle,
-  faMicrosoft,
-} from "@fortawesome/free-brands-svg-icons";
 import Oauth2 from "./Oauth2";
 
 export default function LoginForm() {
