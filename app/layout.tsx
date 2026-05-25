@@ -6,7 +6,7 @@ import AOSWrapper from "./components/AOSWrapper";
 import DevToolsDetector from "./components/DevToolsDetector";
 import NextTopLoader from "nextjs-toploader";
 import { headers } from "next/headers";
-import NortonSafeweb from "./components/NortonSafeweb";
+import NortonSafeweb from "./components/common/metadata/NortonSafeweb";
 import BrowserCheck from "./components/BrowserCheck";
 
 const geistSans = Geist({
@@ -97,21 +97,21 @@ export default function RootLayout({
   const isProduction = env === "production";
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable}`}
+      data-scroll-behavior="smooth"
+    >
       <head>
         <meta
           name="google-site-verification"
           content="9BoujBl0viqXOwAOwv8uJM-JkJo7gDrt_f1ID9NabRI"
         />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="hostname" content="devpulse.hallofcodes.org" />
         <NortonSafeweb />
       </head>
-      <body
-        suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <NextTopLoader showSpinner={false} />
+      <body className="antialiased">
+        <NextTopLoader showSpinner={false} color="#7873f5" />
         <AOSWrapper />
         {children}
         <ToastContainer

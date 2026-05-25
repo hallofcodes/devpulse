@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "./lib/supabase/server";
 import Footer from "./components/layout/Footer";
-import CTA from "./components/layout/CTA";
+import CTA from "./components/common/ui/CTA";
 import Contributors from "./components/landing-page/Contributors";
 import LosserMembers from "./components/landing-page/LosserMembers";
 import RecentLeaderboard from "./components/landing-page/RecentLeaderboard";

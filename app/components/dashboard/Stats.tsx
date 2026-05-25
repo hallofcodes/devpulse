@@ -16,7 +16,7 @@ import Machines from "./widgets/Machines";
 import Categories from "./widgets/Categories";
 import Dependencies from "./widgets/Dependencies";
 import CodingConsistencyHeatmap from "./widgets/CodingConsistencyHeatmap";
-import ProfileDropdown from "../ProfileDropdown";
+import NavProfileDropdown from "../common/NavProfileDropdown";
 
 export interface StatsData {
   total_seconds: number;
@@ -69,52 +69,55 @@ export default function Stats({
     best_day: { date: "", total_seconds: 0 },
   });
 
-  const fetchStats = useCallback(async (force = false) => {
-    setSyncing(true);
-    setAnimated(false);
+  const fetchStats = useCallback(
+    async (force = false) => {
+      setSyncing(true);
+      setAnimated(false);
 
-    const cached = sessionStorage.getItem("wakatimeStats");
-    const cacheTime = Number(sessionStorage.getItem("wakatimeStatsTime"));
-    const now = Date.now();
-    const parsedCached = cached ? (JSON.parse(cached) as StatsData) : null;
-    const hasEnoughDailyHistory =
-      (parsedCached?.daily_stats?.length || 0) >= HEATMAP_DAYS;
-    const hasFreshCache =
-      !!cached &&
-      !!cacheTime &&
-      now - cacheTime < 1000 * 60 * 5 &&
-      hasEnoughDailyHistory;
+      const cached = sessionStorage.getItem("wakatimeStats");
+      const cacheTime = Number(sessionStorage.getItem("wakatimeStatsTime"));
+      const now = Date.now();
+      const parsedCached = cached ? (JSON.parse(cached) as StatsData) : null;
+      const hasEnoughDailyHistory =
+        (parsedCached?.daily_stats?.length || 0) >= HEATMAP_DAYS;
+      const hasFreshCache =
+        !!cached &&
+        !!cacheTime &&
+        now - cacheTime < 1000 * 60 * 5 &&
+        hasEnoughDailyHistory;
 
-    if (hasFreshCache && !force) {
-      setStats(parsedCached as StatsData);
-      setHasLoadedData(true);
-      setSyncing(false);
-      return;
-    }
-
-    try {
-      const res = await fetch("/api/wakatime/sync");
-      const data = await res.json();
-
-      if (data.success) {
-        setStats(data.data);
+      if (hasFreshCache && !force) {
+        setStats(parsedCached as StatsData);
         setHasLoadedData(true);
-
-        sessionStorage.setItem("wakatimeStats", JSON.stringify(data.data));
-        sessionStorage.setItem("wakatimeStatsTime", Date.now().toString());
-      } else {
-        setHasLoadedData(true);
-        toast.error(
-          data.error || "Failed to fetch stats. Please try syncing again.",
-        );
+        setSyncing(false);
+        return;
       }
-    } catch {
-      setHasLoadedData(true);
-      toast.error("Network error. Please try again.");
-    } finally {
-      setSyncing(false);
-    }
-  }, [HEATMAP_DAYS]);
+
+      try {
+        const res = await fetch("/api/wakatime/sync");
+        const data = await res.json();
+
+        if (data.success) {
+          setStats(data.data);
+          setHasLoadedData(true);
+
+          sessionStorage.setItem("wakatimeStats", JSON.stringify(data.data));
+          sessionStorage.setItem("wakatimeStatsTime", Date.now().toString());
+        } else {
+          setHasLoadedData(true);
+          toast.error(
+            data.error || "Failed to fetch stats. Please try syncing again.",
+          );
+        }
+      } catch {
+        setHasLoadedData(true);
+        toast.error("Network error. Please try again.");
+      } finally {
+        setSyncing(false);
+      }
+    },
+    [HEATMAP_DAYS],
+  );
 
   useEffect(() => {
     // Always fetch fresh data on first load so refresh reflects live values.
@@ -152,8 +155,8 @@ export default function Stats({
 
   const sortedDailyStats =
     stats.daily_stats && stats.daily_stats.length > 0
-      ? [...stats.daily_stats].sort(
-          (a, b) => toDateKey(a.date).localeCompare(toDateKey(b.date)),
+      ? [...stats.daily_stats].sort((a, b) =>
+          toDateKey(a.date).localeCompare(toDateKey(b.date)),
         )
       : [];
 
@@ -309,7 +312,7 @@ export default function Stats({
       >
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent truncate">
-            Dashboard
+            Devpulse
           </h1>
           <p className="text-xs sm:text-sm font-medium text-gray-400 mt-1 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)] shrink-0"></span>
@@ -332,8 +335,6 @@ export default function Stats({
               className={`w-5 h-5 ${syncing ? "animate-spin" : ""}`}
             />
           </button>
-
-          <ProfileDropdown avatar={avatar} name={name} email={email} />
         </div>
       </div>
 
@@ -404,7 +405,9 @@ export default function Stats({
               <div className="space-y-3 text-sm">
                 <div className="flex items-center justify-between border-b border-white/5 pb-2">
                   <span className="text-gray-400">Weekly Goal</span>
-                  <span className="text-white font-semibold">{weeklyGoalPercent.toFixed(0)}%</span>
+                  <span className="text-white font-semibold">
+                    {weeklyGoalPercent.toFixed(0)}%
+                  </span>
                 </div>
                 <div className="flex items-center justify-between border-b border-white/5 pb-2">
                   <span className="text-gray-400">Goal Progress</span>
@@ -414,20 +417,29 @@ export default function Stats({
                 </div>
                 <div className="flex items-center justify-between border-b border-white/5 pb-2">
                   <span className="text-gray-400">Momentum vs Prev 7d</span>
-                  <span className={`${momentumClass} font-semibold`}>{momentumLabel}</span>
+                  <span className={`${momentumClass} font-semibold`}>
+                    {momentumLabel}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between border-b border-white/5 pb-2">
                   <span className="text-gray-400">Active Days (7d)</span>
-                  <span className="text-white font-semibold">{activeDaysThisWeek} / 7</span>
+                  <span className="text-white font-semibold">
+                    {activeDaysThisWeek} / 7
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Avg Active Day</span>
-                  <span className="text-cyan-300 font-semibold">{formatHours(avgActiveDaySeconds)}</span>
+                  <span className="text-cyan-300 font-semibold">
+                    {formatHours(avgActiveDaySeconds)}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Peak Day This Week</span>
                   <span className="text-amber-300 font-semibold">
-                    {peakDayThisWeek.day} {peakDayThisWeek.hours > 0 ? `(${formatHours(peakDayThisWeek.hours * 3600)})` : ""}
+                    {peakDayThisWeek.day}{" "}
+                    {peakDayThisWeek.hours > 0
+                      ? `(${formatHours(peakDayThisWeek.hours * 3600)})`
+                      : ""}
                   </span>
                 </div>
               </div>
