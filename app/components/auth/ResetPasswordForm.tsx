@@ -1,68 +1,93 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createClient } from "../../lib/supabase/client";
 import { toast } from "react-toastify";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
-import Oauth2 from "./Oauth2";
-import Link from "next/link";
 
-export default function AuthPage() {
+export default function ResetPasswordForm() {
   const supabase = createClient();
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectParam = searchParams.get("redirect");
-  const redirectTo =
-    redirectParam &&
-    redirectParam.startsWith("/") &&
-    !redirectParam.startsWith("//")
-      ? redirectParam
-      : "/d";
-  const [email, setEmail] = useState("");
+  const captcha = useRef<HCaptcha>(null);
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const captcha = useRef<HCaptcha>(null);
   const [showCaptcha, setShowCaptcha] = useState(false);
+  const [checking, setChecking] = useState(true);
 
-  const handleSignup = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    let cancelled = false;
+
+    const verifyResetSession = async () => {
+      const type = searchParams.get("type");
+      const code = searchParams.get("code");
+
+      if (type && type !== "recovery") {
+        router.replace("/login");
+        return;
+      }
+
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) {
+          router.replace("/login");
+          return;
+        }
+      }
+
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        router.replace("/login");
+        return;
+      }
+
+      if (!cancelled) setChecking(false);
+    };
+
+    verifyResetSession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [router, searchParams, supabase]);
+
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (checking) return;
     setShowCaptcha(true);
   };
 
-  const handleCaptchaVerify = async (token: string) => {
+  const handleCaptchaVerify = async (_token: string) => {
     setShowCaptcha(false);
     setLoading(true);
 
-    const signUp = new Promise(async (resolve, reject) => {
+    const updatePassword = new Promise(async (resolve, reject) => {
       try {
         if (password !== confirmPassword) {
-          return reject(new Error("Passwords do not match!"));
+          return reject(new Error("Passwords do not match."));
         }
 
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { captchaToken: token },
-        });
-
+        const { data, error } = await supabase.auth.updateUser({ password });
         if (error) return reject(error);
+
         resolve(data);
       } catch (error) {
         reject(error);
       }
     });
 
-    toast.promise(signUp, {
-      pending: "Signing up...",
+    toast.promise(updatePassword, {
+      pending: "Resetting password...",
       success: {
         render() {
           if (captcha.current) captcha.current.resetCaptcha();
           setLoading(false);
-          setEmail("");
           setPassword("");
           setConfirmPassword("");
-          return "Signed up successfully! Check your email to confirm your account.";
+          return "Password updated! You can log in now.";
         },
       },
       error: {
@@ -70,31 +95,24 @@ export default function AuthPage() {
           if (captcha.current) captcha.current.resetCaptcha();
           setLoading(false);
           const err = data as Error;
-          return err?.message || "Failed to signup. Please try again.";
+          return err?.message || "Failed to reset password. Please try again.";
         },
       },
+    });
+
+    updatePassword.then(() => {
+      router.replace("/login");
     });
   };
 
   return (
     <>
-      <form onSubmit={handleSignup} className="space-y-4">
-        <input
-          type="email"
-          name="email"
-          autoComplete="email"
-          placeholder="Email"
-          className="input-field"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="password"
           name="password"
           autoComplete="new-password"
-          placeholder="Password"
+          placeholder="New Password"
           className="input-field"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -105,52 +123,24 @@ export default function AuthPage() {
           type="password"
           name="confirmPassword"
           autoComplete="new-password"
-          placeholder="Confirm Password"
+          placeholder="Confirm New Password"
           className="input-field"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
 
-        <p className="text-sm text-gray-500">
-          By signing up, you agree to our{" "}
-          <Link
-            href="/legal/terms"
-            target="_blank"
-            className="text-blue-500 hover:underline"
-          >
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link
-            href="/legal/privacy"
-            target="_blank"
-            className="text-blue-500 hover:underline"
-          >
-            Privacy Policy
-          </Link>
-          .
-        </p>
-
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || checking}
           className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
-            loading
+            loading || checking
               ? "bg-gray-800 cursor-not-allowed opacity-60"
               : "btn-primary"
           }`}
         >
-          Sign Up
+          Reset Password
         </button>
-
-        <div className="flex items-center justify-center gap-2">
-          <span className="w-16 h-px bg-gray-700" />
-          <span className="text-sm text-gray-500">Or continue with</span>
-          <span className="w-16 h-px bg-gray-700" />
-        </div>
-
-        <Oauth2 supabase={supabase} redirectTo={redirectTo} />
       </form>
 
       {showCaptcha && (

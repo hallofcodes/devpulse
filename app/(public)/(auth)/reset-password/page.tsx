@@ -1,33 +1,24 @@
 import Link from "next/link";
 import Image from "next/image";
-import LoginForm from "@/app/components/auth/LoginForm";
 import { Metadata } from "next/types";
+import ResetPasswordForm from "@/app/components/auth/ResetPasswordForm";
 
+// doesnt need description or keywords since this page is only accessible via a link in the email sent to the user,
+// and we dont want it indexed by search engines
 export const metadata: Metadata = {
-  title: "Login - Devpulse",
-  description:
-    "Log in to your Devpulse account to monitor your coding activity and compete on leaderboards.",
-  keywords: [
-    "Devpulse",
-    "login",
-    "coding activity tracker",
-    "developer leaderboards",
-    "WakaTime integration",
-    "coding stats",
-    "programming habits",
-    "developer competition",
-    "flex your projects",
-    "coding streaks",
-    "productivity insights",
-  ],
+  title: "Reset Password - Devpulse",
+  description: "",
   alternates: {
-    canonical: "https://devpulse.hallofcodes.org/login",
+    canonical: "https://devpulse.hallofcodes.org/reset-password",
+  },
+  robots: {
+    index: false,
+    follow: false,
   },
   openGraph: {
-    title: "Login - Devpulse",
-    description:
-      "Log in to your Devpulse account to monitor your coding activity and compete on leaderboards.",
-    url: "https://devpulse.hallofcodes.org/login",
+    title: "Reset Password - Devpulse",
+    description: "",
+    url: "https://devpulse.hallofcodes.org/reset-password",
     siteName: "Devpulse",
     images: [
       {
@@ -42,9 +33,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Login - Devpulse",
-    description:
-      "Log in to your Devpulse account to monitor your coding activity and compete on leaderboards.",
+    title: "Reset Password - Devpulse",
+    description: "",
     images: [
       {
         url: "https://devpulse.hallofcodes.org/images/devpulse.cover.png",
@@ -54,17 +44,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function Login(props: {
-  searchParams?: Promise<{ redirect?: string }>;
-}) {
-  const redirectParam = (await props.searchParams)?.redirect;
-  const redirectTo =
-    redirectParam &&
-    redirectParam.startsWith("/") &&
-    !redirectParam.startsWith("//")
-      ? redirectParam
-      : undefined;
-
+export default async function ResetPassword() {
   return (
     <div className="min-h-screen flex bg-[#0a0a1a] text-white relative">
       {/* Left Side - Visual / Branding */}
@@ -86,11 +66,11 @@ export default async function Login(props: {
 
         <div className="relative z-10 max-w-md">
           <h1 className="text-4xl font-extrabold mb-5 leading-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-            Welcome back to your dashboard.
+            Change your password and get back to tracking your coding activity!
           </h1>
           <p className="text-gray-400 text-lg leading-relaxed mb-8">
-            Access your personalized coding metrics, compare your stats, and
-            keep your productivity streak alive.
+            Your Devpulse dashboard is waiting for you. Enter a new password to
+            regain access and continue your coding journey.
           </p>
 
           <div className="glass-card border border-white/5 rounded-2xl p-5 bg-white/5 backdrop-blur-md shadow-2xl">
@@ -99,29 +79,32 @@ export default async function Login(props: {
               <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
               <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
               <span className="ml-2 text-xs font-mono text-gray-500">
-                devpulse-auth.ts
+                setup.ts
               </span>
             </div>
             <div className="space-y-1.5 font-mono text-sm">
               <div className="flex">
-                <span className="text-indigo-400 mr-2">import</span>
-                <span className="text-gray-200">{"{ Metrics }"}</span>
-                <span className="text-indigo-400 mx-2">from</span>
-                <span className="text-green-400">
-                  &apos;@devpulse/core&apos;
-                </span>
-                <span className="text-gray-400">;</span>
+                <span className="text-purple-400 mr-2">const</span>
+                <span className="text-blue-400">dev</span>
+                <span className="text-gray-200 mx-2">=</span>
+                <span className="text-indigo-400">getAccount</span>
+                <span className="text-gray-200">(</span>
+                <span className="text-yellow-200">this</span>
+                <span className="text-gray-200">);</span>
               </div>
               <div className="flex mt-2">
-                <span className="text-purple-400 mr-2">await</span>
-                <span className="text-blue-400">Metrics</span>
+                <span className="text-blue-400">dev</span>
                 <span className="text-gray-200">.</span>
-                <span className="text-yellow-200">syncToday</span>
-                <span className="text-gray-200">();</span>
+                <span className="text-yellow-200">setNewPassword</span>
+                <span className="text-gray-200">(</span>
+                <span className="text-gray-200">
+                  &quot;your-new-password&quot;
+                </span>
+                <span className="text-gray-200">);</span>
               </div>
               <div className="flex mt-3">
                 <span className="text-emerald-400/80">
-                  {"// Connection established. Ready to track. ⚡"}
+                  {"// And just like that, you&apos;re back in the game. 🎉"}
                 </span>
               </div>
             </div>
@@ -147,26 +130,26 @@ export default async function Login(props: {
           </Link>
 
           <div className="mb-8 text-left">
-            <h2 className="text-3xl font-bold text-white mb-2">Log in</h2>
+            <h2 className="text-3xl font-bold text-white mb-2">
+              Reset your password
+            </h2>
             <p className="text-gray-400">
-              Enter your credentials to access your account.
+              New password, who dis? Enter a new password to regain access to
+              your account and get back to tracking your coding stats!
             </p>
           </div>
 
-          <LoginForm />
+          <ResetPasswordForm />
 
-          <div className="mt-6 flex items-center gap-3 text-sm text-indigo-300/90">
+          <p className="mt-8 text-center text-sm text-gray-400">
+            Already have an account?{" "}
             <Link
-              href={
-                redirectTo
-                  ? `/forgot-password?redirect=${encodeURIComponent(redirectTo)}`
-                  : "/forgot-password"
-              }
-              className="font-semibold transition-colors hover:text-indigo-200 underline-offset-4 hover:underline"
+              href="/login"
+              className="text-blue-500 hover:underline transition"
             >
-              Forgot your password?
+              Log in
             </Link>
-          </div>
+          </p>
         </div>
       </div>
     </div>

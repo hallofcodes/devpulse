@@ -3,25 +3,11 @@
 import { useRef, useState } from "react";
 import { createClient } from "../../lib/supabase/client";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
-import Oauth2 from "./Oauth2";
-import Link from "next/link";
 
-export default function LoginForm() {
+export default function ForgotPasswordForm() {
   const supabase = createClient();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirectParam = searchParams.get("redirect");
-  const redirectTo =
-    redirectParam &&
-    redirectParam.startsWith("/") &&
-    !redirectParam.startsWith("//")
-      ? redirectParam
-      : "/d";
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const captcha = useRef<HCaptcha>(null);
   const [showCaptcha, setShowCaptcha] = useState(false);
@@ -35,13 +21,15 @@ export default function LoginForm() {
     setShowCaptcha(false);
     setLoading(true);
 
-    const signInWithPassword = new Promise(async (resolve, reject) => {
+    const sendReset = new Promise(async (resolve, reject) => {
       try {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.resetPasswordForEmail(
           email,
-          password,
-          options: { captchaToken: token },
-        });
+          {
+            captchaToken: token,
+            redirectTo: `${window.location.origin}/reset-password`,
+          },
+        );
 
         if (error) return reject(error);
 
@@ -51,22 +39,23 @@ export default function LoginForm() {
       }
     });
 
-    toast.promise(signInWithPassword, {
-      pending: "Logging in...",
-      success: "Login successful! Redirecting...",
+    toast.promise(sendReset, {
+      pending: "Hold tight...",
+      success: "Reset instructions sent! Check your email.",
       error: {
         render({ data }) {
-          if (captcha.current) captcha.current.resetCaptcha();
-          setLoading(false);
           const err = data as Error;
-          return err?.message || "Failed to login. Please try again.";
+          return (
+            err?.message ||
+            "Failed to send reset instructions. Please try again."
+          );
         },
       },
     });
 
-    signInWithPassword.then(() => {
+    sendReset.finally(() => {
       if (captcha.current) captcha.current.resetCaptcha();
-      router.push(redirectTo);
+      setLoading(false);
     });
   };
 
@@ -83,16 +72,6 @@ export default function LoginForm() {
           required
         />
 
-        <input
-          type="password"
-          name="password"
-          autoComplete="new-password"
-          placeholder="Password"
-          className="input-field"
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
         <button
           type="submit"
           disabled={loading}
@@ -102,30 +81,8 @@ export default function LoginForm() {
               : "btn-primary"
           }`}
         >
-          Login
+          Send reset instructions
         </button>
-
-        <p className="text-center text-sm text-gray-500">
-          Don&apos;t have an account?{" "}
-          <Link
-            href={
-              redirectTo
-                ? `/signup?redirect=${encodeURIComponent(redirectTo)}`
-                : "/signup"
-            }
-            className="text-blue-500 hover:underline"
-          >
-            Sign up
-          </Link>
-        </p>
-
-        <div className="flex items-center justify-center gap-2">
-          <span className="w-16 h-px bg-gray-700" />
-          <span className="text-sm text-gray-500">Or continue with</span>
-          <span className="w-16 h-px bg-gray-700" />
-        </div>
-
-        <Oauth2 supabase={supabase} redirectTo={redirectTo} />
       </form>
 
       {showCaptcha && (

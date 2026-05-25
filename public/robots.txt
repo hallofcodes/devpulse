@@ -7,5 +7,6 @@ Allow: /leaderboard$
 Disallow: /leaderboard/
 Allow: /join$
 Disallow: /join/
+Disallow: /reset-password/
 
 Sitemap: https://www.hallofcodes.org/sitemap.xml

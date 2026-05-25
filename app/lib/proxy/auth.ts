@@ -62,7 +62,7 @@ export default async function Auth(req: NextRequest) {
   const authRoutes = ["/login", "/signup"];
   if (authRoutes.includes(pathname) && session) {
     console.log("User is authenticated, redirecting to dashboard.");
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    return NextResponse.redirect(new URL("/d", req.url));
   }
 
   return response;
