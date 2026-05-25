@@ -21,10 +21,7 @@ export async function proxy(req: NextRequest) {
   }
 
   const authResponse = await auth(req);
-  if (authResponse) {
-    console.log("Auth middleware triggered for:", req.nextUrl.pathname);
-    return authResponse;
-  }
+  if (authResponse) return authResponse;
 
   return response;
 }

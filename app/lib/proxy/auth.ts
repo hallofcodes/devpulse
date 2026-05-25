@@ -25,9 +25,28 @@ export default async function Auth(req: NextRequest) {
     },
   );
 
+  const code = req.nextUrl.searchParams.get("code");
+  if (code) {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (error) {
+      console.error("Supabase code exchange failed:", error.message);
+    } else {
+      const redirectUrl = req.nextUrl.clone();
+      redirectUrl.searchParams.delete("code");
+
+      const redirectResponse = NextResponse.redirect(redirectUrl);
+      response.cookies.getAll().forEach((cookie) => {
+        redirectResponse.cookies.set(cookie);
+      });
+
+      return redirectResponse;
+    }
+  }
+
   const {
     data: { session },
   } = await supabase.auth.getSession();
+
   const { pathname } = req.nextUrl;
 
   const protectedRoutes = ["/dashboard", "/update-password", "/logout"];
@@ -47,5 +66,5 @@ export default async function Auth(req: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  return undefined;
+  return response;
 }
