@@ -1,3 +1,5 @@
+export const dynamic = "force-static";
+
 import Footer from "@/app/components/layout/Footer";
 import Nav from "@/app/components/layout/Nav";
 import { Metadata } from "next/types";

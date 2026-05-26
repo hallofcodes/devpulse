@@ -1,4 +1,3 @@
-import { createClient } from "../../lib/supabase/server";
 import Footer from "@/app/components/layout/Footer";
 import CTA from "@/app/components/common/ui/CTA";
 import BackButton from "@/app/components/leaderboard/BackButton";
@@ -7,6 +6,7 @@ import { timeAgo } from "@/app/utils/time";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLink } from "@fortawesome/free-solid-svg-icons";
 import { Metadata } from "next/types";
+import { createPublicClient } from "@/app/lib/supabase/public";
 
 export const metadata: Metadata = {
   title: "Flexes - Devpulse",
@@ -57,18 +57,15 @@ export const metadata: Metadata = {
 };
 
 export default async function Flexs() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
+  const { data, error } = await supabase
+    .from("user_flexes")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  const [userFlexes, userResult] = await Promise.all([
-    supabase
-      .from("user_flexes")
-      .select("*")
-      .order("created_at", { ascending: false }),
-    supabase.auth.getUser(),
-  ]);
-
-  const { data } = userFlexes;
-  const { data: user } = userResult;
+  if (error) {
+    console.error("Error fetching flexes:", error);
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0a1a] text-white grid-bg relative">
@@ -79,6 +76,15 @@ export default async function Flexs() {
           <Image src="/logo.svg" alt="Devpulse Logo" width={36} height={36} />
           <h1 className="text-3xl font-bold text-white">Devpulse Flexes</h1>
         </div>
+
+        {error && (
+          <div className="max-w-5xl mx-auto p-6 md:p-10 relative z-10">
+            <h2 className="text-2xl font-bold mb-4">Error Loading Flexes</h2>
+            <p className="text-gray-400 mb-6">
+              There was an error fetching the flexes. Please try again later.
+            </p>
+          </div>
+        )}
 
         {data?.length === 0 && (
           <div className="max-w-5xl mx-auto p-6 md:p-10 relative z-10">
@@ -146,7 +152,7 @@ export default async function Flexs() {
         )}
       </div>
 
-      {!user && <CTA />}
+      <CTA />
       <Footer />
     </div>
   );

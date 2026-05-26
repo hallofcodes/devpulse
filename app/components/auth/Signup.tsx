@@ -1,51 +1,22 @@
-import Link from "next/link";
+"use client";
+
 import Image from "next/image";
-import { Metadata } from "next/types";
-import ResetPasswordForm from "@/app/components/auth/form/ResetPasswordForm";
-import { Suspense } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import SignupForm from "./form/SignupForm";
 
-// doesnt need description or keywords since this page is only accessible via a link in the email sent to the user,
-// and we dont want it indexed by search engines
-export const metadata: Metadata = {
-  title: "Reset Password - Devpulse",
-  description: "",
-  alternates: {
-    canonical: "https://devpulse.hallofcodes.org/reset-password",
-  },
-  robots: {
-    index: false,
-    follow: false,
-  },
-  openGraph: {
-    title: "Reset Password - Devpulse",
-    description: "",
-    url: "https://devpulse.hallofcodes.org/reset-password",
-    siteName: "Devpulse",
-    images: [
-      {
-        url: "https://devpulse.hallofcodes.org/images/devpulse.cover.png",
-        width: 1200,
-        height: 630,
-        alt: "Devpulse Cover Image",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Reset Password - Devpulse",
-    description: "",
-    images: [
-      {
-        url: "https://devpulse.hallofcodes.org/images/devpulse.cover.png",
-        alt: "Devpulse Cover Image",
-      },
-    ],
-  },
-};
+export default function Signup() {
+  const searchParams = useSearchParams();
 
-export default async function ResetPassword() {
+  const redirectParam = searchParams.get("redirect");
+
+  const redirectTo =
+    redirectParam &&
+    redirectParam.startsWith("/") &&
+    !redirectParam.startsWith("//")
+      ? redirectParam
+      : undefined;
+
   return (
     <div className="min-h-screen flex bg-[#0a0a1a] text-white relative">
       {/* Left Side - Visual / Branding */}
@@ -67,11 +38,11 @@ export default async function ResetPassword() {
 
         <div className="relative z-10 max-w-md">
           <h1 className="text-4xl font-extrabold mb-5 leading-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-            Change your password and get back to tracking your coding activity!
+            Start measuring your coding pulse.
           </h1>
           <p className="text-gray-400 text-lg leading-relaxed mb-8">
-            Your Devpulse dashboard is waiting for you. Enter a new password to
-            regain access and continue your coding journey.
+            Join thousands of developers tracking their progress, competing on
+            leaderboards, and leveling up their skills.
           </p>
 
           <div className="glass-card border border-white/5 rounded-2xl p-5 bg-white/5 backdrop-blur-md shadow-2xl">
@@ -88,24 +59,21 @@ export default async function ResetPassword() {
                 <span className="text-purple-400 mr-2">const</span>
                 <span className="text-blue-400">dev</span>
                 <span className="text-gray-200 mx-2">=</span>
-                <span className="text-indigo-400">getAccount</span>
-                <span className="text-gray-200">(</span>
-                <span className="text-yellow-200">this</span>
-                <span className="text-gray-200">);</span>
+                <span className="text-indigo-400 mr-2">new</span>
+                <span className="text-yellow-200">Developer</span>
+                <span className="text-gray-200">();</span>
               </div>
               <div className="flex mt-2">
                 <span className="text-blue-400">dev</span>
                 <span className="text-gray-200">.</span>
-                <span className="text-yellow-200">setNewPassword</span>
+                <span className="text-yellow-200">connect</span>
                 <span className="text-gray-200">(</span>
-                <span className="text-gray-200">
-                  &quot;your-new-password&quot;
-                </span>
+                <span className="text-green-400">&apos;wakatime&apos;</span>
                 <span className="text-gray-200">);</span>
               </div>
               <div className="flex mt-3">
                 <span className="text-emerald-400/80">
-                  {"// And just like that, you&apos;re back in the game. 🎉"}
+                  {"// Your journey begins here. 🚀"}
                 </span>
               </div>
             </div>
@@ -132,27 +100,24 @@ export default async function ResetPassword() {
 
           <div className="mb-8 text-left">
             <h2 className="text-3xl font-bold text-white mb-2">
-              Reset your password
+              Create an account
             </h2>
             <p className="text-gray-400">
-              New password, who dis? Enter a new password to regain access to
-              your account and get back to tracking your coding stats!
+              Start tracking your coding stats today.
             </p>
           </div>
 
-          <Suspense
-            fallback={
-              <div className="text-center text-gray-500">Loading...</div>
-            }
-          >
-            <ResetPasswordForm />
-          </Suspense>
+          <SignupForm />
 
           <p className="mt-8 text-center text-sm text-gray-400">
             Already have an account?{" "}
             <Link
-              href="/login"
-              className="text-blue-500 hover:underline transition"
+              href={
+                redirectTo
+                  ? `/login?redirect=${encodeURIComponent(redirectTo)}`
+                  : "/login"
+              }
+              className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors underline-offset-4 hover:underline"
             >
               Log in
             </Link>

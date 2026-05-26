@@ -48,7 +48,8 @@ export default async function Auth(req: NextRequest) {
 
   const { pathname } = req.nextUrl;
 
-  const protectedRoutes = ["/d", "/d/update-password", "/d/logout"];
+  // Define protected routes that require authentication
+  const protectedRoutes = ["/d", "/api/wakatime/sync"];
   const isProtectedRoute = protectedRoutes.some((route) => {
     const regex = new RegExp(`^${route}(/.*)?$`);
     return regex.test(pathname);
@@ -59,10 +60,15 @@ export default async function Auth(req: NextRequest) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  const authRoutes = ["/login", "/signup"];
+  const authRoutes = [
+    "/login",
+    "/signup",
+    "/forgot-password",
+    "/reset-password",
+  ];
   if (authRoutes.includes(pathname) && session) {
-    console.log("User is authenticated, redirecting to dashboard.");
-    return NextResponse.redirect(new URL("/d", req.url));
+    console.log("User is authenticated, redirecting to home.");
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   return response;

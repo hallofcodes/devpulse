@@ -1,12 +1,12 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { createClient } from "../../lib/supabase/client";
+import { createClient } from "@/app/lib/supabase/client";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
-import Oauth2 from "./Oauth2";
+import Oauth2 from "../Oauth2";
 import Link from "next/link";
 
 export default function LoginForm() {

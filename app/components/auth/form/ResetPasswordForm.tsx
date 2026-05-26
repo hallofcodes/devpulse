@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createClient } from "../../lib/supabase/client";
+import { createClient } from "@/app/lib/supabase/client";
 import { toast } from "react-toastify";
 import { useRouter, useSearchParams } from "next/navigation";
 import HCaptcha from "@hcaptcha/react-hcaptcha";

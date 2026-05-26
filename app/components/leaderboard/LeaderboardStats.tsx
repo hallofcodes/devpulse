@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { NonNullableMember } from "../LeaderboardTable";
+import { NonNullableMember } from "./LeaderboardTable";
 
 const formatHours = (seconds: number) => {
   const h = Math.floor(seconds / 3600);

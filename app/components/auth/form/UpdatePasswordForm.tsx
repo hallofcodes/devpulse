@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { createClient } from "../../lib/supabase/client";
+import { createClient } from "@/app/lib/supabase/client";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { toast } from "react-toastify";
 
