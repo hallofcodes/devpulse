@@ -11,7 +11,7 @@ export default async function AdminPage() {
   const { user, profile } = await getUserWithProfile();
 
   if (!user) {
-    redirect("/login?from=/dashboard/admin");
+    redirect("/login?from=/admin");
   }
 
   if (!profile || profile.role !== "admin") {

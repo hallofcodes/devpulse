@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   const redirectTo =
     redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("//")
       ? redirectParam
-      : "/dashboard";
+      : "/d";
 
   const response = NextResponse.redirect(`${origin}${redirectTo}`);
   response.cookies.set("devpulse_redirect", "", { path: "/", maxAge: 0 });

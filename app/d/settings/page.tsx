@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default async function SettingsPage() {
   const { user, profile } = await getUserWithProfile();
-  if (!user) return redirect("/login?from=/dashboard/settings");
+  if (!user) return redirect("/login?from=/settings");
 
   const hasWakaKey = Boolean(profile?.wakatime_api_key);
   const maskedWakaKey = profile?.wakatime_api_key

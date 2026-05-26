@@ -1,3 +1,5 @@
+export const dynamic = "force-static";
+
 import Footer from "@/app/components/layout/Footer";
 import Nav from "@/app/components/layout/Nav";
 import { Metadata } from "next/types";
@@ -75,15 +77,6 @@ export default function Privacy() {
         <p className="mb-4">
           This information is used only to identify your account and personalize
           your experience.
-        </p>
-
-        <h3 className="font-semibold mt-4">e. Sentry</h3>
-        <p className="mb-4">
-          We use Sentry for error monitoring. While only error-related features
-          are enabled, Sentry may still collect certain information, including
-          personally identifiable information (PII), stack traces, and request
-          data. This information is used solely to help diagnose errors and
-          improve the reliability and performance of the application.
         </p>
 
         <h2 className="text-xl font-semibold mt-6 mb-2">

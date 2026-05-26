@@ -1,5 +1,5 @@
 import Image from "next/image";
-import UpdatePasswordForm from "@/app/components/auth/UpdatePasswordForm";
+import UpdatePasswordForm from "@/app/components/auth/form/UpdatePasswordForm";
 import { Metadata } from "next/types";
 import Footer from "@/app/components/layout/Footer";
 

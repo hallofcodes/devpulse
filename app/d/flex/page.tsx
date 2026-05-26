@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default async function FlexPage() {
   const { user } = await getUserWithProfile();
 
-  if (!user) return redirect("/login?from=/dashboard/flex");
+  if (!user) return redirect("/login?from=/flex");
 
   return <Flex user={user} />;
 }

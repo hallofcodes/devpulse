@@ -19,68 +19,9 @@ type LeaderboardRow = Database["public"]["Tables"]["leaderboards"]["Row"];
 
 export default function LeaderboardHeader({
   leaderboard,
-  isOwner,
 }: {
   leaderboard: LeaderboardRow;
-  isOwner: boolean;
 }) {
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [name, setName] = useState(leaderboard.name);
-  const [description, setDescription] = useState(leaderboard.description || "");
-  const { badWords } = useBadWords();
-
-  const handleEdit = async () => {
-    const sanitizedName = sanitizeTextWithBlocklist(name, badWords, "[redacted]");
-    const sanitizedDescription = sanitizeTextWithBlocklist(
-      description,
-      badWords,
-      "[redacted]",
-    );
-
-    const editLeaderboard: Promise<LeaderboardRow> = new Promise(
-      async (resolve, reject) => {
-        try {
-          const supabase = await createClient();
-          const slug = toKebabSlug(sanitizedName, "leaderboard");
-
-          const { data, error } = await supabase
-            .from("leaderboards")
-            .update({
-              name: sanitizedName,
-              slug,
-              description: sanitizedDescription,
-            })
-            .eq("id", leaderboard.id)
-            .select()
-            .single();
-
-          if (error) return reject(error);
-          resolve(data);
-        } catch (error) {
-          reject(error);
-        }
-      },
-    );
-
-    toast.promise(editLeaderboard, {
-      pending: "Editing leaderboard...",
-      success: "Leaderboard updated!",
-      error: {
-        render({ data }) {
-          const err = data as Error;
-          if (err?.code === "23505") {
-            return "A leaderboard with that name already exists.";
-          }
-          return err?.message || "Failed to edit. Please try again.";
-        },
-      },
-    });
-
-    editLeaderboard.then((data) => {
-      router.push(`/leaderboard/${data.slug}`);
-    });
-  };
 
   return (
     <>
@@ -106,14 +47,6 @@ export default function LeaderboardHeader({
             <div className="mb-2 sm:mb-3 max-w-[calc(100%-120px)] sm:max-w-xl">
               <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight flex items-center gap-3 truncate">
                 {leaderboard.name}
-                {isOwner && (
-                  <button
-                    onClick={() => setOpen(true)}
-                    className="opacity-0 group-hover:opacity-100 transition text-gray-400 hover:text-indigo-400 p-1 shrink-0"
-                  >
-                    <FontAwesomeIcon icon={faPencil} className="text-sm sm:text-[16px]" />
-                  </button>
-                )}
               </h1>
               <p className="text-gray-400 mt-1 text-sm sm:text-base font-medium truncate sm:whitespace-normal leading-relaxed">
                 {leaderboard.description && leaderboard.description?.length > 0
@@ -128,46 +61,6 @@ export default function LeaderboardHeader({
           </div>
         </div>
       </div>
-
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="glass-card p-8 w-[90%] max-w-md">
-            <h3 className="text-lg font-semibold mb-4 text-gray-200">
-              Edit Leaderboard
-            </h3>
-
-            <input
-              className="input-field mb-3"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Leaderboard name"
-            />
-
-            <textarea
-              className="input-field mb-4 min-h-[80px] resize-none"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Description (optional)"
-            />
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setOpen(false)}
-                className="btn-secondary w-full py-2.5"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleEdit}
-                className="btn-primary w-full py-2.5"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

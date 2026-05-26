@@ -1,16 +1,15 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { createClient } from "../../lib/supabase/client";
+import { createClient } from "@/app/lib/supabase/client";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
-import Oauth2 from "./Oauth2";
+import Oauth2 from "../Oauth2";
+import Link from "next/link";
 
-export default function LoginForm() {
+export default function SignupForm() {
   const supabase = createClient();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectParam = searchParams.get("redirect");
   const redirectTo =
@@ -18,14 +17,15 @@ export default function LoginForm() {
     redirectParam.startsWith("/") &&
     !redirectParam.startsWith("//")
       ? redirectParam
-      : "/dashboard";
+      : "/d";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const captcha = useRef<HCaptcha>(null);
   const [showCaptcha, setShowCaptcha] = useState(false);
 
-  const handleLogin = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+  const handleSignup = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setShowCaptcha(true);
   };
@@ -34,50 +34,58 @@ export default function LoginForm() {
     setShowCaptcha(false);
     setLoading(true);
 
-    const signInWithPassword = new Promise(async (resolve, reject) => {
+    const signUp = new Promise(async (resolve, reject) => {
       try {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        if (password !== confirmPassword) {
+          return reject(new Error("Passwords do not match!"));
+        }
+
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: { captchaToken: token },
         });
 
         if (error) return reject(error);
-
         resolve(data);
       } catch (error) {
         reject(error);
       }
     });
 
-    toast.promise(signInWithPassword, {
-      pending: "Logging in...",
-      success: "Login successful! Redirecting...",
+    toast.promise(signUp, {
+      pending: "Signing up...",
+      success: {
+        render() {
+          if (captcha.current) captcha.current.resetCaptcha();
+          setLoading(false);
+          setEmail("");
+          setPassword("");
+          setConfirmPassword("");
+          return "Signed up successfully! Check your email to confirm your account.";
+        },
+      },
       error: {
         render({ data }) {
           if (captcha.current) captcha.current.resetCaptcha();
           setLoading(false);
           const err = data as Error;
-          return err?.message || "Failed to login. Please try again.";
+          return err?.message || "Failed to signup. Please try again.";
         },
       },
-    });
-
-    signInWithPassword.then(() => {
-      if (captcha.current) captcha.current.resetCaptcha();
-      router.push(redirectTo);
     });
   };
 
   return (
     <>
-      <form onSubmit={handleLogin} className="space-y-4">
+      <form onSubmit={handleSignup} className="space-y-4">
         <input
           type="email"
           name="email"
           autoComplete="email"
           placeholder="Email"
           className="input-field"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
@@ -88,9 +96,41 @@ export default function LoginForm() {
           autoComplete="new-password"
           placeholder="Password"
           className="input-field"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+
+        <input
+          type="password"
+          name="confirmPassword"
+          autoComplete="new-password"
+          placeholder="Confirm Password"
+          className="input-field"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+        />
+
+        <p className="text-sm text-gray-500">
+          By signing up, you agree to our{" "}
+          <Link
+            href="/legal/terms"
+            target="_blank"
+            className="text-blue-500 hover:underline"
+          >
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link
+            href="/legal/privacy"
+            target="_blank"
+            className="text-blue-500 hover:underline"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </p>
 
         <button
           type="submit"
@@ -101,11 +141,13 @@ export default function LoginForm() {
               : "btn-primary"
           }`}
         >
-          Login
+          Sign Up
         </button>
 
         <div className="flex items-center justify-center gap-2">
+          <span className="w-16 h-px bg-gray-700" />
           <span className="text-sm text-gray-500">Or continue with</span>
+          <span className="w-16 h-px bg-gray-700" />
         </div>
 
         <Oauth2 supabase={supabase} redirectTo={redirectTo} />

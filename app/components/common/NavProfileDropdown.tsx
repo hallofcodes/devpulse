@@ -29,7 +29,7 @@ export default function NavProfileDropdown({
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-  const showDashboardLink = !pathname.includes("/dashboard");
+  const showDashboardLink = !pathname.includes("/d");
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

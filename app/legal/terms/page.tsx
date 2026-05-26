@@ -1,3 +1,5 @@
+export const dynamic = "force-static";
+
 import Footer from "@/app/components/layout/Footer";
 import Nav from "@/app/components/layout/Nav";
 import { Metadata } from "next/types";
@@ -59,7 +61,6 @@ export default function Terms() {
           <li>WakaTime API (coding statistics)</li>
           <li>GitHub OAuth (authentication and profile data)</li>
           <li>Google Search Console (analytics)</li>
-          <li>Sentry (error monitoring)</li>
         </ul>
         <p className="mb-4">
           We are not responsible for the availability, accuracy, or practices of
@@ -73,11 +74,6 @@ export default function Terms() {
           You may provide a WakaTime API key to use certain features. You are
           responsible for keeping your API key secure. We are not liable for any
           misuse resulting from unauthorized access to your key.
-        </p>
-        <p className="mb-4">
-          When you visit us and an error occurs, we may use Sentry to capture
-          error details. This helps us improve the service, but we do not use
-          this data for any other purpose.
         </p>
 
         <h2 className="text-xl font-semibold mt-6 mb-2">5. Data and Content</h2>
