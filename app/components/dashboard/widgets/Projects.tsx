@@ -10,15 +10,20 @@ export default function Projects({
 }) {
   const totalProjectSeconds = (stats.projects || []).reduce(
     (acc, curr) => acc + curr.total_seconds,
-    0
+    0,
   );
 
   return (
     <>
       {stats.projects && stats.projects.length > 0 ? (
         <>
-          <div className="glass-card p-6 h-full flex flex-col" data-aos="fade-in">
-            <h3 className="text-sm font-semibold text-white mb-4 lg:mb-6">Top Projects</h3>
+          <div
+            className="glass-card p-6 h-full flex flex-col"
+            data-aos="fade-in"
+          >
+            <h3 className="text-sm font-semibold text-white mb-4 lg:mb-6">
+              Top Projects
+            </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 flex-1">
               {stats.projects.slice(0, 6).map((project, idx) => {
                 const percent =
@@ -53,12 +58,17 @@ export default function Projects({
           </div>
         </>
       ) : (
-          <div className="glass-card p-6 h-full flex flex-col min-h-[250px]" data-aos="fade-in">
-            <h3 className="text-sm font-semibold text-white mb-4 lg:mb-6">Top Projects</h3>
-            <div className="flex-1 flex items-center justify-center">
-              <p className="text-sm text-gray-500">No project data available.</p>
-            </div>
+        <div
+          className="glass-card p-6 h-full flex flex-col min-h-[250px]"
+          data-aos="fade-in"
+        >
+          <h3 className="text-sm font-semibold text-white mb-4 lg:mb-6">
+            Top Projects
+          </h3>
+          <div className="flex-1 flex items-center justify-center">
+            <p className="text-sm text-gray-500">No project data available.</p>
           </div>
+        </div>
       )}
     </>
   );

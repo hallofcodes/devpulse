@@ -1,26 +1,40 @@
 "use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { createClient } from "../lib/supabase/client";
 import Link from "next/link";
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { faKey, faRotateRight, faTrashAlt, faChevronRight, faServer, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import {
+  faKey,
+  faRotateRight,
+  faTrashAlt,
+  faChevronRight,
+  faServer,
+  faRightFromBracket,
+} from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
-import { Leaderboard } from "./dashboard/LeaderbordList";
-import { User } from "@supabase/supabase-js";
+
+interface BoardShape {
+  id: string;
+  name: string;
+  slug: string;
+  owner_id: string;
+}
+
+interface UserShape {
+  id: string;
+  email: string;
+}
 
 export default function BoardList({
   user,
   board,
   allowLeave = false,
 }: {
-  user: User;
-  board: Leaderboard;
-  /** When true (joined networks only), show Leave to remove membership */
+  user: UserShape;
+  board: BoardShape;
   allowLeave?: boolean;
 }) {
-  const supabase = createClient();
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
   const inviteUrl =
@@ -32,28 +46,27 @@ export default function BoardList({
   const [leaving, setLeaving] = useState(false);
 
   const handleDelete = async () => {
-    const { error } = await supabase
-      .from("leaderboards")
-      .delete()
-      .eq("id", board.id);
-
-    if (error) setShowDeleteModal(false);
+    const res = await fetch(`/api/leaderboards/${board.id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) {
+      setShowDeleteModal(false);
+      return;
+    }
     window.location.reload();
   };
 
   const handleLeave = async () => {
     setLeaving(true);
-    const { error } = await supabase
-      .from("leaderboard_members")
-      .delete()
-      .eq("leaderboard_id", board.id)
-      .eq("user_id", user.id);
-
+    const res = await fetch(`/api/leaderboards/${board.id}/leave`, {
+      method: "DELETE",
+    });
     setLeaving(false);
     setShowLeaveModal(false);
 
-    if (error) {
-      toast.error(error.message || "Could not leave this leaderboard.");
+    if (!res.ok) {
+      const data = await res.json();
+      toast.error(data.error || "Could not leave this leaderboard.");
       return;
     }
     toast.success("You left the leaderboard.");
@@ -61,22 +74,12 @@ export default function BoardList({
   };
 
   const regenerateJoinCode = (boardId: string) => {
-    const generateJoinCode = new Promise(async (resolve, reject) => {
-      try {
-        const joinCode = crypto.randomUUID().slice(0, 8);
-        const { data, error } = await supabase
-          .from("leaderboards")
-          .update({ join_code: joinCode })
-          .eq("id", boardId)
-          .select()
-          .single();
-
-        if (error) return reject(error);
-
-        resolve(data);
-      } catch (error) {
-        reject(error);
-      }
+    const generateJoinCode = fetch(`/api/leaderboards/${boardId}/join-code`, {
+      method: "PATCH",
+    }).then(async (res) => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      return data;
     });
 
     toast.promise(generateJoinCode, {
@@ -95,20 +98,11 @@ export default function BoardList({
   };
 
   const getJoinCode = (boardId: string) => {
-    const joinCode: Promise<{ join_code: string }[]> = new Promise(
-      async (resolve, reject) => {
-        try {
-          const { data, error } = await supabase
-            .from("leaderboards")
-            .select("join_code")
-            .eq("id", boardId)
-
-          if (error) return reject(error);
-
-          resolve(data);
-        } catch (error) {
-          reject(error);
-        }
+    const joinCode = fetch(`/api/leaderboards/${boardId}/join-code`).then(
+      async (res) => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        return data.joinCode as string;
       },
     );
 
@@ -117,13 +111,13 @@ export default function BoardList({
       error: {
         render({ data }) {
           const err = data as Error;
-          return err?.message || "Failed to get join code. Please try again.";  
+          return err?.message || "Failed to get join code. Please try again.";
         },
       },
     });
 
-    joinCode.then((data) => {
-      setSelectedCode(data[0].join_code);
+    joinCode.then((code) => {
+      setSelectedCode(code);
       setShowCodeModal(true);
     });
   };
@@ -131,9 +125,15 @@ export default function BoardList({
   return (
     <>
       <div className="flex justify-between items-center group/card p-4 sm:p-5">
-        <Link href={`/leaderboard/${board.slug}`} className="flex-1 flex items-center min-w-0 pr-4">
+        <Link
+          href={`/leaderboard/${board.slug}`}
+          className="flex-1 flex items-center min-w-0 pr-4"
+        >
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/5 to-white/10 border border-white/10 flex items-center justify-center shrink-0 mr-4 shadow-sm group-hover/card:border-indigo-500/30 transition-colors">
-            <FontAwesomeIcon icon={faServer} className="text-gray-400 group-hover/card:text-indigo-400 transition-colors w-4 h-4" />
+            <FontAwesomeIcon
+              icon={faServer}
+              className="text-gray-400 group-hover/card:text-indigo-400 transition-colors w-4 h-4"
+            />
           </div>
           <div className="flex flex-col flex-1 min-w-0">
             <div className="flex items-center gap-2">
@@ -145,9 +145,12 @@ export default function BoardList({
               /{board.slug}
             </p>
           </div>
-          
+
           <div className="hidden sm:flex w-8 h-8 rounded-full border border-white/5 bg-white/5 items-center justify-center opacity-0 -translate-x-4 group-hover/card:opacity-100 group-hover/card:translate-x-0 transition-all duration-300 ml-4">
-            <FontAwesomeIcon icon={faChevronRight} className="text-indigo-400 w-3 h-3" />
+            <FontAwesomeIcon
+              icon={faChevronRight}
+              className="text-indigo-400 w-3 h-3"
+            />
           </div>
         </Link>
 
@@ -185,7 +188,10 @@ export default function BoardList({
               className="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 hover:text-amber-400 hover:bg-amber-500/10 transition-colors"
               title="Leave leaderboard"
             >
-              <FontAwesomeIcon icon={faRightFromBracket} className="w-3.5 h-3.5" />
+              <FontAwesomeIcon
+                icon={faRightFromBracket}
+                className="w-3.5 h-3.5"
+              />
             </button>
           </div>
         )}
@@ -195,7 +201,7 @@ export default function BoardList({
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
           <div className="glass-card p-8 w-full max-w-sm relative shadow-2xl border-indigo-500/20">
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl" />
-            
+
             <h3 className="text-[11px] font-bold tracking-widest uppercase text-indigo-400 mb-6 text-center flex items-center justify-center gap-2">
               <FontAwesomeIcon icon={faKey} /> Share Server
             </h3>
@@ -244,51 +250,61 @@ export default function BoardList({
         </div>
       )}
 
-      {showLeaveModal && typeof document !== "undefined" && createPortal(
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="glass-card p-8 w-full max-w-sm relative shadow-2xl border-amber-500/20">
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/20 rounded-full blur-3xl" />
-            <h3 className="text-lg font-bold text-gray-200 mb-2">Leave leaderboard?</h3>
-            <p className="text-sm text-gray-400 mb-6 leading-relaxed">
-              You&apos;ll be removed from{" "}
-              <span className="font-mono text-gray-300 bg-white/5 px-1 rounded">{board.name}</span>.
-              You can rejoin later with an invite link or code.
-            </p>
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => setShowLeaveModal(false)}
-                disabled={leaving}
-                className="flex-1 py-2.5 px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium text-gray-300 transition-colors disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleLeave}
-                disabled={leaving}
-                className="flex-1 py-2.5 px-4 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 rounded-lg text-sm font-bold transition-colors disabled:opacity-50"
-              >
-                {leaving ? "Leaving…" : "Leave"}
-              </button>
+      {showLeaveModal &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+            <div className="glass-card p-8 w-full max-w-sm relative shadow-2xl border-amber-500/20">
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/20 rounded-full blur-3xl" />
+              <h3 className="text-lg font-bold text-gray-200 mb-2">
+                Leave leaderboard?
+              </h3>
+              <p className="text-sm text-gray-400 mb-6 leading-relaxed">
+                You&apos;ll be removed from{" "}
+                <span className="font-mono text-gray-300 bg-white/5 px-1 rounded">
+                  {board.name}
+                </span>
+                . You can rejoin later with an invite link or code.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowLeaveModal(false)}
+                  disabled={leaving}
+                  className="flex-1 py-2.5 px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium text-gray-300 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleLeave}
+                  disabled={leaving}
+                  className="flex-1 py-2.5 px-4 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 rounded-lg text-sm font-bold transition-colors disabled:opacity-50"
+                >
+                  {leaving ? "Leaving…" : "Leave"}
+                </button>
+              </div>
             </div>
-          </div>
-        </div>,
-        document.body
-      )}
+          </div>,
+          document.body,
+        )}
 
       {showDeleteModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
           <div className="glass-card p-8 w-full max-w-sm relative shadow-2xl border-red-500/20">
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-red-500/20 rounded-full blur-3xl" />
-            
+
             <h3 className="text-lg font-bold text-gray-200 mb-2">
               Delete Network
             </h3>
             <p className="text-sm text-gray-400 mb-6 leading-relaxed">
-              Are you sure you want to delete <span className="font-mono text-gray-300 bg-white/5 px-1 rounded">{board.name}</span>? This action cannot be undone.
+              Are you sure you want to delete{" "}
+              <span className="font-mono text-gray-300 bg-white/5 px-1 rounded">
+                {board.name}
+              </span>
+              ? This action cannot be undone.
             </p>
-            
+
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteModal(false)}

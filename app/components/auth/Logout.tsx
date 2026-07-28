@@ -1,22 +1,21 @@
 "use client";
 
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { createClient } from "../../lib/supabase/client";
 import { useEffect, useCallback } from "react";
 
 export default function Logout() {
-  const supabase = createClient();
   const router = useRouter();
 
   const handleLogout = useCallback(async () => {
     try {
-      await supabase.auth.signOut();
+      await signOut({ redirect: false });
     } catch (err) {
       console.error("Error logging out:", err);
     } finally {
       router.push("/");
     }
-  }, [supabase.auth, router]);
+  }, [router]);
 
   useEffect(() => {
     handleLogout();

@@ -1,0 +1,301 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String    @id @default(cuid())
+  name              String?
+  email             String    @unique
+  emailVerified     DateTime?
+  image             String?
+  password          String?
+  role              String    @default("user")
+  wakatimeApiKey    String?   @unique @map("wakatime_api_key")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  accounts          Account[]
+  sessions          Session[]
+  userStats         UserStats?
+  userProjects      UserProjects?
+  dashboardSnapshots UserDashboardSnapshot[]
+  userFlexes        UserFlex[]
+  ownedLeaderboards Leaderboard[]
+  leaderboardMemberships LeaderboardMember[]
+  conversationParticipants ConversationParticipant[]
+  sentMessages      Message[]
+  passwordResetTokens PasswordResetToken[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique @default(cuid())
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model UserStats {
+  userId          String   @id @map("user_id")
+  totalSeconds    BigInt   @default(0) @map("total_seconds")
+  dailyAverage    BigInt   @default(0) @map("daily_average")
+  languages       Json     @default("[]")
+  operatingSystems Json    @default("[]") @map("operating_systems")
+  editors         Json     @default("[]")
+  machines        Json     @default("[]")
+  categories      Json     @default("[]")
+  dependencies    Json     @default("[]")
+  bestDay         Json     @default("{}") @map("best_day")
+  dailyStats      Json     @default("[]") @map("daily_stats")
+  lastFetchedAt   DateTime @default(now()) @map("last_fetched_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_stats")
+}
+
+model UserProjects {
+  userId        String   @id @map("user_id")
+  projects      Json     @default("[]")
+  lastFetchedAt DateTime @default(now()) @map("last_fetched_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_projects")
+}
+
+model UserDashboardSnapshot {
+  id                  Int      @id @default(autoincrement())
+  userId              String   @map("user_id")
+  snapshotDate        DateTime @map("snapshot_date") @db.Date
+  totalSeconds7d      BigInt   @default(0) @map("total_seconds_7d")
+  activeDays7d        Int      @default(0) @map("active_days_7d")
+  consistencyPercent  Int      @default(0) @map("consistency_percent")
+  currentStreak       Int      @default(0) @map("current_streak")
+  bestStreak          Int      @default(0) @map("best_streak")
+  peakDay             DateTime? @map("peak_day") @db.Date
+  peakDaySeconds      BigInt   @default(0) @map("peak_day_seconds")
+  topLanguage         String?  @map("top_language")
+  topLanguagePercent  Decimal? @map("top_language_percent") @db.Decimal(5, 2)
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @default(now()) @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, snapshotDate])
+  @@map("user_dashboard_snapshots")
+}
+
+model UserFlex {
+  id                 String   @id @default(cuid())
+  userId             String   @map("user_id")
+  userEmail          String   @map("user_email")
+  projectName        String   @map("project_name")
+  projectDescription String   @map("project_description") @db.Text
+  projectUrl         String   @map("project_url")
+  projectTime        String   @map("project_time")
+  isOpenSource       Boolean  @default(false) @map("is_open_source")
+  openSourceUrl      String   @default("") @map("open_source_url")
+  createdAt          DateTime @default(now()) @map("created_at")
+  expiresAt          DateTime @map("expires_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_flexes")
+}
+
+model Leaderboard {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  isPublic    Boolean  @default(true) @map("is_public")
+  ownerId     String   @map("owner_id")
+  joinCode    String   @unique @map("join_code")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  owner   User                @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  members LeaderboardMember[]
+
+  @@map("leaderboards")
+}
+
+model LeaderboardMember {
+  id            String   @id @default(cuid())
+  leaderboardId String   @map("leaderboard_id")
+  userId        String   @map("user_id")
+  role          String   @default("member")
+  joinedAt      DateTime @default(now()) @map("joined_at")
+
+  leaderboard Leaderboard @relation(fields: [leaderboardId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([leaderboardId, userId])
+  @@map("leaderboard_members")
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  type      ConversationType @default(PRIVATE)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  participants ConversationParticipant[]
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+enum ConversationType {
+  PRIVATE
+  GLOBAL
+}
+
+model ConversationParticipant {
+  conversationId String   @map("conversation_id")
+  userId         String   @map("user_id")
+  email          String
+  type           String   @default("private")
+  lastSeenAt     DateTime @default(dbgenerated("'1970-01-01 00:00:00'")) @map("last_seen_at")
+  lastReadAt     DateTime @default(now()) @map("last_read_at")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([conversationId, userId])
+  @@index([userId, lastSeenAt(sort: Desc)])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String   @map("conversation_id")
+  senderId       String   @map("sender_id")
+  text           String   @db.Text
+  attachments    Json     @default("[]")
+  createdAt      DateTime @default(now()) @map("created_at")
+  expiresAt      DateTime @default(dbgenerated("(NOW() + INTERVAL 30 DAY)")) @map("expires_at")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id])
+
+  @@index([conversationId, createdAt(sort: Desc), senderId])
+  @@map("messages")
+}
+
+model Project {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  boards Board[]
+
+  @@map("projects")
+}
+
+model Board {
+  id          String   @id @default(cuid())
+  projectId   String   @map("project_id")
+  title       String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  project Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  columns Column[]
+
+  @@map("boards")
+}
+
+model Column {
+  id        String   @id @default(cuid())
+  boardId   String   @map("board_id")
+  title     String
+  position  Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  board  Board   @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  issues Issue[]
+
+  @@index([boardId])
+  @@map("columns")
+}
+
+model Issue {
+  id        String      @id @default(cuid())
+  columnId  String      @map("column_id")
+  issueKey  String      @unique @map("issue_key")
+  title     String
+  tag       String?
+  type      IssueType   @default(FEATURE)
+  priority  IssuePriority @default(P2)
+  position  Int         @default(0)
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @default(now()) @map("updated_at")
+
+  column Column @relation(fields: [columnId], references: [id], onDelete: Cascade)
+
+  @@index([columnId])
+  @@index([columnId, position])
+  @@map("issues")
+}
+
+enum IssueType {
+  BUG
+  FEATURE
+  CHORE
+}
+
+enum IssuePriority {
+  P0
+  P1
+  P2
+}

@@ -1,25 +1,9 @@
 "use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Database } from "../../supabase-types";
 import { BADGE_LEGEND_HOURS, getBadgeInfoFromHours } from "@/app/utils/badge";
 
-type LeaderboardMembersRow =
-  Database["public"]["Views"]["leaderboard_members_view"]["Row"];
-
-// Supabase-generated types for views are always nullable
-// due to the nature of views and
-// conservative type generation.
-export type NonNullableMember = Omit<
-  LeaderboardMembersRow,
-  | "user_id"
-  | "role"
-  | "email"
-  | "total_seconds"
-  | "languages"
-  | "operating_systems"
-  | "editors"
-> & {
+export interface NonNullableMember {
   user_id: string;
   role: string;
   email: string;
@@ -27,7 +11,7 @@ export type NonNullableMember = Omit<
   languages: { name: string }[];
   operating_systems: { name: string }[];
   editors: { name: string }[];
-};
+}
 
 function LeaderboardPodium({
   topUsers,

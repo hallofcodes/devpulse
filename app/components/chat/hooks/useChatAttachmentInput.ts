@@ -1,17 +1,26 @@
 "use client";
 
-import { useCallback, useState, type ClipboardEvent, type DragEvent, type ChangeEvent } from "react";
+import {
+  useCallback,
+  useState,
+  type ClipboardEvent,
+  type DragEvent,
+  type ChangeEvent,
+} from "react";
 
 export function useChatAttachmentInput() {
   const [attachments, setAttachments] = useState<File[]>([]);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
 
-  const handleFileChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    if (!files.length) return;
+  const handleFileChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(event.target.files || []);
+      if (!files.length) return;
 
-    setAttachments((prev) => [...prev, ...files]);
-  }, []);
+      setAttachments((prev) => [...prev, ...files]);
+    },
+    [],
+  );
 
   const handleDrop = useCallback((event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();

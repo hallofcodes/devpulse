@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "./lib/supabase/server";
+import { prisma } from "./lib/prisma";
 import Footer from "./components/layout/Footer";
 import CTA from "./components/common/ui/CTA";
 import Contributors from "./components/landing-page/Contributors";
@@ -19,49 +19,62 @@ import {
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 
-export default async function Home() {
-  const supabase = await createClient();
+type MemberCategory = { name: string; total_seconds: number };
+type RawMember = {
+  user_id: string | null;
+  email: string | null;
+  total_seconds: number;
+  categories: MemberCategory[] | null;
+};
 
-  const [leaderboardsRes, losserMembersRes, topMembersRes] = await Promise.all([
-    supabase
-      .from("leaderboards")
-      .select("id, name, slug")
-      .order("created_at", { ascending: false })
-      .limit(5),
-    supabase
-      .from("top_user_stats")
-      .select("*")
-      .lt("total_seconds", 14400) // thats 4 hours
-      .neq("total_seconds", 0)
-      .not("total_seconds", "is", null)
-      .order("total_seconds", { ascending: true })
-      .limit(50),
-    supabase
-      .from("top_user_stats")
-      .select("*")
-      .neq("total_seconds", 0)
-      .not("total_seconds", "is", null)
-      .order("total_seconds", { ascending: false })
-      .limit(50),
+function isTopMember(member: RawMember): member is TopMember {
+  return member.user_id !== null && member.email !== null;
+}
+
+export default async function Home() {
+  const [leaderboards, losserStatsRows, topStatsRows] = await Promise.all([
+    prisma.leaderboard.findMany({
+      select: { id: true, name: true, slug: true },
+      orderBy: { createdAt: "desc" },
+      take: 5,
+    }),
+    prisma.userStats.findMany({
+      where: { totalSeconds: { gt: 0, lt: 14400 } },
+      select: {
+        userId: true,
+        totalSeconds: true,
+        categories: true,
+        user: { select: { email: true } },
+      },
+      orderBy: { totalSeconds: "asc" },
+      take: 50,
+    }),
+    prisma.userStats.findMany({
+      where: { totalSeconds: { gt: 0 } },
+      select: {
+        userId: true,
+        totalSeconds: true,
+        categories: true,
+        user: { select: { email: true } },
+      },
+      orderBy: { totalSeconds: "desc" },
+      take: 50,
+    }),
   ]);
 
-  const leaderboards = leaderboardsRes.data ?? [];
-  const losser_members = losserMembersRes.data ?? [];
-  const top_members = topMembersRes.data ?? [];
+  const toMember = (row: (typeof topStatsRows)[number]): RawMember => ({
+    user_id: row.userId,
+    email: row.user.email,
+    total_seconds: Number(row.totalSeconds),
+    categories: row.categories as MemberCategory[] | null,
+  });
 
-  const topMembers: TopMember[] = top_members
-    ? top_members.filter(
-        (u): u is TopMember =>
-          u.email !== null && u.total_seconds !== null && u.user_id !== null,
-      )
-    : [];
+  const losser_members = losserStatsRows.map(toMember);
+  const top_members = topStatsRows.map(toMember);
 
-  const losserMembers: TopMember[] = losser_members
-    ? losser_members.filter(
-        (u): u is TopMember =>
-          u.email !== null && u.total_seconds !== null && u.user_id !== null,
-      )
-    : [];
+  const topMembers: TopMember[] = top_members.filter(isTopMember);
+
+  const losserMembers: TopMember[] = losser_members.filter(isTopMember);
 
   const topVibeCoders: TopMember[] = topMembers
     .filter((member): member is TopMember =>
@@ -87,8 +100,8 @@ export default async function Home() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Hall of Codes",
-    url: "https://hallofcodes.github.io",
-    logo: "https://hallofcodes.github.io/cover.jpg",
+    url: "https://www.hallofcodes.org",
+    logo: "https://www.hallofcodes.org/hoc-cover.png",
     sameAs: [
       "https://github.com/hallofcodes",
       "https://www.facebook.com/hallofcodes",

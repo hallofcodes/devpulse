@@ -4,7 +4,11 @@ import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
-export default function BackButton({ href = "/d/leaderboards" }: { href?: string }) {
+export default function BackButton({
+  href = "/d/leaderboards",
+}: {
+  href?: string;
+}) {
   const router = useRouter();
 
   return (

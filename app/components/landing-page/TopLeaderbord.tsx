@@ -85,7 +85,9 @@ export default function TopLeaderboard({
             <div className="divide-y divide-white/5">
               {rankedTopMembers.map((member, i) => {
                 const rank = i + 1;
-                const badgeInfo = getBadgeInfoFromHours(member.total_seconds / 3600);
+                const badgeInfo = getBadgeInfoFromHours(
+                  member.total_seconds / 3600,
+                );
 
                 return (
                   <div
@@ -148,7 +150,10 @@ export default function TopLeaderboard({
                       className={`badge-base ${b.className} shrink-0 !text-[9px] !py-0.5 !px-2`}
                     >
                       {b.icon && (
-                        <FontAwesomeIcon icon={b.icon} className="w-2.5 h-2.5" />
+                        <FontAwesomeIcon
+                          icon={b.icon}
+                          className="w-2.5 h-2.5"
+                        />
                       )}
                       {b.label}
                     </div>

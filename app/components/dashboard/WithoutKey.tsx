@@ -81,7 +81,11 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-4" data-aos="fade-up" data-aos-delay="100">
+      <div
+        className="grid grid-cols-1 xl:grid-cols-12 gap-4"
+        data-aos="fade-up"
+        data-aos-delay="100"
+      >
         <div className="xl:col-span-8 glass-card p-5 md:p-6 border border-white/10">
           <div className="rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 mb-4">
             <p className="text-[11px] uppercase tracking-widest text-gray-500 mb-1">
@@ -90,7 +94,9 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
             <p className="text-white font-semibold truncate">{email}</p>
           </div>
 
-          <label className="text-sm font-medium text-gray-300">WakaTime API Key</label>
+          <label className="text-sm font-medium text-gray-300">
+            WakaTime API Key
+          </label>
           <input
             placeholder="Paste your WakaTime API key"
             className="input-field mt-2 mb-4"
@@ -148,7 +154,8 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
       </div>
 
       <p className="text-xs text-gray-500">
-        New account setup is almost done. Connect WakaTime to finish onboarding and start using your full dashboard.
+        New account setup is almost done. Connect WakaTime to finish onboarding
+        and start using your full dashboard.
       </p>
     </div>
   );

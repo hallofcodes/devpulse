@@ -1,5 +1,5 @@
 import Dashboard from "@/app/components/admin/Dashbord";
-import { getUserWithProfile } from "@/app/lib/supabase/help/user";
+import { getCurrentUser } from "@/app/lib/auth/user";
 import { Metadata } from "next/types";
 import { redirect } from "next/navigation";
 
@@ -8,15 +8,15 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminPage() {
-  const { user, profile } = await getUserWithProfile();
+  const { user } = await getCurrentUser();
 
   if (!user) {
     redirect("/login?from=/admin");
   }
 
-  if (!profile || profile.role !== "admin") {
-    redirect("/dashbord");
+  if (user.role !== "admin") {
+    redirect("/d");
   }
 
-  return <Dashboard user={user} />;
+  return <Dashboard />;
 }

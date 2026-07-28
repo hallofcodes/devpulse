@@ -8,42 +8,64 @@ import Banner from "@/app/components/leaderboard/Banner";
 import BackButton from "@/app/components/leaderboard/BackButton";
 import Image from "next/image";
 import InviteFriendsButton from "@/app/components/leaderboard/InviteFriendsButton";
-import { createPublicClient } from "@/app/lib/supabase/public";
 import InternalServerError from "@/app/internal-server-error";
+import { prisma } from "@/app/lib/prisma";
 
 export async function generateStaticParams() {
-  const supabase = createPublicClient();
+  const leaderboards = await prisma.leaderboard.findMany({
+    select: { slug: true },
+  });
 
-  const { data } = await supabase.from("leaderboards").select("slug");
-
-  return (data || []).map((item) => ({
-    slug: item.slug,
-  }));
+  return leaderboards.map((item) => ({ slug: item.slug }));
 }
 
 export default async function LeaderboardPage(props: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await props.params;
-  const supabase = createPublicClient();
 
-  const { data: leaderboard, error: leaderboardError } = await supabase
-    .from("leaderboards")
-    .select("*")
-    .eq("slug", slug)
-    .single();
+  const leaderboard = await prisma.leaderboard.findUnique({
+    where: { slug },
+  });
+
   if (!leaderboard) return notFound();
-  if (leaderboardError) {
-    console.error("Error fetching leaderboard:", leaderboardError);
-    return InternalServerError();
-  }
 
-  const { data: members, error: membersError } = await supabase
-    .from("leaderboard_members_view")
-    .select("*")
-    .eq("leaderboard_id", leaderboard.id);
-  if (membersError) {
-    console.error("Error fetching members:", membersError);
+  let members: NonNullableMember[] = [];
+  try {
+    const rows = await prisma.leaderboardMember.findMany({
+      where: { leaderboardId: leaderboard.id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            role: true,
+            userStats: {
+              select: {
+                totalSeconds: true,
+                languages: true,
+                operatingSystems: true,
+                editors: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    members = rows
+      .filter((r) => r.user.email)
+      .map((r) => ({
+        user_id: r.userId,
+        role: r.role,
+        email: r.user.email!,
+        total_seconds: Number(r.user.userStats?.totalSeconds ?? 0),
+        languages: (r.user.userStats?.languages as { name: string }[]) ?? [],
+        operating_systems:
+          (r.user.userStats?.operatingSystems as { name: string }[]) ?? [],
+        editors: (r.user.userStats?.editors as { name: string }[]) ?? [],
+      }));
+  } catch {
     return InternalServerError();
   }
 
@@ -81,8 +103,7 @@ export default async function LeaderboardPage(props: {
                   {leaderboard.name}
                 </h1>
                 <p className="text-gray-400 mt-1 text-sm sm:text-base font-medium truncate sm:whitespace-normal leading-relaxed">
-                  {leaderboard.description &&
-                  leaderboard.description?.length > 0
+                  {leaderboard.description && leaderboard.description.length > 0
                     ? leaderboard.description
                     : `Join ${leaderboard.name} to track your coding metrics, compete with fellow developers, and showcase your engineering skills.`}
                 </p>
@@ -91,7 +112,7 @@ export default async function LeaderboardPage(props: {
 
             <div className="mb-2 sm:mb-3 shrink-0 scale-90 sm:scale-95 origin-bottom-right">
               <InviteFriendsButton
-                joinCode={leaderboard?.join_code}
+                joinCode={leaderboard.joinCode}
                 leaderboardName={leaderboard.name}
               />
             </div>
@@ -99,7 +120,7 @@ export default async function LeaderboardPage(props: {
         </div>
 
         <div className="px-4 sm:px-0">
-          <LeaderboardTable members={members as NonNullableMember[]} />
+          <LeaderboardTable members={members} />
         </div>
       </div>
 

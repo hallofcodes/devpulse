@@ -1,34 +1,25 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { createClient } from "../../../lib/supabase/client";
 import { toast } from "react-toastify";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
-import { User } from "@supabase/supabase-js";
 
-export default function ResetPassword({ user }: { user: User }) {
-  const supabase = createClient();
-  const [email] = useState(user?.email || "");
+export default function ResetPassword({ email }: { email: string }) {
   const [loading, setLoading] = useState(false);
   const captcha = useRef<HCaptcha>(null);
   const [showCaptcha, setShowCaptcha] = useState(false);
 
-  const handleCaptchaVerify = async (token: string) => {
+  const handleCaptchaVerify = async (_token: string) => {
     setShowCaptcha(false);
     setLoading(true);
 
-    const resetUserPassword = new Promise(async (resolve, reject) => {
-      try {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${location.origin}/update-password`,
-          captchaToken: token,
-        });
-
-        if (error) return reject(error);
-        resolve("Reset email sent!");
-      } catch (error) {
-        reject(error);
-      }
+    const resetUserPassword = fetch("/api/auth/forgot-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    }).then(async (res) => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
     });
 
     toast.promise(resetUserPassword, {
@@ -71,9 +62,12 @@ export default function ResetPassword({ user }: { user: User }) {
         </h3>
 
         <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3.5 mb-3.5">
-          <p className="text-sm text-white font-semibold mb-0.5">Reset Password</p>
+          <p className="text-sm text-white font-semibold mb-0.5">
+            Reset Password
+          </p>
           <p className="text-xs md:text-sm text-gray-400">
-            Send a secure reset link to <span className="text-gray-300">{email}</span>.
+            Send a secure reset link to{" "}
+            <span className="text-gray-300">{email}</span>.
           </p>
         </div>
 

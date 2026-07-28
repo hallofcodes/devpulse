@@ -86,7 +86,7 @@ const navItems: NavItem[] = [
     category: "other",
   },
   {
-    href: "https://hallofcodes.github.io",
+    href: "https://www.hallofcodes.org",
     label: "Hall of Codes",
     icon: faGlobe,
     role: "user",
@@ -104,7 +104,7 @@ export default function DashboardLayout({
   email: string;
   name: string;
   role: string;
-  avatar: string;
+  avatar: string | null;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();

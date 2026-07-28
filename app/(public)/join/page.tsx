@@ -1,5 +1,6 @@
 import { Metadata } from "next/types";
-import { createClient } from "../../lib/supabase/server";
+import { prisma } from "@/app/lib/prisma";
+import { getCurrentUser } from "@/app/lib/auth/user";
 import JoinButton from "../../components/JoinButton";
 import Footer from "@/app/components/layout/Footer";
 import Image from "next/image";
@@ -17,22 +18,21 @@ type Props = {
 };
 
 async function getLeaderboard(code: string) {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("leaderboards")
-    .select("id, name, description, slug, owner_id, created_at")
-    .eq("join_code", code)
-    .single();
-  return data;
+  return prisma.leaderboard.findUnique({
+    where: { joinCode: code },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      slug: true,
+      ownerId: true,
+      createdAt: true,
+    },
+  });
 }
 
 async function getMemberCount(leaderboardId: string) {
-  const supabase = await createClient();
-  const { count } = await supabase
-    .from("leaderboard_members_view")
-    .select("*", { count: "exact", head: true })
-    .eq("leaderboard_id", leaderboardId);
-  return count ?? 0;
+  return prisma.leaderboardMember.count({ where: { leaderboardId } });
 }
 
 export async function generateMetadata({
@@ -45,9 +45,7 @@ export async function generateMetadata({
     return {
       title: "Join - Devpulse",
       description: "Open an invite link to join a Devpulse leaderboard.",
-      alternates: {
-        canonical: "https://devpulse.hallofcodes.org/join",
-      },
+      alternates: { canonical: "https://devpulse.hallofcodes.org/join" },
     };
   }
 
@@ -56,17 +54,15 @@ export async function generateMetadata({
     return {
       title: "Invite Not Found - Devpulse",
       description: "This invite link is invalid or has expired.",
-      alternates: {
-        canonical: "https://devpulse.hallofcodes.org/join",
-      },
+      alternates: { canonical: "https://devpulse.hallofcodes.org/join" },
     };
   }
 
   const title = `You're invited to join ${leaderboard.name}!`;
   const description =
-    leaderboard.description && leaderboard.description?.length > 0
+    leaderboard.description && leaderboard.description.length > 0
       ? leaderboard.description
-      : `Join the ${leaderboard.name} leaderboard on Devpulse and compete with other developers. Track your coding activity and climb the ranks!`;
+      : `Join the ${leaderboard.name} leaderboard on Devpulse and compete with other developers.`;
 
   return {
     title: `${title} - Devpulse`,
@@ -74,18 +70,8 @@ export async function generateMetadata({
     alternates: {
       canonical: `https://devpulse.hallofcodes.org/join?id=${encodeURIComponent(code)}`,
     },
-    openGraph: {
-      title,
-      description,
-      type: "website",
-      siteName: "Devpulse",
-      url: `https://devpulse.hallofcodes.org/join?id=${encodeURIComponent(code)}`,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
+    openGraph: { title, description, type: "website", siteName: "Devpulse" },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 
@@ -118,7 +104,10 @@ export default async function JoinPage({ searchParams }: Props) {
     );
   }
 
-  const leaderboard = await getLeaderboard(code);
+  const [leaderboard, { user }] = await Promise.all([
+    getLeaderboard(code),
+    getCurrentUser(),
+  ]);
 
   if (!leaderboard) {
     return (
@@ -146,19 +135,17 @@ export default async function JoinPage({ searchParams }: Props) {
 
   const memberCount = await getMemberCount(leaderboard.id);
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
   let alreadyMember = false;
   if (user) {
-    const { data: membership } = await supabase
-      .from("leaderboard_members")
-      .select("id")
-      .eq("leaderboard_id", leaderboard.id)
-      .eq("user_id", user.id)
-      .single();
+    const membership = await prisma.leaderboardMember.findUnique({
+      where: {
+        leaderboardId_userId: {
+          leaderboardId: leaderboard.id,
+          userId: user.id,
+        },
+      },
+      select: { id: true },
+    });
     alreadyMember = !!membership;
   }
 
@@ -177,8 +164,8 @@ export default async function JoinPage({ searchParams }: Props) {
 
           <p className="text-xs uppercase tracking-[0.2em] text-indigo-400 font-semibold mb-3">
             {alreadyMember
-              ? "You\u2019re already a member of"
-              : "You\u2019ve been invited to"}
+              ? "You’re already a member of"
+              : "You’ve been invited to"}
           </p>
 
           <h1 className="text-2xl md:text-3xl font-bold gradient-text mb-2">

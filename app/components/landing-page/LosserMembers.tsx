@@ -36,8 +36,8 @@ export default function LosserMembers({
                 Lower Activity Leaderboard
               </h2>
               <p className="text-gray-400 text-sm md:text-base">
-                Surface developers who may need support, context, or better
-                task flow.
+                Surface developers who may need support, context, or better task
+                flow.
               </p>
             </div>
             <span className="inline-flex items-center rounded-full border border-indigo-400/30 bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-300">
@@ -67,7 +67,10 @@ export default function LosserMembers({
 
             <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4">
               {visibleMembers.map(
-                (member: { email: string; total_seconds: number }, i: number) => {
+                (
+                  member: { email: string; total_seconds: number },
+                  i: number,
+                ) => {
                   const progress = Math.min(
                     100,
                     (member.total_seconds / (4 * 3600)) * 100,
@@ -102,7 +105,8 @@ export default function LosserMembers({
                       </div>
 
                       <p className="text-[11px] text-gray-500 uppercase tracking-[0.1em]">
-                        Activity signal: {getActivitySignal(member.total_seconds)}
+                        Activity signal:{" "}
+                        {getActivitySignal(member.total_seconds)}
                       </p>
                     </article>
                   );

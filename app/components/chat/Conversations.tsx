@@ -1,5 +1,4 @@
-import { User } from "@supabase/supabase-js";
-import { Conversation, TypingState } from "../Chat";
+import { Conversation, TypingState, ChatUserShape } from "../Chat";
 
 export default function Conversations({
   conversations,
@@ -12,7 +11,7 @@ export default function Conversations({
   showLabel = true,
 }: {
   conversations: Conversation[];
-  user: User;
+  user: ChatUserShape;
   conversationId: string | null;
   setConversationId: (id: string) => void;
   unreadCountByConversationId?: Record<string, number>;
@@ -30,7 +29,7 @@ export default function Conversations({
         const isOnline = !!otherUser?.id && !!onlineByUserId?.[otherUser.id];
         const typingState = typingByConversationId?.[conv.id];
         const isTyping = !!typingState;
-        
+
         let label = "Global Chat";
         let sublabel = "Public Channel";
         let initials = "G";
@@ -115,4 +114,3 @@ export default function Conversations({
     </div>
   );
 }
-

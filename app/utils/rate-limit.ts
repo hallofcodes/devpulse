@@ -1,7 +1,11 @@
 // in-memory so on serverless each instance has its own count (redis/kv if you need it shared)
 const ipRequests: Record<string, { count: number; firstRequest: number }> = {};
 
-export function checkRateLimit(ip: string, maxRequests: number, rateLimitWindow: number): boolean {
+export function checkRateLimit(
+  ip: string,
+  maxRequests: number,
+  rateLimitWindow: number,
+): boolean {
   const now = Date.now();
 
   if (!ipRequests[ip]) {

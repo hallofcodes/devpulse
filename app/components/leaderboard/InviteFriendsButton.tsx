@@ -4,7 +4,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShareNodes } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 
-export default function InviteFriendsButton({ joinCode, leaderboardName }: { joinCode?: string; leaderboardName?: string }) {
+export default function InviteFriendsButton({
+  joinCode,
+  leaderboardName,
+}: {
+  joinCode?: string;
+  leaderboardName?: string;
+}) {
   const handleInvite = () => {
     if (typeof window !== "undefined") {
       const inviteUrl = joinCode

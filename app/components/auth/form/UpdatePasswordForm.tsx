@@ -1,40 +1,29 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { createClient } from "@/app/lib/supabase/client";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { toast } from "react-toastify";
 
 export default function UpdatePasswordForm() {
-  const supabase = createClient();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const captcha = useRef<HCaptcha>(null);
   const [showCaptcha, setShowCaptcha] = useState(false);
 
-  const handleCaptchaVerify = async (token: string) => {
-    // Optionally use token here when implemented to backend
-    void token;
+  const handleCaptchaVerify = async (_token: string) => {
     setShowCaptcha(false);
     setLoading(true);
 
-    const updateUserPassword = new Promise(async (resolve, reject) => {
-      try {
-        if (password !== confirmPassword) {
-          return reject(new Error("Passwords do not match!"));
-        }
-
-        const { error } = await supabase.auth.updateUser({
-          password,
-          // options: { captchaToken: token },
-        });
-
-        if (error) return reject(error);
-        resolve("Password updated!");
-      } catch (error) {
-        reject(error);
-      }
+    const updateUserPassword = fetch("/api/auth/update-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    }).then(async (res) => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      if (password !== confirmPassword)
+        throw new Error("Passwords do not match!");
     });
 
     toast.promise(updateUserPassword, {

@@ -1,5 +1,4 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/app/supabase-types";
+import { Prisma } from "@prisma/client";
 import {
   buildSnapshotMetrics,
   formatDateYMD,
@@ -12,8 +11,6 @@ import {
   upsertUserProjects,
   upsertUserStats,
 } from "./repository";
-
-type AppSupabaseClient = SupabaseClient<Database>;
 
 const CONSISTENCY_DAYS = 365;
 const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
@@ -38,14 +35,12 @@ type WakaSummaryDay = {
 };
 
 type SyncWakatimeInput = {
-  supabase: AppSupabaseClient;
   userId: string;
   incomingApiKey: string;
   storedApiKey: string | null | undefined;
 };
 
 type SaveWakatimeApiKeyInput = {
-  supabase: AppSupabaseClient;
   userId: string;
   apiKey: string;
 };
@@ -71,7 +66,11 @@ function getWindowRange() {
   };
 }
 
-async function fetchWakatimeData(apiKey: string, startStr: string, endStr: string) {
+async function fetchWakatimeData(
+  apiKey: string,
+  startStr: string,
+  endStr: string,
+) {
   const authHeader = `Basic ${Buffer.from(apiKey).toString("base64")}`;
 
   const [statsResponse, summariesResponse] = await Promise.all([
@@ -80,9 +79,7 @@ async function fetchWakatimeData(apiKey: string, startStr: string, endStr: strin
     }),
     fetch(
       `https://wakatime.com/api/v1/users/current/summaries?start=${startStr}&end=${endStr}`,
-      {
-        headers: { Authorization: authHeader },
-      },
+      { headers: { Authorization: authHeader } },
     ),
   ]);
 
@@ -90,11 +87,7 @@ async function fetchWakatimeData(apiKey: string, startStr: string, endStr: strin
   const summariesData = await summariesResponse.json();
 
   if (!statsResponse.ok || !summariesResponse.ok) {
-    return {
-      ok: false,
-      stats: null,
-      summaries: null,
-    } as const;
+    return { ok: false, stats: null, summaries: null } as const;
   }
 
   return {
@@ -104,16 +97,21 @@ async function fetchWakatimeData(apiKey: string, startStr: string, endStr: strin
   } as const;
 }
 
+/**
+ * Validates the format of a WakaTime API key.
+ * Returns an error string if invalid, or null if valid.
+ */
 export function validateWakatimeApiKey(apiKey: string) {
   if (apiKey && (!apiKey.trim() || !WAKATIME_API_KEY_PATTERN.test(apiKey))) {
     return "Please enter a valid WakaTime API key.";
   }
-
   return null;
 }
 
+/**
+ * Saves a new WakaTime API key to the user's profile without triggering a sync.
+ */
 export async function saveWakatimeApiKey({
-  supabase,
   userId,
   apiKey,
 }: SaveWakatimeApiKeyInput): Promise<SyncWakatimeResult> {
@@ -127,70 +125,53 @@ export async function saveWakatimeApiKey({
     };
   }
 
-  const { error: profileError } = await updateProfileWakatimeApiKey(
-    supabase,
-    userId,
-    normalizedApiKey,
-  );
-
-  if (profileError) {
-    if (profileError.code === "23505") {
+  try {
+    await updateProfileWakatimeApiKey(userId, normalizedApiKey);
+    return { status: 200, success: true, data: null };
+  } catch (err) {
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2002"
+    ) {
       return {
         status: 400,
         success: false,
         error: "This WakaTime API key is already in use.",
       };
     }
-
-    return {
-      status: 500,
-      success: false,
-      error: "Failed to update API key",
-    };
+    return { status: 500, success: false, error: "Failed to update API key" };
   }
-
-  return {
-    status: 200,
-    success: true,
-    data: null,
-  };
 }
 
+/**
+ * Fetches WakaTime data and upserts stats, projects, and a daily snapshot.
+ * Skips the remote fetch if data is fresh (< 6 hours old) and the key hasn't changed.
+ */
 export async function syncWakatimeData({
-  supabase,
   userId,
   incomingApiKey,
   storedApiKey,
 }: SyncWakatimeInput): Promise<SyncWakatimeResult> {
   const normalizedIncomingApiKey = incomingApiKey.trim();
-  const resolvedApiKey =
-    normalizedIncomingApiKey || storedApiKey?.trim() || "";
+  const resolvedApiKey = normalizedIncomingApiKey || storedApiKey?.trim() || "";
 
   if (!resolvedApiKey) {
-    return {
-      status: 400,
-      success: false,
-      error: "No API key found",
-    };
+    return { status: 400, success: false, error: "No API key found" };
   }
 
   if (!normalizedIncomingApiKey) {
-    const { data: existing } = await getExistingUserStats(supabase, userId);
-    const existingDailyStats = Array.isArray(existing?.daily_stats)
-      ? existing.daily_stats
+    const existing = await getExistingUserStats(userId);
+    const existingDailyStats = Array.isArray(existing?.dailyStats)
+      ? existing.dailyStats
       : [];
 
-    if (existing?.last_fetched_at) {
-      const lastFetch = new Date(existing.last_fetched_at).getTime();
+    if (existing?.lastFetchedAt) {
+      const lastFetch = new Date(existing.lastFetchedAt).getTime();
       if (
         Date.now() - lastFetch < SIX_HOURS_MS &&
-        existingDailyStats.length >= CONSISTENCY_DAYS
+        (existingDailyStats as unknown[]).length >= CONSISTENCY_DAYS
       ) {
-        return {
-          status: 200,
-          success: true,
-          data: existing,
-        };
+        return { status: 200, success: true, data: existing };
       }
     }
   }
@@ -207,26 +188,20 @@ export async function syncWakatimeData({
   }
 
   if (normalizedIncomingApiKey) {
-    const { error: profileError } = await updateProfileWakatimeApiKey(
-      supabase,
-      userId,
-      normalizedIncomingApiKey,
-    );
-
-    if (profileError) {
-      if (profileError.code === "23505") {
+    try {
+      await updateProfileWakatimeApiKey(userId, normalizedIncomingApiKey);
+    } catch (err) {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === "P2002"
+      ) {
         return {
           status: 400,
           success: false,
           error: "This WakaTime API key is already in use.",
         };
       }
-
-      return {
-        status: 500,
-        success: false,
-        error: "Failed to update API key",
-      };
+      return { status: 500, success: false, error: "Failed to update API key" };
     }
   }
 
@@ -243,42 +218,27 @@ export async function syncWakatimeData({
 
   const nowIso = new Date().toISOString();
 
-  const statsPayload: Database["public"]["Tables"]["user_stats"]["Insert"] = {
-    user_id: userId,
-    total_seconds: Math.floor(waka.stats.total_seconds || 0),
-    daily_average: Math.floor(waka.stats.daily_average || 0),
-    languages:
-      (waka.stats.languages || []) as Database["public"]["Tables"]["user_stats"]["Insert"]["languages"],
-    operating_systems:
-      (waka.stats.operating_systems || []) as Database["public"]["Tables"]["user_stats"]["Insert"]["operating_systems"],
-    editors:
-      (waka.stats.editors || []) as Database["public"]["Tables"]["user_stats"]["Insert"]["editors"],
-    machines:
-      (waka.stats.machines || []) as Database["public"]["Tables"]["user_stats"]["Insert"]["machines"],
-    categories:
-      (waka.stats.categories || []) as Database["public"]["Tables"]["user_stats"]["Insert"]["categories"],
-    dependencies:
-      (waka.stats.dependencies || []) as Database["public"]["Tables"]["user_stats"]["Insert"]["dependencies"],
-    best_day:
-      (waka.stats.best_day || {}) as Database["public"]["Tables"]["user_stats"]["Insert"]["best_day"],
-    daily_stats:
-      dailyStats as Database["public"]["Tables"]["user_stats"]["Insert"]["daily_stats"],
-    last_fetched_at: nowIso,
-  };
-
-  const projectsPayload: Database["public"]["Tables"]["user_projects"]["Insert"] = {
-    user_id: userId,
-    projects:
-      (waka.stats.projects || []) as Database["public"]["Tables"]["user_projects"]["Insert"]["projects"],
-    last_fetched_at: nowIso,
-  };
-
-  const [
-    { data: statsResult, error: statsError },
-    { data: projectsResult, error: projectsError },
-  ] = await Promise.all([
-    upsertUserStats(supabase, statsPayload),
-    upsertUserProjects(supabase, projectsPayload),
+  const [statsResult, projectsResult] = await Promise.all([
+    upsertUserStats({
+      userId,
+      totalSeconds: BigInt(Math.floor(waka.stats.total_seconds || 0)),
+      dailyAverage: BigInt(Math.floor(waka.stats.daily_average || 0)),
+      languages: (waka.stats.languages || []) as Prisma.InputJsonValue,
+      operatingSystems: (waka.stats.operating_systems ||
+        []) as Prisma.InputJsonValue,
+      editors: (waka.stats.editors || []) as Prisma.InputJsonValue,
+      machines: (waka.stats.machines || []) as Prisma.InputJsonValue,
+      categories: (waka.stats.categories || []) as Prisma.InputJsonValue,
+      dependencies: (waka.stats.dependencies || []) as Prisma.InputJsonValue,
+      bestDay: (waka.stats.best_day || {}) as Prisma.InputJsonValue,
+      dailyStats: dailyStats as unknown as Prisma.InputJsonValue,
+      lastFetchedAt: new Date(nowIso),
+    }),
+    upsertUserProjects({
+      userId,
+      projects: (waka.stats.projects || []) as Prisma.InputJsonValue,
+      lastFetchedAt: new Date(nowIso),
+    }),
   ]);
 
   const mergedResult = {
@@ -286,32 +246,33 @@ export async function syncWakatimeData({
     projects: projectsResult?.projects || [],
   };
 
-  const { error: snapshotError } = await upsertUserDashboardSnapshot(supabase, {
-    user_id: userId,
-    snapshot_date: endStr,
-    total_seconds_7d: snapshotMetrics.totalSeconds7d,
-    active_days_7d: snapshotMetrics.activeDays7d,
-    consistency_percent: snapshotMetrics.consistencyPercent,
-    current_streak: snapshotMetrics.currentStreak,
-    best_streak: snapshotMetrics.bestStreak,
-    peak_day: snapshotMetrics.peakDayDate,
-    peak_day_seconds: snapshotMetrics.peakDaySeconds,
-    top_language: topLanguage?.name || null,
-    top_language_percent:
-      typeof topLanguage?.percent === "number"
-        ? Number(topLanguage.percent.toFixed(2))
+  try {
+    await upsertUserDashboardSnapshot({
+      userId,
+      snapshotDate: new Date(endStr),
+      totalSeconds7d: BigInt(snapshotMetrics.totalSeconds7d),
+      activeDays7d: snapshotMetrics.activeDays7d,
+      consistencyPercent: snapshotMetrics.consistencyPercent,
+      currentStreak: snapshotMetrics.currentStreak,
+      bestStreak: snapshotMetrics.bestStreak,
+      peakDay: snapshotMetrics.peakDayDate
+        ? new Date(snapshotMetrics.peakDayDate)
         : null,
-    updated_at: nowIso,
-  });
-
-  if (snapshotError) {
-    console.error("Failed to upsert user dashboard snapshot", snapshotError);
+      peakDaySeconds: BigInt(snapshotMetrics.peakDaySeconds),
+      topLanguage: topLanguage?.name || null,
+      topLanguagePercent:
+        typeof topLanguage?.percent === "number"
+          ? new Prisma.Decimal(topLanguage.percent.toFixed(2))
+          : null,
+      updatedAt: new Date(nowIso),
+    });
+  } catch (err) {
+    console.error("Failed to upsert user dashboard snapshot", err);
   }
 
   return {
     status: 200,
-    success: !!statsResult && !statsError && !projectsError,
+    success: true,
     data: mergedResult,
-    error: statsError || projectsError,
   };
 }

@@ -223,7 +223,6 @@ export default function Player({
     return { menuCenterX, arrowX };
   };
 
-
   useLayoutEffect(() => {
     if (!showSettings) return;
     const update = () => {

@@ -11,14 +11,21 @@ const formatHours = (seconds: number) => {
   return `${h}h ${m}m`;
 };
 
-export default function LeaderboardStats({ members }: { members: NonNullableMember[] }) {
+export default function LeaderboardStats({
+  members,
+}: {
+  members: NonNullableMember[];
+}) {
   useEffect(() => {
     setTimeout(() => {
       AOS.refresh();
     }, 200);
   }, []);
 
-  const totalSeconds = members.reduce((acc, m) => acc + (m.total_seconds || 0), 0);
+  const totalSeconds = members.reduce(
+    (acc, m) => acc + (m.total_seconds || 0),
+    0,
+  );
   const totalDevs = members.length;
 
   const languageTime: Record<string, number> = {};
@@ -28,19 +35,23 @@ export default function LeaderboardStats({ members }: { members: NonNullableMemb
   members.forEach((m) => {
     const seenEditors = new Set<string>();
 
-    (m.languages as { name?: string; total_seconds?: number }[] || []).forEach((l: { name?: string; total_seconds?: number } | string) => {
+    (
+      (m.languages as { name?: string; total_seconds?: number }[]) || []
+    ).forEach((l: { name?: string; total_seconds?: number } | string) => {
       const name = typeof l === "string" ? l : l.name || "Unknown";
       const secs = typeof l === "string" ? 3600 : l.total_seconds || 3600;
       languageTime[name] = (languageTime[name] || 0) + secs;
     });
-    (m.editors as { name?: string; total_seconds?: number }[] || []).forEach((e: { name?: string; total_seconds?: number } | string) => {
-      const name = typeof e === "string" ? e : e.name || "Unknown";
-      const secs = typeof e === "string" ? 3600 : e.total_seconds || 3600;
-      editorTime[name] = (editorTime[name] || 0) + secs;
-      seenEditors.add(name);
-    });
+    ((m.editors as { name?: string; total_seconds?: number }[]) || []).forEach(
+      (e: { name?: string; total_seconds?: number } | string) => {
+        const name = typeof e === "string" ? e : e.name || "Unknown";
+        const secs = typeof e === "string" ? 3600 : e.total_seconds || 3600;
+        editorTime[name] = (editorTime[name] || 0) + secs;
+        seenEditors.add(name);
+      },
+    );
 
-    seenEditors.forEach(name => {
+    seenEditors.forEach((name) => {
       editorUsers[name] = (editorUsers[name] || 0) + 1;
     });
   });
@@ -49,7 +60,7 @@ export default function LeaderboardStats({ members }: { members: NonNullableMemb
     .map(([name, total_seconds]) => ({
       name,
       total_seconds,
-      percent: (total_seconds / Math.max(totalSeconds, 1)) * 100
+      percent: (total_seconds / Math.max(totalSeconds, 1)) * 100,
     }))
     .sort((a, b) => b.total_seconds - a.total_seconds);
 
@@ -75,7 +86,7 @@ export default function LeaderboardStats({ members }: { members: NonNullableMemb
       label: "Total Coding",
       value: totalHoursFormatted,
       sub: "Leaderboard Total",
-      trend: `${totalDevs} Dev${totalDevs !== 1 ? 's' : ''}`,
+      trend: `${totalDevs} Dev${totalDevs !== 1 ? "s" : ""}`,
       trendUp: true,
     },
     {
@@ -96,13 +107,16 @@ export default function LeaderboardStats({ members }: { members: NonNullableMemb
       label: "Top Editor",
       value: topEditor,
       sub: formatHours(editorList[0]?.total_seconds || 0),
-      trend: `${topEditorCount} Dev${topEditorCount !== 1 ? 's' : ''}`,
+      trend: `${topEditorCount} Dev${topEditorCount !== 1 ? "s" : ""}`,
       trendUp: true,
     },
   ];
 
   return (
-    <div className="w-full xl:w-64 shrink-0 h-fit rounded-2xl hidden lg:flex flex-col gap-6" data-aos="fade-in">
+    <div
+      className="w-full xl:w-64 shrink-0 h-fit rounded-2xl hidden lg:flex flex-col gap-6"
+      data-aos="fade-in"
+    >
       <div className="glass-card p-5 rounded-2xl flex flex-col gap-6">
         <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1 flex items-center justify-start gap-2">
           Leaderboard Stats
@@ -137,7 +151,6 @@ export default function LeaderboardStats({ members }: { members: NonNullableMemb
           ))}
         </div>
       </div>
-
     </div>
   );
 }

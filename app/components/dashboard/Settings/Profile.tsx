@@ -1,29 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "../../../lib/supabase/client";
 import { toast } from "react-toastify";
-import type { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import { useBadWords } from "@/app/hooks/useBadWords";
 import { sanitizeTextWithBlocklist } from "@/app/utils/moderation";
 
-export default function UserProfile({ user }: { user: User }) {
-  const supabase = createClient();
-  const initialName =
-    user?.user_metadata?.name ||
-    user?.email?.split("@")[0] ||
-    "User";
+interface UserShape {
+  id: string;
+  name: string | null;
+  email: string | null;
+  image: string | null;
+}
+
+export default function UserProfile({ user }: { user: UserShape }) {
+  const initialName = user.name || user.email?.split("@")[0] || "User";
   const [originalName, setOriginalName] = useState(initialName);
   const [name, setName] = useState(initialName);
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const { badWords } = useBadWords();
-  const preferredAvatar =
-    user?.user_metadata?.avatar_url ||
-    user?.user_metadata?.picture ||
-    user?.user_metadata?.avatar ||
-    "/logo.svg";
+  const preferredAvatar = user.image || "/logo.svg";
 
   const isEdited = name.trim() !== originalName.trim();
 
@@ -52,17 +49,13 @@ export default function UserProfile({ user }: { user: User }) {
 
     setLoading(true);
 
-    const updateUserProfile = new Promise(async (resolve, reject) => {
-      try {
-        const { error } = await supabase.auth.updateUser({
-          data: { name: sanitizedName },
-        });
-
-        if (error) return reject(error);
-        resolve("Profile updated!");
-      } catch (error) {
-        reject(error);
-      }
+    const updateUserProfile = fetch("/api/profile", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: sanitizedName }),
+    }).then(async (res) => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
     });
 
     toast.promise(updateUserProfile, {
@@ -78,10 +71,9 @@ export default function UserProfile({ user }: { user: User }) {
     });
 
     updateUserProfile.then(() => {
-      const nextName = sanitizedName;
       setLoading(false);
-      setOriginalName(nextName);
-      setName(nextName);
+      setOriginalName(sanitizedName);
+      setName(sanitizedName);
       setIsEditing(false);
     });
   }
@@ -94,7 +86,8 @@ export default function UserProfile({ user }: { user: User }) {
             Account Profile
           </h3>
           <p className="text-xs md:text-sm text-gray-400 mt-1.5">
-            Keep your profile details accurate for a better dashboard experience.
+            Keep your profile details accurate for a better dashboard
+            experience.
           </p>
         </div>
 
@@ -117,14 +110,18 @@ export default function UserProfile({ user }: { user: User }) {
           className="rounded-full border border-white/10"
         />
         <div>
-          <p className="text-white font-semibold leading-none mb-1">{originalName}</p>
+          <p className="text-white font-semibold leading-none mb-1">
+            {originalName}
+          </p>
           <p className="text-xs text-gray-500">{user.email || "No email"}</p>
         </div>
       </div>
 
       <div className="space-y-3">
         <div>
-          <label className="text-xs md:text-sm text-gray-400 font-medium">Display Name</label>
+          <label className="text-xs md:text-sm text-gray-400 font-medium">
+            Display Name
+          </label>
           <input
             type="text"
             className={`input-field mt-1 ${!isEditing ? "opacity-70" : ""}`}
@@ -135,7 +132,9 @@ export default function UserProfile({ user }: { user: User }) {
         </div>
 
         <div>
-          <label className="text-xs md:text-sm text-gray-400 font-medium">Email</label>
+          <label className="text-xs md:text-sm text-gray-400 font-medium">
+            Email
+          </label>
           <input
             type="email"
             className="input-field mt-1 opacity-70"

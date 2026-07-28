@@ -1,10 +1,10 @@
-import { getUserWithProfile } from "@/app/lib/supabase/help/user";
+import { getCurrentUser } from "@/app/lib/auth/user";
 import Image from "next/image";
 import Link from "next/link";
 import NavProfileDropdown from "../common/NavProfileDropdown";
 
 export default async function Nav() {
-  const { user } = await getUserWithProfile();
+  const { user } = await getCurrentUser();
 
   return (
     <header className="absolute top-0 w-full z-50">
@@ -20,14 +20,9 @@ export default async function Nav() {
 
         {user ? (
           <NavProfileDropdown
-            avatar={
-              user.user_metadata?.avatar_url ||
-              user.user_metadata?.picture ||
-              user.user_metadata?.avatar ||
-              null
-            }
-            name={user.user_metadata?.name || user.email!.split("@")[0]}
-            email={user.email!}
+            avatar={user.image ?? null}
+            name={user.name ?? user.email?.split("@")[0] ?? ""}
+            email={user.email ?? ""}
             type="navbar"
           />
         ) : (

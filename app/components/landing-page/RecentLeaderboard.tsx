@@ -73,7 +73,9 @@ export default function RecentLeaderboard({
                     <p className="text-[10px] uppercase tracking-[0.1em] text-gray-500 mb-1">
                       Status
                     </p>
-                    <p className="text-xs font-semibold text-indigo-300">Live</p>
+                    <p className="text-xs font-semibold text-indigo-300">
+                      Live
+                    </p>
                   </div>
                   <div className="rounded-xl border border-white/5 bg-white/[0.01] px-3 py-2.5">
                     <p className="text-[10px] uppercase tracking-[0.1em] text-gray-500 mb-1">
@@ -85,7 +87,9 @@ export default function RecentLeaderboard({
                     <p className="text-[10px] uppercase tracking-[0.1em] text-gray-500 mb-1">
                       Action
                     </p>
-                    <p className="text-xs font-semibold text-indigo-200">Enter</p>
+                    <p className="text-xs font-semibold text-indigo-200">
+                      Enter
+                    </p>
                   </div>
                 </div>
               </div>
@@ -94,7 +98,10 @@ export default function RecentLeaderboard({
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
             {arenaBoards.map(
-              (board: { id: string; name: string; slug: string }, i: number) => (
+              (
+                board: { id: string; name: string; slug: string },
+                i: number,
+              ) => (
                 <Link
                   key={board.id}
                   href={`/leaderboard/${board.slug}`}

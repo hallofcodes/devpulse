@@ -57,7 +57,10 @@ export default function VibeCoders({
 
             <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4">
               {visibleVibeCoders.map(
-                (member: { email: string; total_seconds: number }, i: number) => (
+                (
+                  member: { email: string; total_seconds: number },
+                  i: number,
+                ) => (
                   <article
                     key={`${member.email}-${i}`}
                     className="glass-card border-white/5 bg-white/[0.015] rounded-xl p-4"

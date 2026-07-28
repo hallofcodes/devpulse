@@ -25,13 +25,17 @@ export default function StatsCard({
           <div
             key={card.label}
             className={`group flex flex-col ${
-              idx > 0 ? "xl:border-l xl:pl-8 xl:pt-0 xl:border-t-0 border-gray-800/50 " : ""
+              idx > 0
+                ? "xl:border-l xl:pl-8 xl:pt-0 xl:border-t-0 border-gray-800/50 "
+                : ""
             }${
-              idx % 2 !== 0 ? "sm:border-l sm:pl-8 border-gray-800/50 " : "sm:pr-8 xl:pr-0 "
-            }${
-              idx >= 2 ? "sm:border-t sm:pt-8 border-gray-800/50 " : ""
-            }${
-              idx === 4 ? "sm:col-span-2 xl:col-span-1 sm:border-l-0 sm:pl-0 sm:pr-0 xl:border-l xl:pl-8" : ""
+              idx % 2 !== 0
+                ? "sm:border-l sm:pl-8 border-gray-800/50 "
+                : "sm:pr-8 xl:pr-0 "
+            }${idx >= 2 ? "sm:border-t sm:pt-8 border-gray-800/50 " : ""}${
+              idx === 4
+                ? "sm:col-span-2 xl:col-span-1 sm:border-l-0 sm:pl-0 sm:pr-0 xl:border-l xl:pl-8"
+                : ""
             }`}
           >
             <div className="flex items-center justify-between mb-3">
@@ -73,4 +77,3 @@ export default function StatsCard({
     </div>
   );
 }
-

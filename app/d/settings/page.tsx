@@ -2,7 +2,7 @@ import { Metadata } from "next/types";
 import UserProfile from "@/app/components/dashboard/Settings/Profile";
 import ResetPassword from "@/app/components/dashboard/Settings/ResetPassword";
 import WakaTimeKey from "@/app/components/dashboard/Settings/WakaTimeKey";
-import { getUserWithProfile } from "@/app/lib/supabase/help/user";
+import { getCurrentUser } from "@/app/lib/auth/user";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
@@ -10,12 +10,12 @@ export const metadata: Metadata = {
 };
 
 export default async function SettingsPage() {
-  const { user, profile } = await getUserWithProfile();
+  const { user } = await getCurrentUser();
   if (!user) return redirect("/login?from=/settings");
 
-  const hasWakaKey = Boolean(profile?.wakatime_api_key);
-  const maskedWakaKey = profile?.wakatime_api_key
-    ? `${profile.wakatime_api_key.slice(0, 8)}...${profile.wakatime_api_key.slice(-4)}`
+  const hasWakaKey = Boolean(user.wakatimeApiKey);
+  const maskedWakaKey = user.wakatimeApiKey
+    ? `${user.wakatimeApiKey.slice(0, 8)}...${user.wakatimeApiKey.slice(-4)}`
     : null;
 
   return (
@@ -45,18 +45,16 @@ export default async function SettingsPage() {
         </div>
       </div>
 
-      {user && (
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 items-start">
-          <div className="xl:col-span-2 space-y-4">
-            <UserProfile user={user} />
-            <WakaTimeKey hasKey={hasWakaKey} maskedKey={maskedWakaKey} />
-          </div>
-
-          <div className="xl:col-span-1">
-            <ResetPassword user={user} />
-          </div>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 items-start">
+        <div className="xl:col-span-2 space-y-4">
+          <UserProfile user={user} />
+          <WakaTimeKey hasKey={hasWakaKey} maskedKey={maskedWakaKey} />
         </div>
-      )}
+
+        <div className="xl:col-span-1">
+          <ResetPassword email={user.email!} />
+        </div>
+      </div>
     </div>
   );
 }

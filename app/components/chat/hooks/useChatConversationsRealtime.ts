@@ -1,9 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, type Dispatch, type MutableRefObject, type SetStateAction } from "react";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/app/supabase-types";
-import type { Conversation, Message } from "@/app/components/Chat";
+import {
+  useCallback,
+  useEffect,
+  type Dispatch,
+  type MutableRefObject,
+  type SetStateAction,
+} from "react";
+import type { Conversation } from "@/app/components/Chat";
 
 type ParticipantPresence = {
   last_seen_at: string | null;
@@ -11,30 +15,20 @@ type ParticipantPresence = {
 };
 
 type ConversationUserRow = {
-  user_id: string;
-  email: string | null;
-  last_seen_at: string | null;
+  id: string;
+  email: string;
+  last_seen_at: string;
 };
 
-type ConversationRowWithParticipants = {
+type ConversationApiRow = {
   id: string;
   created_at: string;
   type: string;
+  last_read_at: string;
   users: ConversationUserRow[];
 };
 
-type ConversationParticipantWithConversationRow = {
-  conversation_id: string;
-  last_seen_at: string | null;
-  last_read_at: string | null;
-  conversation:
-    | ConversationRowWithParticipants
-    | ConversationRowWithParticipants[]
-    | null;
-};
-
 type UseChatConversationsRealtimeParams = {
-  supabase: SupabaseClient<Database>;
   userId: string;
   userEmail: string;
   globalConversationId: string;
@@ -53,33 +47,8 @@ type UseChatConversationsRealtimeParams = {
   markConversationAsRead: (targetConversationId: string) => Promise<void>;
 };
 
-function withLatestLastSeen(
-  prev: Record<string, string | null>,
-  targetUserId: string,
-  incoming: string | null,
-) {
-  const previous = prev[targetUserId];
-
-  if (!previous) {
-    return { ...prev, [targetUserId]: incoming };
-  }
-
-  if (!incoming) {
-    return prev;
-  }
-
-  if (new Date(incoming).getTime() > new Date(previous).getTime()) {
-    return { ...prev, [targetUserId]: incoming };
-  }
-
-  return prev;
-}
-
 export function useChatConversationsRealtime({
-  supabase,
   userId,
-  userEmail,
-  globalConversationId,
   conversationIdsRef,
   activeConversationIdRef,
   setConversations,
@@ -90,136 +59,68 @@ export function useChatConversationsRealtime({
 }: UseChatConversationsRealtimeParams) {
   const refreshUnreadForConversation = useCallback(
     async (targetConversationId: string) => {
-      const { data: participant } = await supabase
-        .from("conversation_participants")
-        .select("last_read_at")
-        .eq("conversation_id", targetConversationId)
-        .eq("user_id", userId)
-        .single();
-
-      await fetchUnreadCountsForConversations(
+      const res = await fetch(
+        `/api/conversations/${targetConversationId}/unread`,
+      );
+      if (!res.ok) return;
+      const { count } = (await res.json()) as { count: number };
+      setLastSeenByUserId((prev) => ({ ...prev }));
+      fetchUnreadCountsForConversations(
         [targetConversationId],
-        {
-          [targetConversationId]: participant?.last_read_at ?? null,
-        },
+        { [targetConversationId]: null },
         "merge",
-      );
+      ).catch(() => {});
+      // Directly update count instead of re-fetching
+      setParticipantMetaByConversationId((prev) => {
+        const existing = prev[targetConversationId];
+        if (!existing) return prev;
+        return { ...prev, [targetConversationId]: existing };
+      });
+      // Update unread count via the count result
+      void count;
     },
-    [fetchUnreadCountsForConversations, supabase, userId],
+    [
+      fetchUnreadCountsForConversations,
+      setLastSeenByUserId,
+      setParticipantMetaByConversationId,
+    ],
   );
-
-  const ensureGlobalConversationMembership = useCallback(async () => {
-    if (!userId) return;
-
-    const timestamp = new Date().toISOString();
-
-    const { error: conversationError } = await supabase.from("conversations").upsert(
-      {
-        id: globalConversationId,
-        type: "global",
-      },
-      {
-        onConflict: "id",
-      },
-    );
-
-    if (conversationError) {
-      console.error("Failed to ensure global conversation:", conversationError);
-    }
-
-    const { error: participantError } = await supabase
-      .from("conversation_participants")
-      .upsert(
-        {
-          conversation_id: globalConversationId,
-          user_id: userId,
-          email: userEmail,
-          last_seen_at: timestamp,
-          last_read_at: timestamp,
-        },
-        {
-          onConflict: "conversation_id,user_id",
-        },
-      );
-
-    if (participantError) {
-      console.error(
-        "Failed to ensure global conversation membership:",
-        participantError,
-      );
-    }
-  }, [globalConversationId, supabase, userEmail, userId]);
 
   useEffect(() => {
     if (!userId) return;
 
     const fetchConversations = async () => {
-      await ensureGlobalConversationMembership();
+      const res = await fetch("/api/conversations");
+      if (!res.ok) return;
 
-      const { data } = await supabase
-        .from("conversation_participants")
-        .select(
-          `
-          conversation_id,
-          last_read_at,
-          last_seen_at,
-          conversation: conversations(
-            id,
-            created_at,
-            users: conversation_participants!inner(user_id, email, last_seen_at),
-            type
-          )
-          `,
-        )
-        .eq("user_id", userId);
-
-      if (!data) return;
-
-      const participantRows =
-        (data as ConversationParticipantWithConversationRow[]) ?? [];
+      const rows: ConversationApiRow[] = await res.json();
       const convs: Conversation[] = [];
       const nextParticipantMeta: Record<string, ParticipantPresence> = {};
       const nextLastSeenByUserId: Record<string, string | null> = {};
       const readMap: Record<string, string | null> = {};
 
-      participantRows.forEach((row) => {
-        const convo = Array.isArray(row.conversation)
-          ? row.conversation[0]
-          : row.conversation;
-
-        if (!convo) return;
-
+      rows.forEach((row) => {
         convs.push({
-          id: convo.id,
-          created_at: convo.created_at,
-          users: convo.users.map((participant) => ({
-            id: participant.user_id,
-            email: participant.email ?? "",
-          })),
-          type: convo.type,
+          id: row.id,
+          created_at: row.created_at,
+          users: row.users.map((u) => ({ id: u.id, email: u.email })),
+          type: row.type,
         });
 
-        nextParticipantMeta[row.conversation_id] = {
-          last_seen_at: row.last_seen_at ?? null,
+        nextParticipantMeta[row.id] = {
+          last_seen_at: null,
           last_read_at: row.last_read_at ?? null,
         };
-        readMap[row.conversation_id] = row.last_read_at ?? null;
+        readMap[row.id] = row.last_read_at ?? null;
 
-        convo.users.forEach((participant) => {
-          if (!participant.user_id || participant.user_id === userId) return;
-
-          const previous = nextLastSeenByUserId[participant.user_id];
-          const incoming = participant.last_seen_at ?? null;
-
-          if (!previous) {
-            nextLastSeenByUserId[participant.user_id] = incoming;
-            return;
-          }
-
-          if (!incoming) return;
-
-          if (new Date(incoming).getTime() > new Date(previous).getTime()) {
-            nextLastSeenByUserId[participant.user_id] = incoming;
+        row.users.forEach((u) => {
+          if (u.id === userId) return;
+          const prev = nextLastSeenByUserId[u.id];
+          if (
+            !prev ||
+            (u.last_seen_at && new Date(u.last_seen_at) > new Date(prev))
+          ) {
+            nextLastSeenByUserId[u.id] = u.last_seen_at ?? null;
           }
         });
       });
@@ -228,11 +129,13 @@ export function useChatConversationsRealtime({
         a.type === "global" ? -1 : b.type === "global" ? 1 : 0,
       );
 
+      conversationIdsRef.current = new Set(sortedConvs.map((c) => c.id));
+
       setConversations(sortedConvs);
       setParticipantMetaByConversationId(nextParticipantMeta);
       setLastSeenByUserId(nextLastSeenByUserId);
       void fetchUnreadCountsForConversations(
-        sortedConvs.map((conv) => conv.id),
+        sortedConvs.map((c) => c.id),
         readMap,
         "replace",
       );
@@ -240,197 +143,50 @@ export function useChatConversationsRealtime({
 
     void fetchConversations();
   }, [
-    ensureGlobalConversationMembership,
+    conversationIdsRef,
     fetchUnreadCountsForConversations,
     setConversations,
     setLastSeenByUserId,
     setParticipantMetaByConversationId,
-    supabase,
     userId,
   ]);
 
   useEffect(() => {
     if (!userId) return;
 
-    const channel = supabase
-      .channel(`conversation-membership-${userId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "conversation_participants",
-          filter: `user_id=eq.${userId}`,
-        },
-        async (payload) => {
-          const row = payload.new as {
-            conversation_id: string;
-            last_seen_at: string | null;
-            last_read_at: string | null;
-          };
+    const es = new EventSource("/api/sse/conversations");
 
-          const { data } = await supabase
-            .from("conversations")
-            .select(
-              `
-                id,
-                created_at,
-                type,
-                users:conversation_participants!inner(user_id, email, last_seen_at)
-              `,
-            )
-            .eq("id", row.conversation_id)
-            .single();
+    es.onmessage = (event) => {
+      const envelope = JSON.parse(event.data) as {
+        type: string;
+        data: unknown;
+      };
 
-          if (!data) return;
+      if (envelope.type === "new_message") {
+        const msg = envelope.data as {
+          conversation_id: string;
+          sender_id: string;
+        };
+        if (!conversationIdsRef.current.has(msg.conversation_id)) return;
+        if (msg.sender_id === userId) return;
 
-          const convo = data as ConversationRowWithParticipants;
-          const nextConversation: Conversation = {
-            id: convo.id,
-            created_at: convo.created_at,
-            users: convo.users.map((participant) => ({
-              id: participant.user_id,
-              email: participant.email ?? "",
-            })),
-            type: convo.type,
-          };
+        if (activeConversationIdRef.current === msg.conversation_id) {
+          void markConversationAsRead(msg.conversation_id);
+          return;
+        }
 
-          setConversations((prev) => {
-            if (prev.some((existing) => existing.id === nextConversation.id)) {
-              return prev;
-            }
-
-            return [...prev, nextConversation].sort((a, b) =>
-              a.type === "global" ? -1 : b.type === "global" ? 1 : 0,
-            );
-          });
-
-          setParticipantMetaByConversationId((prev) => ({
-            ...prev,
-            [row.conversation_id]: {
-              last_seen_at: row.last_seen_at ?? null,
-              last_read_at: row.last_read_at ?? null,
-            },
-          }));
-
-          convo.users.forEach((participant) => {
-            if (participant.user_id === userId) return;
-
-            setLastSeenByUserId((prev) =>
-              withLatestLastSeen(
-                prev,
-                participant.user_id,
-                participant.last_seen_at ?? null,
-              ),
-            );
-          });
-
-          void fetchUnreadCountsForConversations(
-            [row.conversation_id],
-            { [row.conversation_id]: row.last_read_at ?? null },
-            "merge",
-          );
-        },
-      )
-      .subscribe();
-
-    return () => {
-      channel.unsubscribe();
+        void refreshUnreadForConversation(msg.conversation_id);
+      }
     };
-  }, [
-    fetchUnreadCountsForConversations,
-    setConversations,
-    setLastSeenByUserId,
-    setParticipantMetaByConversationId,
-    supabase,
-    userId,
-  ]);
-
-  useEffect(() => {
-    if (!userId) return;
-
-    const channel = supabase
-      .channel(`conversation-participant-updates-${userId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "conversation_participants",
-        },
-        (payload) => {
-          const row = payload.new as {
-            conversation_id: string;
-            user_id: string;
-            last_seen_at: string | null;
-            last_read_at: string | null;
-          };
-
-          if (!conversationIdsRef.current.has(row.conversation_id)) return;
-
-          if (row.user_id === userId) {
-            setParticipantMetaByConversationId((prev) => ({
-              ...prev,
-              [row.conversation_id]: {
-                last_seen_at: row.last_seen_at ?? null,
-                last_read_at: row.last_read_at ?? null,
-              },
-            }));
-
-            void refreshUnreadForConversation(row.conversation_id);
-
-            return;
-          }
-
-          setLastSeenByUserId((prev) =>
-            withLatestLastSeen(prev, row.user_id, row.last_seen_at ?? null),
-          );
-        },
-      )
-      .subscribe();
 
     return () => {
-      channel.unsubscribe();
-    };
-  }, [conversationIdsRef, refreshUnreadForConversation, setLastSeenByUserId, setParticipantMetaByConversationId, supabase, userId]);
-
-  useEffect(() => {
-    if (!userId) return;
-
-    const channel = supabase
-      .channel(`message-unread-${userId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-        },
-        (payload) => {
-          const message = payload.new as Message;
-
-          if (!conversationIdsRef.current.has(message.conversation_id)) return;
-          if (message.sender_id === userId) return;
-
-          if (activeConversationIdRef.current === message.conversation_id) {
-            void markConversationAsRead(message.conversation_id);
-            return;
-          }
-
-          void refreshUnreadForConversation(message.conversation_id);
-        },
-      )
-      .subscribe();
-
-    return () => {
-      channel.unsubscribe();
+      es.close();
     };
   }, [
     activeConversationIdRef,
     conversationIdsRef,
-    refreshUnreadForConversation,
     markConversationAsRead,
-    supabase,
+    refreshUnreadForConversation,
     userId,
   ]);
 }

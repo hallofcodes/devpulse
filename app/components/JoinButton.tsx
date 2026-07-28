@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "../lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
@@ -52,7 +51,10 @@ export default function JoinButton({
         </Link>
         <p className="text-xs text-gray-500">
           Don&apos;t have an account?{" "}
-          <Link href={`/signup?redirect=${encodeURIComponent(`/join?id=${code}`)}`} className="text-indigo-400 hover:text-indigo-300 transition-colors">
+          <Link
+            href={`/signup?redirect=${encodeURIComponent(`/join?id=${code}`)}`}
+            className="text-indigo-400 hover:text-indigo-300 transition-colors"
+          >
             Sign up free
           </Link>
         </p>
@@ -62,46 +64,30 @@ export default function JoinButton({
 
   const handleJoin = async () => {
     setJoining(true);
-    const supabase = createClient();
 
-    const joinPromise = (async () => {
-      const { data: userData } = await supabase.auth.getUser();
-      const user = userData.user;
-      if (!user) throw new Error("Not authenticated");
-
-      const { data: board } = await supabase
-        .from("leaderboards")
-        .select("id")
-        .eq("join_code", code)
-        .single();
-
-      if (!board) throw new Error("Invalid invite code");
-
-      const { error } = await supabase.from("leaderboard_members").insert({
-        leaderboard_id: board.id,
-        user_id: user.id,
-      });
-
-      if (error) throw error;
-      return board;
-    })();
+    const joinPromise = fetch("/api/leaderboards/join", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ joinCode: code }),
+    }).then(async (res) => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      return data;
+    });
 
     try {
-      await toast.promise(joinPromise, {
+      const result = await toast.promise(joinPromise, {
         pending: "Joining leaderboard...",
         success: "You're in! Welcome to the leaderboard.",
         error: {
           render({ data }) {
             const err = data as Error;
-            if (err?.code === "23505") {
-              return "You are already a member of this leaderboard.";
-            }
             return err?.message || "Failed to join. Please try again.";
           },
         },
       });
 
-      router.push(`/leaderboard/${leaderboardSlug}`);
+      router.push(`/leaderboard/${result.slug}`);
     } finally {
       setJoining(false);
     }

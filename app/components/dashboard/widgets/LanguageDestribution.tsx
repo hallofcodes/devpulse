@@ -30,10 +30,7 @@ export default function LanguageDestribution({
     percent: total > 0 ? Math.round((item.value / total) * 100) : 0,
   }));
 
-  const renderTooltip = ({
-    active,
-    payload,
-  }: TooltipContentProps) => {
+  const renderTooltip = ({ active, payload }: TooltipContentProps) => {
     if (!active || !payload || payload.length === 0) return null;
 
     const point = payload[0].payload as RadarPoint;
@@ -48,7 +45,9 @@ export default function LanguageDestribution({
           boxShadow: "0 8px 30px rgba(0,0,0,0.35)",
         }}
       >
-        <p className="text-xs text-gray-300 font-semibold mb-1">{point.subject}</p>
+        <p className="text-xs text-gray-300 font-semibold mb-1">
+          {point.subject}
+        </p>
         <p className="text-xs text-indigo-300">{point.percent}% share</p>
         <p className="text-xs text-gray-400">{formatHours(point.seconds)}</p>
       </div>

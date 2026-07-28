@@ -1,59 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { auth } from "@/app/lib/auth";
 
 export default async function Auth(req: NextRequest) {
-  const response = NextResponse.next({
-    request: { headers: req.headers },
-  });
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name) {
-          return req.cookies.get(name)?.value;
-        },
-        set(name, value, options) {
-          response.cookies.set({ name, value, ...options });
-        },
-        remove(name, options) {
-          response.cookies.set({ name, value: "", ...options });
-        },
-      },
-    },
-  );
-
-  const code = req.nextUrl.searchParams.get("code");
-  if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) {
-      console.error("Supabase code exchange failed:", error.message);
-    } else {
-      const redirectUrl = req.nextUrl.clone();
-      redirectUrl.searchParams.delete("code");
-
-      const redirectResponse = NextResponse.redirect(redirectUrl);
-      response.cookies.getAll().forEach((cookie) => {
-        redirectResponse.cookies.set(cookie);
-      });
-
-      return redirectResponse;
-    }
-  }
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
+  const session = await auth();
   const { pathname } = req.nextUrl;
 
-  // Define protected routes that require authentication
   const protectedRoutes = ["/d", "/api/wakatime/sync"];
-  const isProtectedRoute = protectedRoutes.some((route) => {
-    const regex = new RegExp(`^${route}(/.*)?$`);
-    return regex.test(pathname);
-  });
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    new RegExp(`^${route}(/.*)?$`).test(pathname),
+  );
 
   if (isProtectedRoute && !session) {
     console.log("User is not authenticated, redirecting to login.");
@@ -71,5 +26,5 @@ export default async function Auth(req: NextRequest) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
-  return response;
+  return null;
 }

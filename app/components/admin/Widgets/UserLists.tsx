@@ -1,6 +1,9 @@
-import { Database } from "@/app/supabase-types";
-
-type UserStat = Database["public"]["Views"]["top_user_stats"]["Row"];
+export interface UserStat {
+  user_id: string | null;
+  email: string | null;
+  total_seconds: number | null;
+  categories: unknown;
+}
 
 export default function UserLists({
   users,

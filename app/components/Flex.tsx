@@ -1,8 +1,5 @@
 "use client";
 
-import { User } from "@supabase/supabase-js";
-import { createClient } from "../lib/supabase/client";
-import { Database } from "../supabase-types";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -18,8 +15,6 @@ import { useBadWords } from "@/app/hooks/useBadWords";
 import { hasBlocklistedWord } from "@/app/utils/moderation";
 import { toast } from "react-toastify";
 
-const supabase = createClient();
-
 export interface Projects {
   name: string;
   text: string;
@@ -30,27 +25,35 @@ export interface Projects {
   open_source_url?: string;
 }
 
-type UserFlexRow = Database["public"]["Tables"]["user_flexes"]["Row"];
+interface FlexRow {
+  id: string;
+  projectName: string;
+  projectDescription: string;
+  projectUrl: string;
+  projectTime: string;
+  isOpenSource: boolean;
+  openSourceUrl: string;
+  expiresAt: string;
+  createdAt: string;
+}
 
-function toEditableFlex(row: UserFlexRow): Projects {
+function toEditableFlex(row: FlexRow): Projects {
   return {
-    name: row.project_name ?? "",
-    text: row.project_time ?? "",
-    project_description: row.project_description ?? "",
-    project_url: row.project_url ?? "",
-    project_time: row.project_time ?? "",
-    is_open_source: row.is_open_source ?? false,
-    open_source_url: row.open_source_url ?? "",
+    name: row.projectName ?? "",
+    text: row.projectTime ?? "",
+    project_description: row.projectDescription ?? "",
+    project_url: row.projectUrl ?? "",
+    project_time: row.projectTime ?? "",
+    is_open_source: row.isOpenSource ?? false,
+    open_source_url: row.openSourceUrl ?? "",
   };
 }
 
-export default function Flex({ user }: { user: User }) {
+export default function Flex() {
   const [loading, setLoading] = useState(false);
   const [flexes, setFlexes] = useState<Projects[]>([]);
   const [flex, setFlex] = useState<Projects | null>(null);
-  const [userFlexes, setUserFlexes] = useState<
-    Database["public"]["Tables"]["user_flexes"]["Row"][]
-  >([]);
+  const [userFlexes, setUserFlexes] = useState<FlexRow[]>([]);
   const [editingFlexId, setEditingFlexId] = useState<string | null>(null);
   const [activeMenuFlexId, setActiveMenuFlexId] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -78,7 +81,9 @@ export default function Flex({ user }: { user: User }) {
     if (!flex) return;
 
     const normalizedProjectName = flex.name.trim();
-    const normalizedProjectDescription = (flex.project_description || "").trim();
+    const normalizedProjectDescription = (
+      flex.project_description || ""
+    ).trim();
 
     if (!normalizedProjectName) {
       toast.error("Project name cannot be empty.");
@@ -90,7 +95,9 @@ export default function Flex({ user }: { user: User }) {
       hasBlocklistedWord(normalizedProjectDescription, badWords);
 
     if (containsBadWords) {
-      toast.error("No bad words allowed. Please remove them before submitting.");
+      toast.error(
+        "No bad words allowed. Please remove them before submitting.",
+      );
       return;
     }
 
@@ -103,39 +110,32 @@ export default function Flex({ user }: { user: User }) {
       open_source_url: flex.is_open_source ? (flex.open_source_url ?? "") : "",
     };
 
-    const { data, error } = editingFlexId
-      ? await supabase
-          .from("user_flexes")
-          .update(payload)
-          .eq("id", editingFlexId)
-          .eq("user_id", user.id)
-          .select()
-          .single()
-      : await supabase
-          .from("user_flexes")
-          .insert({
-            user_id: user.id,
-            user_email: user.email!,
-            ...payload,
-          })
-          .select()
-          .single();
+    const res = editingFlexId
+      ? await fetch(`/api/flex/${editingFlexId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        })
+      : await fetch("/api/flex", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
 
-    if (error) {
-      console.error("Error submitting flex:", error);
+    if (!res.ok) {
       toast.error("Failed to submit flex. Please try again.");
-    } else {
-      setUserFlexes((prev) =>
-        editingFlexId
-          ? prev.map((existingFlex) =>
-              existingFlex.id === editingFlexId ? data : existingFlex,
-            )
-          : [data, ...prev],
-      );
-      setFlex(null);
-      setEditingFlexId(null);
-      toast.success(editingFlexId ? "Flex updated!" : "Flex submitted!");
+      return;
     }
+
+    const data: FlexRow = await res.json();
+    setUserFlexes((prev) =>
+      editingFlexId
+        ? prev.map((f) => (f.id === editingFlexId ? data : f))
+        : [data, ...prev],
+    );
+    setFlex(null);
+    setEditingFlexId(null);
+    toast.success(editingFlexId ? "Flex updated!" : "Flex submitted!");
   };
 
   const expireAt = (expireAt: string) => {
@@ -147,14 +147,9 @@ export default function Flex({ user }: { user: User }) {
   };
 
   const handleDeleteFlex = async (flexId: string) => {
-    const { error } = await supabase
-      .from("user_flexes")
-      .delete()
-      .eq("id", flexId)
-      .eq("user_id", user.id);
+    const res = await fetch(`/api/flex/${flexId}`, { method: "DELETE" });
 
-    if (error) {
-      console.error("Error deleting flex:", error);
+    if (!res.ok) {
       toast.error("Failed to delete flex. Please try again.");
       return;
     }
@@ -169,46 +164,36 @@ export default function Flex({ user }: { user: User }) {
   };
 
   useEffect(() => {
-    async function fetchFlexes() {
+    async function fetchUserFlexes() {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("user_flexes")
-        .select("*")
-        .eq("user_id", user.id);
-
-      if (error) {
-        console.error("Error fetching flexes:", error);
-      } else {
+      const res = await fetch("/api/flex");
+      if (res.ok) {
+        const data: FlexRow[] = await res.json();
         setUserFlexes(data);
       }
       setLoading(false);
     }
 
-    fetchFlexes();
-  }, [user.id]);
+    fetchUserFlexes();
+  }, []);
 
   useEffect(() => {
     if (!showModal) return;
 
-    async function fetchFlexes() {
-      const { data, error } = await supabase
-        .from("user_projects")
-        .select("projects")
-        .eq("user_id", user.id);
+    async function fetchProjects() {
+      const res = await fetch("/api/flex/projects");
+      if (!res.ok) return;
 
-      if (error) {
-        console.error("Error fetching flexes:", error);
-      } else {
-        const projects: Projects[] = data[0].projects as unknown as Projects[];
-        const newProjects = projects.filter(
-          (p) => !userFlexes.some((f) => f.project_name === p.name),
-        );
-        setFlexes(newProjects);
-      }
+      const data: { projects: Projects[] } = await res.json();
+      const projects: Projects[] = data.projects ?? [];
+      const newProjects = projects.filter(
+        (p) => !userFlexes.some((f) => f.projectName === p.name),
+      );
+      setFlexes(newProjects);
     }
 
-    fetchFlexes();
-  }, [showModal, userFlexes, user.id]);
+    fetchProjects();
+  }, [showModal, userFlexes]);
 
   return (
     <div className="p-6 md:p-8 space-y-6">
@@ -342,7 +327,7 @@ export default function Flex({ user }: { user: User }) {
           {userFlexes.map((f) => (
             <div key={f.id} className="glass-card p-4 flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold">{f.project_name}</h3>
+                <h3 className="text-lg font-bold">{f.projectName}</h3>
                 <div className="flex flex-col items-end">
                   <div className="relative" data-flex-menu>
                     <button
@@ -358,7 +343,10 @@ export default function Flex({ user }: { user: User }) {
                       aria-haspopup="menu"
                       aria-expanded={activeMenuFlexId === f.id}
                     >
-                      <FontAwesomeIcon icon={faEllipsis} className="w-3.5 h-3.5" />
+                      <FontAwesomeIcon
+                        icon={faEllipsis}
+                        className="w-3.5 h-3.5"
+                      />
                     </button>
 
                     {activeMenuFlexId === f.id && (
@@ -376,7 +364,10 @@ export default function Flex({ user }: { user: User }) {
                           }}
                           className="w-full text-left px-3 py-1.5 text-xs text-gray-300 hover:bg-white/10 flex items-center gap-2"
                         >
-                          <FontAwesomeIcon icon={faPencil} className="w-3 h-3" />
+                          <FontAwesomeIcon
+                            icon={faPencil}
+                            className="w-3 h-3"
+                          />
                           Edit
                         </button>
                         <button
@@ -392,14 +383,14 @@ export default function Flex({ user }: { user: User }) {
                     )}
                   </div>
                   <span className="mt-1 text-sm text-gray-300 leading-none">
-                    {f.project_time}
+                    {f.projectTime}
                   </span>
                 </div>
               </div>
-              <p className="text-sm text-gray-400">{f.project_description}</p>
+              <p className="text-sm text-gray-400">{f.projectDescription}</p>
               <a
                 className="text-sm text-gray-400 truncate"
-                href={f.project_url}
+                href={f.projectUrl}
                 title="Click to view project"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -408,23 +399,23 @@ export default function Flex({ user }: { user: User }) {
                   icon={faExternalLink}
                   className="w-3 h-3 text-gray-400 me-1"
                 />
-                {f.project_url}
+                {f.projectUrl}
               </a>
-              {f.is_open_source && (
+              {f.isOpenSource && (
                 <a
                   className="text-sm text-green-400 truncate"
-                  href={f.open_source_url}
+                  href={f.openSourceUrl}
                 >
                   <FontAwesomeIcon
                     icon={faCode}
                     className="w-3 h-3 text-green-400 me-1"
                   />
-                  {f.open_source_url}
+                  {f.openSourceUrl}
                 </a>
               )}
               <span className="text-xs">
-                Expires in {expireAt(f.expires_at || "")} • Posted{" "}
-                {timeAgo(f.created_at)}
+                Expires in {expireAt(f.expiresAt || "")} • Posted{" "}
+                {timeAgo(f.createdAt)}
               </span>
             </div>
           ))}
@@ -456,7 +447,10 @@ export default function Flex({ user }: { user: User }) {
                     key={idx}
                     onClick={() => {
                       setEditingFlexId(null);
-                      setFlex({ ...u, open_source_url: u.open_source_url || "" });
+                      setFlex({
+                        ...u,
+                        open_source_url: u.open_source_url || "",
+                      });
                       setShowModal(false);
                     }}
                     className="flex items-center gap-3 p-2 rounded hover:bg-neutral-800 cursor-pointer"

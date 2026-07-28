@@ -7,11 +7,13 @@ export default function InternalServerError() {
         <h2 className="mt-6 text-2xl font-semibold">Internal Server Error</h2>
 
         <p className="my-3 leading-relaxed">
-          Oops! Something went wrong on our end. Please try refreshing the page or come back later.
+          Oops! Something went wrong on our end. Please try refreshing the page
+          or come back later.
         </p>
 
         <p className="mt-10 text-xs text-neutral-400">
-          Tip: Theres nothing you can do about this, but we’re already on it. Thanks for your patience!
+          Tip: Theres nothing you can do about this, but we’re already on it.
+          Thanks for your patience!
         </p>
       </div>
 

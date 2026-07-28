@@ -46,7 +46,9 @@ export default function MediaViewerModal({
 }: MediaViewerModalProps) {
   const currentMediaIndex = useMemo(() => {
     if (!viewer) return -1;
-    return attachments.findIndex((attachment) => attachment.public_url === viewer.url);
+    return attachments.findIndex(
+      (attachment) => attachment.public_url === viewer.url,
+    );
   }, [attachments, viewer]);
 
   const hasPrevMedia = currentMediaIndex > 0;
@@ -112,7 +114,12 @@ export default function MediaViewerModal({
               <div className="absolute top-3 right-3 z-30 flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => void downloadRemoteMedia(viewer.url, viewer.filename || "media")}
+                  onClick={() =>
+                    void downloadRemoteMedia(
+                      viewer.url,
+                      viewer.filename || "media",
+                    )
+                  }
                   className="w-8 h-8 rounded-md text-white/90 hover:text-white transition"
                   aria-label="Download media"
                 >
@@ -134,7 +141,9 @@ export default function MediaViewerModal({
               autoPlay={true}
               immersive={true}
               className="w-full h-full"
-              onDownload={() => void downloadRemoteMedia(viewer.url, viewer.filename || "media")}
+              onDownload={() =>
+                void downloadRemoteMedia(viewer.url, viewer.filename || "media")
+              }
               onClose={() => onChange(null)}
             />
           )}

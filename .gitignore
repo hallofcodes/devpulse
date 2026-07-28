@@ -54,3 +54,5 @@ supabase/*
 
 yarn.lock
 pnpm-lock.yaml
+
+/app/generated/prisma

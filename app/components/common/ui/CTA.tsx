@@ -42,7 +42,10 @@ export default function CTA() {
         </div>
 
         <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3">
-          <Link href="/signup" className="btn-primary inline-block px-8 py-4 text-center">
+          <Link
+            href="/signup"
+            className="btn-primary inline-block px-8 py-4 text-center"
+          >
             Create free account
           </Link>
           <Link
