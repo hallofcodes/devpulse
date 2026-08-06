@@ -3,6 +3,7 @@ import { auth } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/prisma";
 import { emitter } from "@/app/lib/emitter";
 import { IssueType, IssuePriority } from "@prisma/client";
+import { getColumnAccess, getNextIssueKey } from "@/app/lib/kanban";
 
 const TYPE_MAP: Record<string, IssueType> = {
   bug: "BUG",
@@ -25,17 +26,30 @@ export async function POST(req: Request) {
   const { columnId, title, tag, type, priority, issueKey, position } =
     await req.json();
 
-  if (!columnId || !title?.trim() || !issueKey) {
+  if (!columnId || !title?.trim()) {
     return NextResponse.json(
-      { error: "columnId, title, and issueKey are required." },
+      { error: "columnId and title are required." },
       { status: 400 },
     );
   }
 
+  const columnAccess = await getColumnAccess(session.user.id, columnId);
+  if (!columnAccess) {
+    return NextResponse.json({ error: "Column not found." }, { status: 404 });
+  }
+
+  const resolvedIssueKey =
+    typeof issueKey === "string" && issueKey.trim().length > 0
+      ? issueKey.trim()
+      : await getNextIssueKey(
+          columnAccess.projectId,
+          columnAccess.projectName,
+        );
+
   const issue = await prisma.issue.create({
     data: {
       columnId,
-      issueKey,
+      issueKey: resolvedIssueKey,
       title: title.trim(),
       tag: tag ?? "",
       type: TYPE_MAP[type] ?? "FEATURE",
@@ -53,6 +67,7 @@ export async function POST(req: Request) {
     type: issue.type.toLowerCase(),
     priority: issue.priority.toLowerCase(),
     position: issue.position,
+    created_at: issue.createdAt.toISOString(),
   };
 
   emitter.emit("kanban", { type: "issue_created", data: payload });

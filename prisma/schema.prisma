@@ -29,6 +29,7 @@ model User {
   conversationParticipants ConversationParticipant[]
   sentMessages      Message[]
   passwordResetTokens PasswordResetToken[]
+  kanbanProjects    Project[]
 
   @@map("users")
 }
@@ -233,12 +234,18 @@ model Message {
 }
 
 model Project {
-  id        String   @id @default(cuid())
-  name      String
-  createdAt DateTime @default(now()) @map("created_at")
+  id                  String   @id @default(cuid())
+  userId              String?  @map("user_id")
+  name                String
+  description         String?
+  wakatimeProjectName String?  @map("wakatime_project_name")
+  color               String?  @default("indigo")
+  createdAt           DateTime @default(now()) @map("created_at")
 
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   boards Board[]
 
+  @@index([userId])
   @@map("projects")
 }
 

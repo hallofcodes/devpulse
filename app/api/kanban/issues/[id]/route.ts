@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/app/lib/auth";
 import { prisma } from "@/app/lib/prisma";
 import { emitter } from "@/app/lib/emitter";
+import { getColumnAccess, getIssueAccess } from "@/app/lib/kanban";
 
 export async function PATCH(
   req: Request,
@@ -18,6 +19,21 @@ export async function PATCH(
     column_id?: string;
     position?: number;
   };
+
+  const issueAccess = await getIssueAccess(session.user.id, id);
+  if (!issueAccess) {
+    return NextResponse.json({ error: "Issue not found." }, { status: 404 });
+  }
+
+  if (column_id !== undefined) {
+    const columnAccess = await getColumnAccess(session.user.id, column_id);
+    if (!columnAccess || columnAccess.projectId !== issueAccess.projectId) {
+      return NextResponse.json(
+        { error: "Cannot move issue to that column." },
+        { status: 400 },
+      );
+    }
+  }
 
   const data: Record<string, unknown> = {};
   if (column_id !== undefined) data.columnId = column_id;
