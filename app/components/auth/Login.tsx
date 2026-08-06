@@ -18,9 +18,9 @@ export default function Login() {
       : undefined;
 
   return (
-    <div className="min-h-screen flex bg-[#0a0a1a] text-white relative">
+    <div className="min-h-screen flex  relative">
       {/* Left Side - Visual / Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 md:p-16 xl:p-24 border-r border-white/5 bg-gradient-to-br from-[#0a0a1a] to-[#0a0a1a] overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 md:p-16 xl:p-24 border-r border-white/5 bg-blue-600 overflow-hidden">
         {/* Background elements */}
         <div className="absolute inset-0 grid-bg opacity-30" />
 
@@ -30,14 +30,14 @@ export default function Login() {
             className="flex items-center gap-3 w-fit hover:opacity-80 transition"
           >
             <Image src="/logo.svg" alt="Devpulse Logo" width={40} height={40} />
-            <span className="text-2xl font-bold tracking-tight text-white">
+            <span className="text-2xl font-bold tracking-tight">
               Devpulse
             </span>
           </Link>
         </div>
 
         <div className="relative z-10 max-w-md">
-          <h1 className="text-4xl font-extrabold mb-5 leading-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+          <h1 className="text-4xl font-extrabold mb-5 leading-tight text-white">
             Welcome back to your dashboard.
           </h1>
           <p className="text-gray-400 text-lg leading-relaxed mb-8">
@@ -95,7 +95,7 @@ export default function Login() {
             className="lg:hidden flex items-center justify-center gap-3 mb-10"
           >
             <Image src="/logo.svg" alt="Devpulse Logo" width={40} height={40} />
-            <h2 className="text-3xl font-bold text-white">Devpulse</h2>
+            <h2 className="text-3xl font-bold">Devpulse</h2>
           </Link>
 
           <div className="mb-8 text-left">

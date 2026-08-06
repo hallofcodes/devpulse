@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function Terms() {
   return (
-    <div className="min-h-screen bg-[#0a0a1a] text-white overflow-hidden grid-bg relative">
+    <div className="min-h-screen  overflow-hidden grid-bg relative">
       <Nav />
 
       <div className="relative max-w-7xl mx-auto px-6 pt-32 lg:pt-40 pb-20 lg:pb-32 min-h-[85vh]">

@@ -22,7 +22,7 @@ export default function Logout() {
   }, [handleLogout]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0a1a] text-white grid-bg">
+    <div className="min-h-screen flex items-center justify-center  grid-bg">
       <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
     </div>
   );

@@ -139,7 +139,7 @@ export default function DashboardLayout({
     );
 
   return (
-    <div className="min-h-screen bg-[#0a0a1a] text-white">
+    <div className="min-h-screen ">
       <header className="md:hidden sticky top-0 z-30 flex items-center justify-between h-14 px-4 border-b border-white/5 bg-[#0a0a1a]">
         <button
           onClick={() => setSidebarOpen(true)}

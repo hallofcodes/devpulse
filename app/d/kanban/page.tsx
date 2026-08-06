@@ -385,47 +385,15 @@ export default function Kanban() {
     : 0;
 
   return (
-    <div className="min-h-screen px-4 py-4 md:px-6">
-      <div className="mx-auto flex max-w-7xl flex-col gap-4">
-        <section className="glass-card overflow-hidden border-t-4 border-indigo-500/50">
-          <div className="bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,0.25),transparent_35%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))] p-5 md:p-6">
-            <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-              <div className="space-y-2">
-                <p className="text-xs uppercase tracking-[0.25em] text-indigo-300/80">
-                  Project Kanban
-                </p>
-                <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl">
-                  Track product work against shipped coding time
-                </h1>
-                <p className="max-w-2xl text-sm text-gray-400 md:text-base">
-                  Create internal Kanban projects, bind them to synced WakaTime
-                  projects, and manage execution from backlog to done inside the
-                  same dashboard flow.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                <button
-                  onClick={() => setProjectModalOpen(true)}
-                  className="btn-primary px-4 py-2 text-sm"
-                >
-                  New Project
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedColumn(availableColumns[0]?.id ?? null);
-                    setIssueModalOpen(true);
-                  }}
-                  disabled={!availableColumns.length}
-                  className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all ${
-                    availableColumns.length
-                      ? "border-white/10 bg-white/5 text-white hover:border-indigo-500/30 hover:bg-white/10"
-                      : "cursor-not-allowed border-white/5 bg-white/5 text-gray-500"
-                  }`}
-                >
-                  New Issue
-                </button>
-              </div>
+    <div className="min-h-screen ">
+      <div className="sticky top-0 z-20 border-b border-white/5 bg-[#0a0a1a]/95 backdrop-blur">
+        <div className="mx-auto max-w-[1400px] px-6 py-4">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-indigo-400/80">
+                Project Kanban
+              </p>
+              <h1 className="text-2xl font-semibold">Boards</h1>
             </div>
 
             <div className="mt-6 grid gap-3 md:grid-cols-4">

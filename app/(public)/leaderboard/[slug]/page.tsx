@@ -70,7 +70,7 @@ export default async function LeaderboardPage(props: {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a1a] text-white grid-bg relative">
+    <div className="min-h-screen  grid-bg relative">
       <div className="w-full max-w-[1600px] mx-auto p-0 sm:p-6 md:p-10 relative z-10">
         <div className="group relative mb-20 sm:mb-24">
           <Banner
