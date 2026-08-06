@@ -81,7 +81,7 @@ export default async function JoinPage({ searchParams }: Props) {
 
   if (!code) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0a1a] text-white grid-bg">
+      <div className="min-h-screen flex items-center justify-center  grid-bg">
         <div className="glass-card p-10 text-center max-w-md mx-auto">
           <div className="w-16 h-16 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto mb-5">
             <FontAwesomeIcon
@@ -111,7 +111,7 @@ export default async function JoinPage({ searchParams }: Props) {
 
   if (!leaderboard) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0a1a] text-white grid-bg">
+      <div className="min-h-screen flex items-center justify-center  grid-bg">
         <div className="glass-card p-10 text-center max-w-md mx-auto">
           <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-5">
             <FontAwesomeIcon
@@ -150,7 +150,7 @@ export default async function JoinPage({ searchParams }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a1a] text-white grid-bg relative overflow-hidden">
+    <div className="min-h-screen  grid-bg relative overflow-hidden">
       <div className="glow-orb w-[500px] h-[500px] bg-indigo-600/20 top-[-200px] left-1/2 -translate-x-1/2 absolute" />
       <div className="glow-orb w-[300px] h-[300px] bg-purple-600/15 bottom-[-100px] right-[-50px] absolute" />
 

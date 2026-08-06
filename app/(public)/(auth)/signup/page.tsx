@@ -44,7 +44,7 @@ export default async function SignupPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#0a0a1a] text-white">
+        <div className="min-h-screen flex items-center justify-center ">
           Loading...
         </div>
       }

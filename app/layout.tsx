@@ -104,10 +104,6 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
     >
       <head>
-        <meta
-          name="google-site-verification"
-          content="9BoujBl0viqXOwAOwv8uJM-JkJo7gDrt_f1ID9NabRI"
-        />
         <meta name="hostname" content="devpulse.hallofcodes.org" />
         <NortonSafeweb />
       </head>

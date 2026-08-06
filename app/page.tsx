@@ -134,7 +134,7 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(devpulseWaka) }}
       />
 
-      <div className="min-h-screen bg-[#0a0a1a] text-white overflow-hidden grid-bg relative">
+      <div className="min-h-screen overflow-hidden grid-bg relative">
         <Nav />
 
         {/* Hero Section */}

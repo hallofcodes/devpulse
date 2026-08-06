@@ -18,9 +18,9 @@ export default function Signup() {
       : undefined;
 
   return (
-    <div className="min-h-screen flex bg-[#0a0a1a] text-white relative">
+    <div className="min-h-screen flex  relative">
       {/* Left Side - Visual / Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 md:p-16 xl:p-24 border-r border-white/5 bg-gradient-to-br from-[#0a0a1a] to-[#0a0a1a] overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 md:p-16 xl:p-24 border-r border-white/5 bg-blue-600 overflow-hidden">
         {/* Background elements */}
         <div className="absolute inset-0 grid-bg opacity-30" />
 
@@ -37,7 +37,7 @@ export default function Signup() {
         </div>
 
         <div className="relative z-10 max-w-md">
-          <h1 className="text-4xl font-extrabold mb-5 leading-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+          <h1 className="text-4xl font-extrabold mb-5 leading-tight text-white">
             Start measuring your coding pulse.
           </h1>
           <p className="text-gray-400 text-lg leading-relaxed mb-8">

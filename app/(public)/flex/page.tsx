@@ -63,7 +63,7 @@ export default async function Flexs() {
   });
 
   return (
-    <div className="min-h-screen bg-[#0a0a1a] text-white grid-bg relative">
+    <div className="min-h-screen  grid-bg relative">
       <div className="max-w-5xl mx-auto p-6 md:p-10 relative z-10">
         <BackButton href="/" />
 
