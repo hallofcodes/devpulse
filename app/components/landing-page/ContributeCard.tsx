@@ -24,13 +24,13 @@ export default function ContributeCard() {
       className="max-w-5xl mx-auto px-6 pt-4 pb-10 relative z-10"
       data-aos="fade-up"
     >
-      <p className="text-xs uppercase tracking-[0.16em] text-gray-400/90 font-semibold mb-3">
+      <p className="text-xs uppercase tracking-[0.16em] text-gray-500/90 font-semibold mb-3">
         Open Source
       </p>
-      <h3 className="text-2xl font-semibold text-white mb-2">
+      <h3 className="text-2xl font-semibold text-gray-900 mb-2">
         Want to contribute?
       </h3>
-      <p className="text-gray-400 mb-4">
+      <p className="text-gray-500 mb-4">
         We welcome thoughtful contributions across features, fixes, and
         documentation. A quick review of the contribution flow helps avoid
         collisions and keeps delivery fast for everyone.
@@ -40,13 +40,13 @@ export default function ContributeCard() {
         {contributionSteps.map((step, i) => (
           <article
             key={step.title}
-            className="glass-card rounded-xl border-white/5 bg-white/[0.015] p-4"
+            className="glass-card rounded-xl border-gray-200 bg-gray-50 p-4"
           >
-            <div className="inline-flex h-6 min-w-6 items-center justify-center rounded-md border border-white/15 bg-white/5 px-1.5 text-[11px] font-bold text-gray-200 mb-3">
+            <div className="inline-flex h-6 min-w-6 items-center justify-center rounded-md border border-gray-200 bg-gray-50 px-1.5 text-[11px] font-bold text-gray-700 mb-3">
               {i + 1}
             </div>
-            <h4 className="text-white font-semibold mb-2">{step.title}</h4>
-            <p className="text-sm text-gray-400">{step.description}</p>
+            <h4 className="text-gray-900 font-semibold mb-2">{step.title}</h4>
+            <p className="text-sm text-gray-500">{step.description}</p>
           </article>
         ))}
       </div>
@@ -62,7 +62,7 @@ export default function ContributeCard() {
           href="https://github.com/hallofcodes/devpulse"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block px-4 py-2 rounded-lg border border-white/15 text-gray-200 hover:text-white hover:bg-white/5 transition"
+          className="inline-block px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition"
         >
           Open project repository
         </Link>

@@ -52,7 +52,7 @@ export default function StatsCard({
                 {card.trend}
               </span>
             </div>
-            <p className="text-2xl font-bold text-white mb-1">{card.value}</p>
+            <p className="text-2xl font-bold text-gray-900 mb-1">{card.value}</p>
             <p className="text-xs text-gray-600 mb-3">{card.sub}</p>
             {/* Mini bar */}
             <div

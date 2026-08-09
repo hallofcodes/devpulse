@@ -307,7 +307,7 @@ export default function Stats() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent truncate">
             Devpulse
           </h1>
-          <p className="text-xs sm:text-sm font-medium text-gray-400 mt-1 flex items-center gap-2">
+          <p className="text-xs sm:text-sm font-medium text-gray-500 mt-1 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)] shrink-0"></span>
             <span className="truncate">Your coding activity overview</span>
           </p>
@@ -318,7 +318,7 @@ export default function Stats() {
           <button
             onClick={handleSync}
             disabled={syncing}
-            className={`p-2 rounded-full hover:bg-gray-800/50 text-gray-400 hover:text-white transition-colors relative ${
+            className={`p-2 rounded-full hover:bg-gray-800/50 text-gray-500 hover:text-gray-900 transition-colors relative ${
               syncing ? "opacity-50 cursor-not-allowed" : ""
             }`}
             title="Sync Now"
@@ -392,42 +392,42 @@ export default function Stats() {
             </div>
 
             <div className="glass-card p-6 border-t-4 border-indigo-500/50 mt-6">
-              <h3 className="text-xs font-semibold text-indigo-300 uppercase tracking-widest mb-4">
+              <h3 className="text-xs font-semibold text-indigo-600 uppercase tracking-widest mb-4">
                 Performance Signals
               </h3>
               <div className="space-y-3 text-sm">
-                <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                  <span className="text-gray-400">Weekly Goal</span>
-                  <span className="text-white font-semibold">
+                <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                  <span className="text-gray-500">Weekly Goal</span>
+                  <span className="text-gray-900 font-semibold">
                     {weeklyGoalPercent.toFixed(0)}%
                   </span>
                 </div>
-                <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                  <span className="text-gray-400">Goal Progress</span>
-                  <span className="text-indigo-300 font-semibold">
+                <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                  <span className="text-gray-500">Goal Progress</span>
+                  <span className="text-indigo-600 font-semibold">
                     {formatHours(last7Seconds)} / {WEEKLY_GOAL_HOURS}h
                   </span>
                 </div>
-                <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                  <span className="text-gray-400">Momentum vs Prev 7d</span>
+                <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                  <span className="text-gray-500">Momentum vs Prev 7d</span>
                   <span className={`${momentumClass} font-semibold`}>
                     {momentumLabel}
                   </span>
                 </div>
-                <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                  <span className="text-gray-400">Active Days (7d)</span>
-                  <span className="text-white font-semibold">
+                <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                  <span className="text-gray-500">Active Days (7d)</span>
+                  <span className="text-gray-900 font-semibold">
                     {activeDaysThisWeek} / 7
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Avg Active Day</span>
+                  <span className="text-gray-500">Avg Active Day</span>
                   <span className="text-cyan-300 font-semibold">
                     {formatHours(avgActiveDaySeconds)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Peak Day This Week</span>
+                  <span className="text-gray-500">Peak Day This Week</span>
                   <span className="text-amber-300 font-semibold">
                     {peakDayThisWeek.day}{" "}
                     {peakDayThisWeek.hours > 0

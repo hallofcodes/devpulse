@@ -15,7 +15,7 @@ export default function UserLists({
   return (
     <div className="overflow-x-auto rounded-2xl border border-zinc-800">
       <table className="min-w-full text-sm">
-        <thead className="bg-zinc-900 text-gray-400">
+        <thead className="bg-zinc-900 text-gray-500">
           <tr>
             <th className="text-left p-3 whitespace-nowrap">User</th>
             <th className="text-left p-3 whitespace-nowrap">Email</th>

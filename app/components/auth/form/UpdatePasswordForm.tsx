@@ -88,7 +88,7 @@ export default function UpdatePasswordForm() {
       {showCaptcha && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 backdrop-blur-sm">
           <div className="glass-card p-8 text-center">
-            <h3 className="text-lg font-semibold mb-4 text-gray-200">
+            <h3 className="text-lg font-semibold mb-4 text-gray-700">
               Verify you are human
             </h3>
 
@@ -100,7 +100,7 @@ export default function UpdatePasswordForm() {
 
             <button
               onClick={() => setShowCaptcha(false)}
-              className="mt-4 text-sm text-gray-500 hover:text-gray-300 transition"
+              className="mt-4 text-sm text-gray-500 hover:text-gray-600 transition"
             >
               Cancel
             </button>

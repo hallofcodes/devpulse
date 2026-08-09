@@ -17,6 +17,7 @@ export default function LoginForm() {
     !redirectParam.startsWith("//")
       ? redirectParam
       : "/d";
+  const justVerified = searchParams.get("verified") === "1";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -61,6 +62,11 @@ export default function LoginForm() {
 
   return (
     <>
+      {justVerified && (
+        <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          Email verified successfully. You can now log in.
+        </div>
+      )}
       <form onSubmit={handleLogin} className="space-y-4">
         <input
           type="email"

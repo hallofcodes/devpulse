@@ -128,21 +128,21 @@ export default function DashboardWithKey() {
 
       {activeModal && (
         <div className="fixed top-0 bottom-0 right-0 left-[68px] md:left-[240px] z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="glass-card w-[calc(100%-2rem)] max-w-sm relative overflow-hidden flex flex-col animate-in zoom-in-95 duration-200 border-white/10 shadow-2xl mx-auto">
+          <div className="glass-card w-[calc(100%-2rem)] max-w-sm relative overflow-hidden flex flex-col animate-in zoom-in-95 duration-200 border-gray-200 shadow-2xl mx-auto">
             {activeModal === "share" ? (
               <>
                 <div className="absolute -top-24 -right-24 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-20 bg-emerald-500" />
 
-                <div className="flex items-start justify-between p-6 pb-4 border-b border-white/5 relative z-10">
+                <div className="flex items-start justify-between p-6 pb-4 border-b border-gray-200 relative z-10">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border bg-emerald-500/10 border-emerald-500/20 text-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
                       <FontAwesomeIcon
                         icon={faShareNodes}
                         className="w-5 h-5"
                       />
                     </div>
                     <div className="flex flex-col">
-                      <h3 className="text-lg font-bold text-white tracking-tight">
+                      <h3 className="text-lg font-bold text-gray-900 tracking-tight">
                         Share Server
                       </h3>
                       <span className="text-[10px] font-medium text-gray-500 uppercase tracking-widest mt-0.5">
@@ -155,19 +155,19 @@ export default function DashboardWithKey() {
                       setActiveModal(null);
                       window.location.reload();
                     }}
-                    className="text-gray-500 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5"
+                    className="text-gray-500 hover:text-gray-900 transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100"
                   >
                     <FontAwesomeIcon icon={faTimes} className="w-4 h-4" />
                   </button>
                 </div>
 
-                <div className="p-6 relative z-10 bg-black/20 space-y-4">
+                <div className="p-6 relative z-10 bg-gray-100 space-y-4">
                   <div className="space-y-2">
-                    <label className="text-[11px] uppercase tracking-widest text-gray-400 font-bold ml-1">
+                    <label className="text-[11px] uppercase tracking-widest text-gray-500 font-bold ml-1">
                       Join Code
                     </label>
                     <div className="flex gap-2">
-                      <div className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-3 font-mono text-lg tracking-[0.15em] text-white text-center">
+                      <div className="flex-1 bg-black/50 border border-gray-200 rounded-xl px-4 py-3 font-mono text-lg tracking-[0.15em] text-gray-900 text-center">
                         {createdCode}
                       </div>
                       <button
@@ -178,8 +178,8 @@ export default function DashboardWithKey() {
                         }}
                         className={`px-4 rounded-xl text-sm font-semibold transition-all border ${
                           copied === "code"
-                            ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400"
-                            : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10"
+                            ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-600"
+                            : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
                         }`}
                       >
                         {copied === "code" ? "Copied!" : "Copy"}
@@ -188,11 +188,11 @@ export default function DashboardWithKey() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[11px] uppercase tracking-widest text-gray-400 font-bold ml-1">
+                    <label className="text-[11px] uppercase tracking-widest text-gray-500 font-bold ml-1">
                       Invite URL
                     </label>
                     <div className="flex gap-2">
-                      <div className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-300 truncate">
+                      <div className="flex-1 bg-black/50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-600 truncate">
                         {`${typeof window !== "undefined" ? window.location.origin : ""}/join?id=${createdCode}`}
                       </div>
                       <button
@@ -205,8 +205,8 @@ export default function DashboardWithKey() {
                         }}
                         className={`px-4 rounded-xl text-sm font-semibold transition-all border ${
                           copied === "url"
-                            ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400"
-                            : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10"
+                            ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-600"
+                            : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
                         }`}
                       >
                         {copied === "url" ? "Copied!" : "Copy"}
@@ -233,13 +233,13 @@ export default function DashboardWithKey() {
                   }`}
                 />
 
-                <div className="flex items-start justify-between p-6 pb-4 border-b border-white/5 relative z-10">
+                <div className="flex items-start justify-between p-6 pb-4 border-b border-gray-200 relative z-10">
                   <div className="flex items-center gap-4">
                     <div
                       className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border ${
                         activeModal === "create"
-                          ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.15)]"
-                          : "bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]"
+                          ? "bg-indigo-50 border-indigo-500/20 text-indigo-600 shadow-[0_0_15px_rgba(99,102,241,0.15)]"
+                          : "bg-blue-500/10 border-blue-500/20 text-blue-600 shadow-[0_0_15px_rgba(59,130,246,0.15)]"
                       }`}
                     >
                       <FontAwesomeIcon
@@ -248,7 +248,7 @@ export default function DashboardWithKey() {
                       />
                     </div>
                     <div className="flex flex-col">
-                      <h3 className="text-lg font-bold text-white tracking-tight">
+                      <h3 className="text-lg font-bold text-gray-900 tracking-tight">
                         {activeModal === "create"
                           ? "Create Server"
                           : "Join Server"}
@@ -263,22 +263,22 @@ export default function DashboardWithKey() {
 
                   <button
                     onClick={() => setActiveModal(null)}
-                    className="text-gray-500 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5"
+                    className="text-gray-500 hover:text-gray-900 transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100"
                   >
                     <FontAwesomeIcon icon={faTimes} className="w-4 h-4" />
                   </button>
                 </div>
 
-                <div className="p-6 relative z-10 bg-black/20">
+                <div className="p-6 relative z-10 bg-gray-100">
                   {activeModal === "create" ? (
                     <div className="space-y-6">
                       <div className="space-y-2.5">
-                        <label className="text-[11px] uppercase tracking-widest text-gray-400 font-bold ml-1">
+                        <label className="text-[11px] uppercase tracking-widest text-gray-500 font-bold ml-1">
                           Leaderboard Name
                         </label>
                         <input
                           placeholder="e.g., Top Coders"
-                          className="input-field w-full px-4 text-sm py-3.5 bg-white/[0.02] border border-white/10 focus:border-indigo-500/50 focus:bg-white/[0.04] transition-all rounded-xl shadow-inner placeholder:text-gray-600"
+                          className="input-field w-full px-4 text-sm py-3.5 bg-gray-50 border border-gray-200 focus:border-indigo-500/50 focus:bg-white/[0.04] transition-all rounded-xl shadow-inner placeholder:text-gray-600"
                           value={leaderboardName}
                           onChange={(e) => setLeaderboardName(e.target.value)}
                           onKeyDown={(e) =>
@@ -297,12 +297,12 @@ export default function DashboardWithKey() {
                   ) : (
                     <div className="space-y-6">
                       <div className="space-y-2.5">
-                        <label className="text-[11px] uppercase tracking-widest text-gray-400 font-bold ml-1">
+                        <label className="text-[11px] uppercase tracking-widest text-gray-500 font-bold ml-1">
                           Join Code
                         </label>
                         <input
                           placeholder="8-character code..."
-                          className="input-field w-full px-4 font-mono text-sm py-3.5 tracking-wider bg-white/[0.02] border border-white/10 focus:border-blue-500/50 focus:bg-white/[0.04] transition-all uppercase rounded-xl shadow-inner placeholder:text-gray-600"
+                          className="input-field w-full px-4 font-mono text-sm py-3.5 tracking-wider bg-gray-50 border border-gray-200 focus:border-blue-500/50 focus:bg-white/[0.04] transition-all uppercase rounded-xl shadow-inner placeholder:text-gray-600"
                           maxLength={8}
                           value={joinCode}
                           onChange={(e) => setJoinCode(e.target.value)}

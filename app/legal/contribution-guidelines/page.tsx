@@ -20,7 +20,7 @@ export default function ContributionGuidelines() {
           Contribution Guidelines
         </h1>
 
-        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10">
+        <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10">
           Thank you for considering contributing to <strong>Devpulse</strong>!
           To help maintain the quality, stability, and integrity of our codebase
           (&quot;Hall of Codes&quot;), please read and follow these guidelines.

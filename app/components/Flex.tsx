@@ -205,7 +205,7 @@ export default function Flex() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent truncate">
             Flex
           </h1>
-          <p className="text-xs sm:text-sm font-medium text-gray-400 mt-1 flex items-center gap-2">
+          <p className="text-xs sm:text-sm font-medium text-gray-500 mt-1 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)] shrink-0"></span>
             <span className="truncate">
               Share your flexes with the community
@@ -229,7 +229,7 @@ export default function Flex() {
 
       {loading && (
         <div className="p-6 flex items-center justify-center">
-          <p className="text-gray-400">Loading your flexes...</p>
+          <p className="text-gray-500">Loading your flexes...</p>
         </div>
       )}
 
@@ -244,7 +244,7 @@ export default function Flex() {
                 type="text"
                 value={flex.name || ""}
                 onChange={(e) => setFlex({ ...flex, name: e.target.value })}
-                className="w-full mt-4 px-3 py-2 bg-transparent text-gray-100 placeholder:text-gray-500 border border-neutral-800 rounded-xl outline-none"
+                className="w-full mt-4 px-3 py-2 bg-transparent text-gray-700 placeholder:text-gray-500 border border-neutral-800 rounded-xl outline-none"
               />
 
               <textarea
@@ -253,7 +253,7 @@ export default function Flex() {
                   setFlex({ ...flex, project_description: e.target.value })
                 }
                 placeholder="Project Description"
-                className="w-full mt-2 px-3 py-2 bg-transparent text-gray-100 placeholder:text-gray-500 border border-neutral-800 rounded-xl outline-none"
+                className="w-full mt-2 px-3 py-2 bg-transparent text-gray-700 placeholder:text-gray-500 border border-neutral-800 rounded-xl outline-none"
                 rows={4}
               ></textarea>
 
@@ -264,7 +264,7 @@ export default function Flex() {
                   setFlex({ ...flex, project_url: e.target.value })
                 }
                 placeholder="Project URL"
-                className="w-full mt-2 px-3 py-2 bg-transparent text-gray-100 placeholder:text-gray-500 border border-neutral-800 rounded-xl outline-none"
+                className="w-full mt-2 px-3 py-2 bg-transparent text-gray-700 placeholder:text-gray-500 border border-neutral-800 rounded-xl outline-none"
               />
 
               <div className="flex items-center mt-2 space-x-2">
@@ -287,7 +287,7 @@ export default function Flex() {
                     setFlex({ ...flex, open_source_url: e.target.value })
                   }
                   placeholder="Open Source URL"
-                  className="w-full mt-2 px-3 py-2 bg-transparent text-gray-100 placeholder:text-gray-500 border border-neutral-800 rounded-xl outline-none"
+                  className="w-full mt-2 px-3 py-2 bg-transparent text-gray-700 placeholder:text-gray-500 border border-neutral-800 rounded-xl outline-none"
                 />
               )}
 
@@ -316,7 +316,7 @@ export default function Flex() {
 
       {userFlexes.length === 0 && !loading && (
         <div className="p-6 flex items-center justify-center">
-          <p className="text-gray-400">
+          <p className="text-gray-500">
             You have no flexes yet. Start by sharing your first project!
           </p>
         </div>
@@ -337,7 +337,7 @@ export default function Flex() {
                           prev === f.id ? null : f.id,
                         )
                       }
-                      className="p-1 -m-1 text-gray-500 hover:text-gray-300 transition-colors leading-none"
+                      className="p-1 -m-1 text-gray-500 hover:text-gray-600 transition-colors leading-none"
                       title="Flex actions"
                       aria-label="Open flex actions"
                       aria-haspopup="menu"
@@ -352,7 +352,7 @@ export default function Flex() {
                     {activeMenuFlexId === f.id && (
                       <div
                         role="menu"
-                        className="absolute right-0 mt-1 w-24 rounded-lg border border-white/10 bg-[#0F0F23]/95 backdrop-blur-xl shadow-xl py-1 z-20"
+                        className="absolute right-0 mt-1 w-24 rounded-lg border border-gray-200 bg-white/95 backdrop-blur-xl shadow-xl py-1 z-20"
                       >
                         <button
                           type="button"
@@ -362,7 +362,7 @@ export default function Flex() {
                             setFlex(toEditableFlex(f));
                             setActiveMenuFlexId(null);
                           }}
-                          className="w-full text-left px-3 py-1.5 text-xs text-gray-300 hover:bg-white/10 flex items-center gap-2"
+                          className="w-full text-left px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-100 flex items-center gap-2"
                         >
                           <FontAwesomeIcon
                             icon={faPencil}
@@ -374,7 +374,7 @@ export default function Flex() {
                           type="button"
                           role="menuitem"
                           onClick={() => void handleDeleteFlex(f.id)}
-                          className="w-full text-left px-3 py-1.5 text-xs text-red-300 hover:bg-red-500/10 flex items-center gap-2"
+                          className="w-full text-left px-3 py-1.5 text-xs text-red-300 hover:bg-red-50 flex items-center gap-2"
                         >
                           <FontAwesomeIcon icon={faTrash} className="w-3 h-3" />
                           Delete
@@ -382,14 +382,14 @@ export default function Flex() {
                       </div>
                     )}
                   </div>
-                  <span className="mt-1 text-sm text-gray-300 leading-none">
+                  <span className="mt-1 text-sm text-gray-600 leading-none">
                     {f.projectTime}
                   </span>
                 </div>
               </div>
-              <p className="text-sm text-gray-400">{f.projectDescription}</p>
+              <p className="text-sm text-gray-500">{f.projectDescription}</p>
               <a
-                className="text-sm text-gray-400 truncate"
+                className="text-sm text-gray-500 truncate"
                 href={f.projectUrl}
                 title="Click to view project"
                 target="_blank"
@@ -397,18 +397,18 @@ export default function Flex() {
               >
                 <FontAwesomeIcon
                   icon={faExternalLink}
-                  className="w-3 h-3 text-gray-400 me-1"
+                  className="w-3 h-3 text-gray-500 me-1"
                 />
                 {f.projectUrl}
               </a>
               {f.isOpenSource && (
                 <a
-                  className="text-sm text-green-400 truncate"
+                  className="text-sm text-green-600 truncate"
                   href={f.openSourceUrl}
                 >
                   <FontAwesomeIcon
                     icon={faCode}
-                    className="w-3 h-3 text-green-400 me-1"
+                    className="w-3 h-3 text-green-600 me-1"
                   />
                   {f.openSourceUrl}
                 </a>
@@ -429,11 +429,11 @@ export default function Flex() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search projects..."
-              className="w-full mb-3 px-3 py-2 bg-transparent text-gray-100 placeholder:text-gray-500 border border-neutral-800 rounded-xl outline-none"
+              className="w-full mb-3 px-3 py-2 bg-transparent text-gray-700 placeholder:text-gray-500 border border-neutral-800 rounded-xl outline-none"
             />
             <div className="space-y-2 max-h-60 overflow-y-auto">
               {flexes.length === 0 && !loading && (
-                <p className="text-gray-400 text-sm text-center">
+                <p className="text-gray-500 text-sm text-center">
                   You have no projects to flex yet.
                 </p>
               )}

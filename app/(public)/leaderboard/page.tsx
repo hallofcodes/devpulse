@@ -69,7 +69,7 @@ export default async function Leaderboards() {
 
         <div className="flex justify-center items-center gap-3 mb-8">
           <Image src="/logo.svg" alt="Devpulse Logo" width={36} height={36} />
-          <h1 className="text-3xl font-bold text-white">
+          <h1 className="text-3xl font-bold text-gray-900">
             Devpulse Leaderboards
           </h1>
         </div>
@@ -77,7 +77,7 @@ export default async function Leaderboards() {
         {leaderboards.length === 0 && (
           <div className="max-w-5xl mx-auto p-6 md:p-10 relative z-10">
             <h2 className="text-2xl font-bold mb-4">No Leaderboards Yet</h2>
-            <p className="text-gray-400 mb-6">
+            <p className="text-gray-500 mb-6">
               Please come back later to see the leaderboards from our community.
             </p>
           </div>
@@ -89,17 +89,17 @@ export default async function Leaderboards() {
               <a
                 key={board.id}
                 href={`/leaderboard/${board.slug}`}
-                className="stat-card flex justify-between items-center px-6 py-4 group bg-black/20 hover:bg-white/5 transition-all border border-white/5 rounded-xl rounded-tl-sm hover:border-indigo-500/30"
+                className="stat-card flex justify-between items-center px-6 py-4 group bg-gray-100 hover:bg-gray-100 transition-all border border-gray-200 rounded-xl rounded-tl-sm hover:border-indigo-500/30"
                 data-aos="fade-up"
                 data-aos-delay={(i * 50).toString()}
               >
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full bg-indigo-500 group-hover:shadow-[0_0_10px_rgba(99,102,241,0.8)] transition-all" />
-                  <span className="text-gray-200 font-semibold group-hover:text-white transition">
+                  <span className="text-gray-700 font-semibold group-hover:text-gray-900 transition">
                     {board.name}
                   </span>
                 </div>
-                <span className="text-gray-500 text-sm group-hover:text-indigo-400 transition flex items-center gap-2">
+                <span className="text-gray-500 text-sm group-hover:text-indigo-600 transition flex items-center gap-2">
                   View{" "}
                   <FontAwesomeIcon icon={faArrowRight} className="w-4 h-4" />
                 </span>

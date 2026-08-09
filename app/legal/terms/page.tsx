@@ -20,7 +20,7 @@ export default function Terms() {
           Terms of Service
         </h1>
 
-        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10">
+        <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10">
           These Terms of Service (&quot;Terms&quot;) govern your use of{" "}
           <strong>Devpulse</strong>
           (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) available at{" "}

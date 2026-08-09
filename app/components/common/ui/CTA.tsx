@@ -3,40 +3,40 @@ import Link from "next/link";
 export default function CTA() {
   return (
     <section
-      className="max-w-5xl mx-auto px-6 py-8 relative z-10 border-y border-white/10"
+      className="max-w-5xl mx-auto px-6 py-8 relative z-10 border-y border-gray-200"
       data-aos="fade-up"
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
         <div className="lg:col-span-8">
-          <p className="text-xs uppercase tracking-[0.16em] text-indigo-300/80 font-semibold mb-3">
+          <p className="text-xs uppercase tracking-[0.16em] text-indigo-600/80 font-semibold mb-3">
             Launch DevPulse
           </p>
           <h2 className="text-3xl md:text-4xl font-bold mb-3 gradient-text">
             Ready to track your coding productivity?
           </h2>
-          <p className="text-gray-400 max-w-2xl">
+          <p className="text-gray-500 max-w-2xl">
             Connect your data source, onboard your team, and turn raw coding
             time into actionable performance insights.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5">
-            <div className="glass-card rounded-xl border-white/5 bg-white/[0.015] px-3 py-3">
+            <div className="glass-card rounded-xl border-gray-200 bg-gray-50 px-3 py-3">
               <p className="text-[11px] uppercase tracking-[0.1em] text-gray-500 mb-1">
                 Setup Time
               </p>
-              <p className="text-sm text-white font-semibold">~5 minutes</p>
+              <p className="text-sm text-gray-900 font-semibold">~5 minutes</p>
             </div>
-            <div className="glass-card rounded-xl border-white/5 bg-white/[0.015] px-3 py-3">
+            <div className="glass-card rounded-xl border-gray-200 bg-gray-50 px-3 py-3">
               <p className="text-[11px] uppercase tracking-[0.1em] text-gray-500 mb-1">
                 Sync Source
               </p>
-              <p className="text-sm text-white font-semibold">WakaTime</p>
+              <p className="text-sm text-gray-900 font-semibold">WakaTime</p>
             </div>
-            <div className="glass-card rounded-xl border-white/5 bg-white/[0.015] px-3 py-3">
+            <div className="glass-card rounded-xl border-gray-200 bg-gray-50 px-3 py-3">
               <p className="text-[11px] uppercase tracking-[0.1em] text-gray-500 mb-1">
                 Visibility
               </p>
-              <p className="text-sm text-white font-semibold">Team + Public</p>
+              <p className="text-sm text-gray-900 font-semibold">Team + Public</p>
             </div>
           </div>
         </div>

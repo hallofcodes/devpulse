@@ -118,20 +118,20 @@ export default function LeaderboardStats({
       data-aos="fade-in"
     >
       <div className="glass-card p-5 rounded-2xl flex flex-col gap-6">
-        <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1 flex items-center justify-start gap-2">
+        <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1 flex items-center justify-start gap-2">
           Leaderboard Stats
         </h3>
         <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-1 gap-6">
           {statCards.map((card, idx) => (
             <div key={idx} className="flex flex-col gap-2 relative group">
               <div className="flex justify-between items-start">
-                <span className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">
+                <span className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">
                   {card.label}
                 </span>
                 <div
                   className={`text-[9px] font-mono px-1.5 py-0.5 rounded flex items-center gap-1 ${
                     card.trendUp
-                      ? "text-emerald-400 bg-emerald-400/10"
+                      ? "text-emerald-600 bg-emerald-400/10"
                       : "text-rose-400 bg-rose-400/10"
                   }`}
                 >
@@ -140,7 +140,7 @@ export default function LeaderboardStats({
               </div>
 
               <div className="flex flex-col">
-                <span className="text-xl sm:text-2xl font-bold tracking-tight text-white mb-0.5">
+                <span className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 mb-0.5">
                   {card.value}
                 </span>
                 <span className="text-xs text-gray-500 font-medium">

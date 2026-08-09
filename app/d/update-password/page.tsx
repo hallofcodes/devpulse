@@ -16,7 +16,7 @@ export default async function UpdatePassword() {
             <Image src="/logo.svg" alt="Devpulse Logo" width={36} height={36} />
             <h2 className="text-2xl font-bold gradient-text">Devpulse</h2>
           </div>
-          <p className="mb-8 text-gray-400 text-sm">
+          <p className="mb-8 text-gray-500 text-sm">
             Update your password to keep your account secure. Enter a strong new
           </p>
 

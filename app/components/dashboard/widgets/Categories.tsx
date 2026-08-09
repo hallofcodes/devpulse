@@ -18,7 +18,7 @@ export default function Categories({
   return (
     <>
       <div data-aos="fade-in">
-        <h3 className="text-sm font-semibold text-white mb-4">Categories</h3>
+        <h3 className="text-sm font-semibold text-gray-900 mb-4">Categories</h3>
         <div className="space-y-4">
           {categoriesList.slice(0, 4).map((category, idx) => {
             const percent = Math.min(100, Math.max(0, category.percent || 0));
@@ -27,7 +27,7 @@ export default function Categories({
               <div key={`${category.name}-${idx}`}>
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-2.5">
-                    <span className="text-sm text-gray-300 font-medium">
+                    <span className="text-sm text-gray-600 font-medium">
                       {category.name}
                     </span>
                     {idx === 0 && (

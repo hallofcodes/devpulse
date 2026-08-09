@@ -53,7 +53,7 @@ export default function JoinButton({
           Don&apos;t have an account?{" "}
           <Link
             href={`/signup?redirect=${encodeURIComponent(`/join?id=${code}`)}`}
-            className="text-indigo-400 hover:text-indigo-300 transition-colors"
+            className="text-indigo-600 hover:text-indigo-600 transition-colors"
           >
             Sign up free
           </Link>

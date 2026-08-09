@@ -23,10 +23,10 @@ export default async function SettingsPage() {
       <div className="glass-card p-4 md:p-5 border-t-4 border-indigo-500/50">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">
               Account Settings
             </h1>
-            <p className="text-xs md:text-sm text-gray-400 mt-1">
+            <p className="text-xs md:text-sm text-gray-500 mt-1">
               Manage profile details, WakaTime connection, and account security.
             </p>
           </div>

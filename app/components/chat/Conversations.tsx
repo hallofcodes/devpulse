@@ -48,16 +48,16 @@ export default function Conversations({
             onClick={() => setConversationId(conv.id)}
             className={`w-full flex items-center gap-3.5 p-3 rounded-xl transition-all text-left ${
               isActive
-                ? "bg-white/[0.05] border border-white/[0.08] shadow-sm"
-                : "hover:bg-white/[0.02] border border-transparent opacity-80 hover:opacity-100"
+                ? "bg-gray-100 border border-gray-200 shadow-sm"
+                : "hover:bg-gray-100 border border-transparent opacity-80 hover:opacity-100"
             }`}
           >
             <div className="relative flex-shrink-0">
               <div
                 className={`flex justify-center items-center w-[38px] h-[38px] rounded-full text-[14px] font-bold transition-all border ${
                   isGlobal
-                    ? "bg-indigo-500/15 text-indigo-300 border-indigo-500/30"
-                    : "bg-neutral-800 text-gray-200 border-white/10 shadow-sm"
+                    ? "bg-indigo-500/15 text-indigo-600 border-indigo-500/30"
+                    : "bg-neutral-800 text-gray-700 border-gray-200 shadow-sm"
                 }`}
               >
                 {initials}
@@ -72,19 +72,19 @@ export default function Conversations({
                 <div className="flex justify-between items-center mb-0.5">
                   <span
                     className={`text-[14px] font-semibold truncate tracking-tight ${
-                      isActive ? "text-gray-100" : "text-gray-300"
+                      isActive ? "text-gray-700" : "text-gray-600"
                     }`}
                   >
                     {label}
                   </span>
                   <div className="flex items-center gap-1.5">
                     {isGlobal && (
-                      <span className="bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-[9px] font-bold px-1.5 py-0.5 rounded-md">
+                      <span className="bg-indigo-500/20 border border-indigo-500/30 text-indigo-600 text-[9px] font-bold px-1.5 py-0.5 rounded-md">
                         All
                       </span>
                     )}
                     {unreadCount > 0 && (
-                      <span className="min-w-[20px] h-5 px-1.5 rounded-full bg-rose-500/90 text-white text-[10px] font-bold flex items-center justify-center">
+                      <span className="min-w-[20px] h-5 px-1.5 rounded-full bg-rose-500/90 text-gray-900 text-[10px] font-bold flex items-center justify-center">
                         {unreadCount > 99 ? "99+" : unreadCount}
                       </span>
                     )}
@@ -92,7 +92,7 @@ export default function Conversations({
                 </div>
                 <span
                   className={`text-[12px] truncate font-medium ${
-                    isTyping ? "text-indigo-300" : "text-gray-500"
+                    isTyping ? "text-indigo-600" : "text-gray-500"
                   }`}
                   title={sublabel}
                 >

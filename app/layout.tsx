@@ -108,11 +108,11 @@ export default function RootLayout({
         <NortonSafeweb />
       </head>
       <body className="antialiased">
-        <NextTopLoader showSpinner={false} color="#7873f5" />
+        <NextTopLoader showSpinner={false} color="#2563eb" />
         <AOSWrapper />
         {children}
         <ToastContainer
-          toastStyle={{ backgroundColor: "#312e81", color: "#fff" }}
+          toastStyle={{ backgroundColor: "#ffffff", color: "#1a1f2e", border: "1px solid #e2e8f0", boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}
         />
         {isProduction && (
           <>

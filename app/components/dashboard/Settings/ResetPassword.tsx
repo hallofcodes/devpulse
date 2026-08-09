@@ -61,13 +61,13 @@ export default function ResetPassword({ email }: { email: string }) {
           Security
         </h3>
 
-        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3.5 mb-3.5">
-          <p className="text-sm text-white font-semibold mb-0.5">
+        <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 mb-3.5">
+          <p className="text-sm text-gray-900 font-semibold mb-0.5">
             Reset Password
           </p>
-          <p className="text-xs md:text-sm text-gray-400">
+          <p className="text-xs md:text-sm text-gray-500">
             Send a secure reset link to{" "}
-            <span className="text-gray-300">{email}</span>.
+            <span className="text-gray-600">{email}</span>.
           </p>
         </div>
 
@@ -83,7 +83,7 @@ export default function ResetPassword({ email }: { email: string }) {
       {showCaptcha && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 backdrop-blur-sm">
           <div className="glass-card p-8 text-center">
-            <h3 className="text-lg font-semibold mb-4 text-gray-200">
+            <h3 className="text-lg font-semibold mb-4 text-gray-700">
               Verify you are human
             </h3>
 
@@ -95,7 +95,7 @@ export default function ResetPassword({ email }: { email: string }) {
 
             <button
               onClick={() => setShowCaptcha(false)}
-              className="mt-4 text-sm text-gray-500 hover:text-gray-300 transition"
+              className="mt-4 text-sm text-gray-500 hover:text-gray-600 transition"
             >
               Cancel
             </button>

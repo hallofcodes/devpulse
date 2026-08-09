@@ -82,10 +82,10 @@ export default function UserProfile({ user }: { user: UserShape }) {
     <div className="glass-card p-5 border-t-4 border-indigo-500/50">
       <div className="flex items-start justify-between gap-3 mb-4">
         <div>
-          <h3 className="text-xs font-semibold text-indigo-300 uppercase tracking-widest">
+          <h3 className="text-xs font-semibold text-indigo-600 uppercase tracking-widest">
             Account Profile
           </h3>
-          <p className="text-xs md:text-sm text-gray-400 mt-1.5">
+          <p className="text-xs md:text-sm text-gray-500 mt-1.5">
             Keep your profile details accurate for a better dashboard
             experience.
           </p>
@@ -95,7 +95,7 @@ export default function UserProfile({ user }: { user: UserShape }) {
           type="button"
           onClick={() => (isEditing ? cancelEditing() : setIsEditing(true))}
           disabled={loading}
-          className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-50"
+          className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50"
         >
           {isEditing ? "Cancel" : "Edit"}
         </button>
@@ -107,10 +107,10 @@ export default function UserProfile({ user }: { user: UserShape }) {
           alt="User Avatar"
           width={54}
           height={54}
-          className="rounded-full border border-white/10"
+          className="rounded-full border border-gray-200"
         />
         <div>
-          <p className="text-white font-semibold leading-none mb-1">
+          <p className="text-gray-900 font-semibold leading-none mb-1">
             {originalName}
           </p>
           <p className="text-xs text-gray-500">{user.email || "No email"}</p>
@@ -119,7 +119,7 @@ export default function UserProfile({ user }: { user: UserShape }) {
 
       <div className="space-y-3">
         <div>
-          <label className="text-xs md:text-sm text-gray-400 font-medium">
+          <label className="text-xs md:text-sm text-gray-500 font-medium">
             Display Name
           </label>
           <input
@@ -132,7 +132,7 @@ export default function UserProfile({ user }: { user: UserShape }) {
         </div>
 
         <div>
-          <label className="text-xs md:text-sm text-gray-400 font-medium">
+          <label className="text-xs md:text-sm text-gray-500 font-medium">
             Email
           </label>
           <input
@@ -157,7 +157,7 @@ export default function UserProfile({ user }: { user: UserShape }) {
             type="button"
             onClick={cancelEditing}
             disabled={loading}
-            className="px-4 py-2.5 rounded-xl text-sm font-medium border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-50"
+            className="px-4 py-2.5 rounded-xl text-sm font-medium border border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50"
           >
             Discard
           </button>

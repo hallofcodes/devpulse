@@ -10,9 +10,13 @@ export default async function Auth(req: NextRequest) {
     new RegExp(`^${route}(/.*)?$`).test(pathname),
   );
 
-  if (isProtectedRoute && !session) {
-    console.log("User is not authenticated, redirecting to login.");
-    return NextResponse.redirect(new URL("/login", req.url));
+  if (isProtectedRoute) {
+    if (!session) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+    if (!session.user.emailVerified) {
+      return NextResponse.redirect(new URL("/verify-email", req.url));
+    }
   }
 
   const authRoutes = [
@@ -21,9 +25,16 @@ export default async function Auth(req: NextRequest) {
     "/forgot-password",
     "/reset-password",
   ];
+
   if (authRoutes.includes(pathname) && session) {
-    console.log("User is authenticated, redirecting to home.");
-    return NextResponse.redirect(new URL("/", req.url));
+    if (!session.user.emailVerified) {
+      return NextResponse.redirect(new URL("/verify-email", req.url));
+    }
+    return NextResponse.redirect(new URL("/d", req.url));
+  }
+
+  if (pathname === "/verify-email" && session?.user.emailVerified) {
+    return NextResponse.redirect(new URL("/d", req.url));
   }
 
   return null;

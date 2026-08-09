@@ -6,6 +6,7 @@ import {
   DndContext,
   DragEndEvent,
   PointerSensor,
+  TouchSensor,
   useDraggable,
   useDroppable,
   useSensor,
@@ -116,7 +117,12 @@ function isIssueUpdate(
 }
 
 export default function Kanban() {
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 200, tolerance: 8 },
+    }),
+  );
   const [projects, setProjects] = useState<KanbanProject[]>([]);
   const [boards, setBoards] = useState<KanbanBoard[]>([]);
   const [columns, setColumns] = useState<KanbanColumn[]>([]);
@@ -129,6 +135,7 @@ export default function Kanban() {
   const [selectedColumn, setSelectedColumn] = useState<string | null>(null);
   const [submittingIssue, setSubmittingIssue] = useState(false);
   const [submittingProject, setSubmittingProject] = useState(false);
+  const [showRecentIssues, setShowRecentIssues] = useState(false);
   const [issueForm, setIssueForm] = useState({
     title: "",
     tag: "",
@@ -247,6 +254,25 @@ export default function Kanban() {
     () => groupedBoards.flatMap((board) => board.columns),
     [groupedBoards],
   );
+
+  // Derive metrics from live issues state so they update on every drag
+  const liveIssueCount = useMemo(() => {
+    const colIds = new Set(availableColumns.map((c) => c.id));
+    return issues.filter((issue) => colIds.has(issue.column_id)).length;
+  }, [issues, availableColumns]);
+
+  const liveCompletedCount = useMemo(() => {
+    const doneColIds = new Set(
+      availableColumns
+        .filter((c) => c.title.toLowerCase() === "done")
+        .map((c) => c.id),
+    );
+    return issues.filter((issue) => doneColIds.has(issue.column_id)).length;
+  }, [issues, availableColumns]);
+
+  const liveCompletionRate = liveIssueCount > 0
+    ? Math.round((liveCompletedCount / liveIssueCount) * 100)
+    : 0;
 
   const recentIssues = useMemo(() => {
     return issues
@@ -378,67 +404,70 @@ export default function Kanban() {
     }
   }
 
-  const completionRate = currentProject?.issue_count
-    ? Math.round(
-        (currentProject.completed_issue_count / currentProject.issue_count) * 100,
-      )
-    : 0;
-
   return (
-    <div className="min-h-screen ">
-      <div className="sticky top-0 z-20 border-b border-white/5 bg-[#0a0a1a]/95 backdrop-blur">
-        <div className="mx-auto max-w-[1400px] px-6 py-4">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div className="min-h-screen">
+      {/* Sticky header — title + actions only */}
+      <div className="sticky top-0 z-20 border-b border-gray-200 bg-white/95 backdrop-blur">
+        <div className="mx-auto max-w-[1400px] px-4 py-3 md:px-6 md:py-4">
+          <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-indigo-400/80">
+              <p className="text-xs uppercase tracking-[0.2em] text-indigo-600/80">
                 Project Kanban
               </p>
-              <h1 className="text-2xl font-semibold">Boards</h1>
+              <h1 className="text-xl font-semibold md:text-2xl">Boards</h1>
             </div>
-
-            <div className="mt-6 grid gap-3 md:grid-cols-4">
-              <OverviewCard
-                label="Kanban Projects"
-                value={String(projects.length)}
-                sub="User-owned workspaces"
-              />
-              <OverviewCard
-                label="Open Issues"
-                value={String(
-                  (currentProject?.issue_count ?? 0) -
-                    (currentProject?.completed_issue_count ?? 0),
-                )}
-                sub="Still in flight"
-              />
-              <OverviewCard
-                label="Completion"
-                value={`${completionRate}%`}
-                sub="Done column progress"
-              />
-              <OverviewCard
-                label="Tracked Time"
-                value={formatHours(currentProject?.total_tracked_seconds ?? 0)}
-                sub={
-                  currentProject?.wakatime_project_name
-                    ? "From linked WakaTime project"
-                    : "No WakaTime project linked"
-                }
-              />
-            </div>
+            <button
+              onClick={() => setProjectModalOpen(true)}
+              className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-600 shadow-sm transition hover:border-indigo-300 hover:text-indigo-600"
+            >
+              + New Project
+            </button>
           </div>
-        </section>
+        </div>
+      </div>
 
-        <section className="grid gap-4 xl:grid-cols-[340px_minmax(0,1fr)]">
-          <div className="space-y-4">
+      {/* Main content */}
+      <div className="mx-auto max-w-[1400px] px-4 py-4 md:px-6 md:py-6">
+        {/* Metrics row */}
+        <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+          <OverviewCard
+            label="Kanban Projects"
+            value={String(projects.length)}
+            sub="User-owned workspaces"
+          />
+          <OverviewCard
+            label="Open Issues"
+            value={String(liveIssueCount - liveCompletedCount)}
+            sub="Still in flight"
+          />
+          <OverviewCard
+            label="Completion"
+            value={`${liveCompletionRate}%`}
+            sub="Done column progress"
+          />
+          <OverviewCard
+            label="Tracked Time"
+            value={formatHours(currentProject?.total_tracked_seconds ?? 0)}
+            sub={
+              currentProject?.wakatime_project_name
+                ? "From linked WakaTime project"
+                : "No WakaTime project linked"
+            }
+          />
+        </div>
+
+        {/* Workspace + Boards */}
+        <div className="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
+          {/* Left sidebar — shown below boards on mobile, beside on xl */}
+          <div className="order-2 space-y-4 xl:order-1">
             <div className="glass-card p-4 md:p-5">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-lg font-semibold text-white">
+                  <h2 className="text-base font-semibold text-gray-900">
                     Project Workspace
                   </h2>
-                  <p className="text-sm text-gray-400">
-                    Switch context or create a new project with WakaTime
-                    linkage.
+                  <p className="text-sm text-gray-500">
+                    Switch context or create a new project.
                   </p>
                 </div>
               </div>
@@ -471,34 +500,34 @@ export default function Kanban() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h3 className="text-lg font-semibold text-white">
+                      <h3 className="text-base font-semibold text-gray-900">
                         {currentProject.name}
                       </h3>
-                      <p className="mt-1 text-sm text-gray-300">
+                      <p className="mt-1 text-sm text-gray-600">
                         {currentProject.description || "No project brief yet."}
                       </p>
                     </div>
-                    <span className="rounded-full border border-white/10 bg-black/20 px-2.5 py-1 text-[11px] uppercase tracking-[0.18em] text-gray-200">
+                    <span className="rounded-full border border-gray-200 bg-gray-100 px-2.5 py-1 text-[11px] uppercase tracking-[0.18em] text-gray-700">
                       {currentProject.color}
                     </span>
                   </div>
 
-                  <div className="mt-4 space-y-2 text-sm text-gray-300">
+                  <div className="mt-4 space-y-2 text-sm text-gray-600">
                     <p>
                       Linked WakaTime:
-                      <span className="ml-2 font-medium text-white">
+                      <span className="ml-2 font-medium text-gray-900">
                         {currentProject.wakatime_project_name || "Not linked"}
                       </span>
                     </p>
                     <p>
                       Boards:
-                      <span className="ml-2 font-medium text-white">
+                      <span className="ml-2 font-medium text-gray-900">
                         {currentProject.board_count}
                       </span>
                     </p>
                     <p>
                       Created:
-                      <span className="ml-2 font-medium text-white">
+                      <span className="ml-2 font-medium text-gray-900">
                         {formatDate(currentProject.created_at)}
                       </span>
                     </p>
@@ -513,36 +542,46 @@ export default function Kanban() {
             </div>
 
             <div className="glass-card p-4 md:p-5">
-              <h2 className="text-lg font-semibold text-white">
-                Recent Issues
-              </h2>
-              <p className="text-sm text-gray-400">
-                Latest cards for the active project.
-              </p>
+              <button
+                className="flex w-full items-center justify-between gap-3 text-left xl:cursor-default"
+                onClick={() => setShowRecentIssues((v) => !v)}
+              >
+                <div>
+                  <h2 className="text-base font-semibold text-gray-900">
+                    Recent Issues
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Latest cards for the active project.
+                  </p>
+                </div>
+                <span className="text-xs text-gray-400 xl:hidden">
+                  {showRecentIssues ? "▲" : "▼"}
+                </span>
+              </button>
 
-              <div className="mt-4 space-y-3">
+              <div className={`mt-4 space-y-3 ${showRecentIssues ? "block" : "hidden xl:block"}`}>
                 {recentIssues.length > 0 ? (
                   recentIssues.map((issue) => (
                     <div
                       key={issue.id}
-                      className="rounded-2xl border border-white/5 bg-white/[0.03] p-3"
+                      className="rounded-2xl border border-gray-200 bg-gray-50 p-3"
                     >
-                      <div className="flex items-center justify-between gap-3 text-xs text-gray-400">
+                      <div className="flex items-center justify-between gap-3 text-xs text-gray-500">
                         <span>{issue.issue_key}</span>
-                        <span className="rounded-full border border-white/10 px-2 py-1 uppercase">
+                        <span className="rounded-full border border-gray-200 px-2 py-1 uppercase">
                           {issue.priority}
                         </span>
                       </div>
-                      <p className="mt-2 text-sm font-medium text-white">
+                      <p className="mt-2 text-sm font-medium text-gray-900">
                         {issue.title}
                       </p>
-                      <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-gray-400">
+                      <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-gray-500">
                         {issue.tag ? (
-                          <span className="rounded-full border border-white/10 px-2 py-1">
+                          <span className="rounded-full border border-gray-200 px-2 py-1">
                             {issue.tag}
                           </span>
                         ) : null}
-                        <span className="rounded-full border border-white/10 px-2 py-1 uppercase">
+                        <span className="rounded-full border border-gray-200 px-2 py-1 uppercase">
                           {issue.type}
                         </span>
                         <span>{formatDate(issue.created_at)}</span>
@@ -559,25 +598,26 @@ export default function Kanban() {
             </div>
           </div>
 
-          <div className="glass-card p-4 md:p-5">
-            <div className="flex flex-col gap-2 border-b border-white/5 pb-4 md:flex-row md:items-center md:justify-between">
+          {/* Boards panel — shown first on mobile */}
+          <div className="order-1 glass-card overflow-hidden p-4 md:p-5 xl:order-2">
+            <div className="flex flex-col gap-2 border-b border-gray-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-white">Boards</h2>
-                <p className="text-sm text-gray-400">
+                <h2 className="text-base font-semibold text-gray-900">Boards</h2>
+                <p className="text-sm text-gray-500">
                   {currentProject
                     ? "Delivery lanes for the active project."
                     : "Create a project first to open a board."}
                 </p>
               </div>
               {currentProject?.wakatime_project_name ? (
-                <div className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">
+                <div className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600">
                   Bound to {currentProject.wakatime_project_name}
                 </div>
               ) : null}
             </div>
 
             {loading ? (
-              <div className="py-16 text-center text-sm text-gray-400">
+              <div className="py-16 text-center text-sm text-gray-500">
                 Loading Kanban workspace...
               </div>
             ) : groupedBoards.length === 0 ? (
@@ -589,30 +629,30 @@ export default function Kanban() {
               </div>
             ) : (
               <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-                <div className="mt-5 flex gap-5 overflow-x-auto pb-3">
+                <div className="mt-5 space-y-6">
                   {groupedBoards.map((board) => (
-                    <section key={board.id} className="min-w-[920px] space-y-4">
-                      <div className="flex items-end justify-between gap-4">
-                        <div>
-                          <h3 className="text-base font-semibold text-white">
-                            {board.title}
-                          </h3>
-                          <p className="text-sm text-gray-400">
-                            {board.description || "Execution board"}
-                          </p>
-                        </div>
+                    <section key={board.id} className="space-y-3">
+                      <div>
+                        <h3 className="text-sm font-semibold text-gray-900">
+                          {board.title}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {board.description || "Execution board"}
+                        </p>
                       </div>
 
-                      <div className="grid gap-4 md:grid-cols-3">
+                      {/* Horizontal scroll on mobile, grid on md+ */}
+                      <div className="flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible md:pb-0">
                         {board.columns.map((column) => (
-                          <Column
-                            key={column.id}
-                            column={column}
-                            onAdd={() => {
-                              setSelectedColumn(column.id);
-                              setIssueModalOpen(true);
-                            }}
-                          />
+                          <div key={column.id} className="min-w-[260px] flex-none md:min-w-0">
+                            <Column
+                              column={column}
+                              onAdd={() => {
+                                setSelectedColumn(column.id);
+                                setIssueModalOpen(true);
+                              }}
+                            />
+                          </div>
                         ))}
                       </div>
                     </section>
@@ -621,7 +661,7 @@ export default function Kanban() {
               </DndContext>
             )}
           </div>
-        </section>
+        </div>
       </div>
 
       {projectModalOpen ? (
@@ -690,8 +730,8 @@ export default function Kanban() {
                     }
                     className={`rounded-xl border px-3 py-2 text-xs font-semibold transition-all ${
                       projectForm.color === color.value
-                        ? "border-white/30 bg-white/10 text-white"
-                        : "border-white/5 bg-white/5 text-gray-400"
+                        ? "border-gray-400 bg-gray-100 text-gray-900"
+                        : "border-gray-200 bg-gray-50 text-gray-500"
                     }`}
                   >
                     {color.label}
@@ -704,7 +744,7 @@ export default function Kanban() {
           <div className="mt-5 flex justify-end gap-2">
             <button
               onClick={() => setProjectModalOpen(false)}
-              className="rounded-xl px-3 py-2 text-sm text-gray-400"
+              className="rounded-xl px-3 py-2 text-sm text-gray-500"
             >
               Cancel
             </button>
@@ -796,7 +836,7 @@ export default function Kanban() {
           <div className="mt-5 flex justify-end gap-2">
             <button
               onClick={() => setIssueModalOpen(false)}
-              className="rounded-xl px-3 py-2 text-sm text-gray-400"
+              className="rounded-xl px-3 py-2 text-sm text-gray-500"
             >
               Cancel
             </button>
@@ -828,19 +868,19 @@ function OverviewCard({
   sub: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/5 bg-black/20 p-4">
+    <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
       <p className="text-xs uppercase tracking-[0.2em] text-gray-500">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-white">{value}</p>
-      <p className="mt-1 text-sm text-gray-400">{sub}</p>
+      <p className="mt-2 text-2xl font-semibold text-gray-900">{value}</p>
+      <p className="mt-1 text-xs text-gray-500">{sub}</p>
     </div>
   );
 }
 
 function EmptyPanel({ title, body }: { title: string; body: string }) {
   return (
-    <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-5 text-center">
-      <p className="text-sm font-semibold text-white">{title}</p>
-      <p className="mt-1 text-sm text-gray-400">{body}</p>
+    <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-5 text-center">
+      <p className="text-sm font-semibold text-gray-900">{title}</p>
+      <p className="mt-1 text-sm text-gray-500">{body}</p>
     </div>
   );
 }
@@ -857,16 +897,16 @@ function ModalShell({
   onClose: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#020617]/80 p-4 backdrop-blur-sm">
-      <div className="glass-card w-full max-w-xl border-white/10 p-5 md:p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-sm">
+      <div className="glass-card w-full max-w-xl border-gray-200 p-5 md:p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold text-white">{title}</h2>
-            <p className="mt-1 text-sm text-gray-400">{subtitle}</p>
+            <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+            <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
           </div>
           <button
             onClick={onClose}
-            className="rounded-full border border-white/10 px-3 py-1 text-sm text-gray-400"
+            className="rounded-full border border-gray-200 px-3 py-1 text-sm text-gray-500 hover:bg-gray-50"
           >
             Close
           </button>
@@ -892,11 +932,11 @@ function Column({
   return (
     <div
       ref={setNodeRef}
-      className="rounded-3xl border border-white/5 bg-white/[0.03] p-4"
+      className="rounded-3xl border border-gray-200 bg-gray-50 p-4"
     >
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-300">
+          <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-600">
             {column.title}
           </h3>
           <p className="mt-1 text-xs text-gray-500">
@@ -905,7 +945,7 @@ function Column({
         </div>
         <button
           onClick={onAdd}
-          className="rounded-full border border-white/10 px-3 py-1 text-xs text-gray-300 transition hover:border-indigo-500/30 hover:text-white"
+          className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs text-gray-600 transition hover:border-indigo-300 hover:text-indigo-600"
         >
           Add
         </button>
@@ -927,7 +967,7 @@ function IssueCard({
   item: KanbanIssue;
   columnId: string;
 }) {
-  const { setNodeRef, listeners, attributes, transform } = useDraggable({
+  const { setNodeRef, listeners, attributes, transform, isDragging } = useDraggable({
     id: item.id,
     data: { columnId },
   });
@@ -941,25 +981,26 @@ function IssueCard({
         transform: transform
           ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
           : undefined,
+        zIndex: isDragging ? 50 : undefined,
       }}
-      className="cursor-grab rounded-2xl border border-white/8 bg-[#0b1020] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.25)] active:cursor-grabbing"
+      className={`cursor-grab rounded-2xl border border-gray-200 bg-white p-4 shadow-sm active:cursor-grabbing ${isDragging ? "shadow-lg opacity-95" : ""}`}
     >
-      <div className="flex items-center justify-between gap-3 text-xs text-gray-400">
+      <div className="flex items-center justify-between gap-3 text-xs text-gray-500">
         <span>{item.issue_key}</span>
         {item.tag ? (
-          <span className="rounded-full border border-white/10 px-2 py-1">
+          <span className="rounded-full border border-gray-200 px-2 py-1">
             {item.tag}
           </span>
         ) : null}
       </div>
 
-      <p className="mt-3 text-sm font-medium text-white">{item.title}</p>
+      <p className="mt-3 text-sm font-medium text-gray-900">{item.title}</p>
 
-      <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-gray-400">
-        <span className="rounded-full border border-white/10 px-2 py-1 uppercase">
+      <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-gray-500">
+        <span className="rounded-full border border-gray-200 px-2 py-1 uppercase">
           {item.type}
         </span>
-        <span className="rounded-full border border-white/10 px-2 py-1 uppercase">
+        <span className="rounded-full border border-gray-200 px-2 py-1 uppercase">
           {item.priority}
         </span>
       </div>

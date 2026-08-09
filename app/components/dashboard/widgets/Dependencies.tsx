@@ -15,7 +15,7 @@ export default function Dependencies({
   return (
     <>
       <div className="glass-card p-6 h-full flex flex-col" data-aos="fade-in">
-        <h3 className="text-sm font-semibold text-white mb-4 lg:mb-6">
+        <h3 className="text-sm font-semibold text-gray-900 mb-4 lg:mb-6">
           Dependencies
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 flex-1">
@@ -23,15 +23,15 @@ export default function Dependencies({
             <div key={idx}>
               <div className="flex flex-col gap-1 mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-400 flex-shrink-0">
+                  <span className="text-gray-500 flex-shrink-0">
                     <FontAwesomeIcon icon={faBoxOpen} />
                   </span>
-                  <span className="text-sm text-gray-300 font-medium truncate block">
+                  <span className="text-sm text-gray-600 font-medium truncate block">
                     {dep.name}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs font-mono ml-6">
-                  <span className="text-gray-400">
+                  <span className="text-gray-500">
                     {formatHours(dep.total_seconds)}
                   </span>
                   <span className="text-cyan-400 font-semibold">

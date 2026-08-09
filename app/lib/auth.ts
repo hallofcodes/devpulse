@@ -54,12 +54,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.role = user.role;
       }
 
-      if (token.sub && typeof token.role !== "string") {
+      // Re-query DB when role is unset OR emailVerified is null/undefined.
+      // The null check means unverified users trigger a DB lookup on each
+      // request so that verification is picked up immediately without a
+      // forced re-login.
+      if (token.sub && (typeof token.role !== "string" || !token.emailVerified)) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.sub },
-          select: { role: true },
+          select: { role: true, emailVerified: true },
         });
-        token.role = dbUser?.role ?? "user";
+        if (dbUser) {
+          token.role = dbUser.role;
+          token.emailVerified = dbUser.emailVerified;
+        }
       }
 
       return token;
@@ -70,6 +77,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       session.user.role =
         typeof token.role === "string" ? token.role : "user";
+      session.user.emailVerified =
+        (token.emailVerified as Date | null | undefined) ?? null;
       return session;
     },
     async signIn({ user, account }) {

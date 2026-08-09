@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import { toast } from "react-toastify";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Oauth2 from "../Oauth2";
 import Link from "next/link";
 
 export default function SignupForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectParam = searchParams.get("redirect");
   const redirectTo =
@@ -41,7 +41,12 @@ export default function SignupForm() {
         const data = await res.json();
         if (!res.ok) return reject(new Error(data.error));
 
-        await signIn("credentials", { email, password, redirect: false });
+        await fetch("/api/auth/verify-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+
         resolve();
       } catch (error) {
         reject(error);
@@ -49,21 +54,19 @@ export default function SignupForm() {
     });
 
     toast.promise(signUp, {
-      pending: "Signing up...",
+      pending: "Creating account...",
       success: {
         render() {
           setLoading(false);
-          setEmail("");
-          setPassword("");
-          setConfirmPassword("");
-          return "Signed up successfully!";
+          router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+          return "Account created! Please verify your email.";
         },
       },
       error: {
         render({ data }) {
           setLoading(false);
           const err = data as Error;
-          return err?.message || "Failed to signup. Please try again.";
+          return err?.message || "Failed to sign up. Please try again.";
         },
       },
     });
@@ -138,9 +141,9 @@ export default function SignupForm() {
         </button>
 
         <div className="flex items-center justify-center gap-2">
-          <span className="w-16 h-px bg-gray-700" />
+          <span className="w-16 h-px bg-gray-200" />
           <span className="text-sm text-gray-500">Or continue with</span>
-          <span className="w-16 h-px bg-gray-700" />
+          <span className="w-16 h-px bg-gray-200" />
         </div>
 
         <Oauth2 redirectTo={redirectTo} />

@@ -145,7 +145,7 @@ export default async function Home() {
               href="https://github.com/hallofcodes/devpulse"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-colors text-xs font-semibold uppercase tracking-widest mb-8 group"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors text-xs font-semibold uppercase tracking-widest mb-8 group"
               data-aos="fade-right"
             >
               <FontAwesomeIcon
@@ -156,7 +156,7 @@ export default async function Home() {
             </Link>
 
             <h1
-              className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-400 mb-6"
+              className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] text-gray-900 mb-6"
               data-aos="fade-up"
               data-aos-delay="100"
             >
@@ -165,7 +165,7 @@ export default async function Home() {
             </h1>
 
             <p
-              className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10"
+              className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10"
               data-aos="fade-up"
               data-aos-delay="200"
             >
@@ -199,22 +199,22 @@ export default async function Home() {
             {/* Card 1 */}
             <div data-aos="fade-left" data-aos-delay="200">
               <div
-                className="absolute top-0 right-10 lg:right-0 w-[320px] glass-card p-5 border-white/10 shadow-2xl skew-y-3 -rotate-3 transition-all duration-700 hover:rotate-0 hover:skew-y-0"
+                className="absolute top-0 right-10 lg:right-0 w-[320px] glass-card p-5 border-gray-200 shadow-2xl skew-y-3 -rotate-3 transition-all duration-700 hover:rotate-0 hover:skew-y-0"
                 style={{ transformStyle: "preserve-3d" }}
               >
                 <div className="flex items-center justify-between mb-4">
-                  <div className="text-xs text-gray-400 font-semibold uppercase tracking-wider">
+                  <div className="text-xs text-gray-500 font-semibold uppercase tracking-wider">
                     Total Coding
                   </div>
-                  <div className="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full font-bold">
+                  <div className="text-xs text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full font-bold">
                     +18%
                   </div>
                 </div>
-                <div className="text-4xl font-extrabold text-white mb-2">
+                <div className="text-4xl font-extrabold text-gray-900 mb-2">
                   42h 15m
                 </div>
                 <div className="text-xs text-gray-500 mb-4">Last 7 days</div>
-                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-gray-50 rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 w-3/4 rounded-full" />
                 </div>
               </div>
@@ -222,8 +222,8 @@ export default async function Home() {
 
             {/* Card 2 */}
             <div data-aos="fade-up" data-aos-delay="400">
-              <div className="absolute top-44 left-10 lg:-left-10 w-[280px] glass-card p-5 border-white/10 shadow-2xl -skew-y-3 rotate-3 z-20 backdrop-blur-xl bg-[#0f0f28]/80 transition-all duration-700 hover:rotate-0 hover:skew-y-0 text-left">
-                <h4 className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-4">
+              <div className="absolute top-44 left-10 lg:-left-10 w-[280px] glass-card p-5 border-gray-200 shadow-2xl -skew-y-3 rotate-3 z-20 backdrop-blur-xl bg-white/90 transition-all duration-700 hover:rotate-0 hover:skew-y-0 text-left">
+                <h4 className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-4">
                   Top Languages
                 </h4>
                 <div className="space-y-4">
@@ -233,12 +233,12 @@ export default async function Home() {
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="font-bold text-white">TypeScript</span>
-                        <span className="text-gray-400 font-mono text-xs">
+                        <span className="font-bold text-gray-900">TypeScript</span>
+                        <span className="text-gray-500 font-mono text-xs">
                           28h 40m
                         </span>
                       </div>
-                      <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-1 w-full bg-gray-50 rounded-full overflow-hidden">
                         <div className="h-full bg-[#3178c6] w-[70%]" />
                       </div>
                     </div>
@@ -249,12 +249,12 @@ export default async function Home() {
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="font-bold text-white">React</span>
-                        <span className="text-gray-400 font-mono text-xs">
+                        <span className="font-bold text-gray-900">React</span>
+                        <span className="text-gray-500 font-mono text-xs">
                           12h 10m
                         </span>
                       </div>
-                      <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-1 w-full bg-gray-50 rounded-full overflow-hidden">
                         <div className="h-full bg-[#61dafb] w-[30%]" />
                       </div>
                     </div>
@@ -264,29 +264,29 @@ export default async function Home() {
             </div>
 
             {/* Card 3 (Code terminal) */}
-            <div className="absolute bottom-5 right-20 w-[300px] glass-card p-4 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-30 bg-[#050510]/90 transition-transform duration-700 hover:-translate-y-2 text-left">
+            <div className="absolute bottom-5 right-20 w-[300px] glass-card p-4 border border-gray-200 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-30 bg-white/95 transition-transform duration-700 hover:-translate-y-2 text-left">
               <div className="flex gap-1.5 mb-3">
                 <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
                 <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
                 <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
               </div>
               <div className="font-mono text-[13px] leading-relaxed">
-                <span className="text-purple-400">import</span>{" "}
-                <span className="text-gray-300">{"{ Pulse }"}</span>{" "}
-                <span className="text-purple-400">from</span>{" "}
-                <span className="text-green-400">&apos;devpulse&apos;</span>;
+                <span className="text-purple-600">import</span>{" "}
+                <span className="text-gray-600">{"{ Pulse }"}</span>{" "}
+                <span className="text-purple-600">from</span>{" "}
+                <span className="text-green-600">&apos;devpulse&apos;</span>;
                 <br />
                 <br />
-                <span className="text-blue-400">Pulse</span>.
-                <span className="text-yellow-200">syncWakaTime</span>(
-                <span className="text-gray-300">key</span>).
-                <span className="text-yellow-200">then</span>(
-                <span className="text-blue-300">stats</span>{" "}
-                <span className="text-purple-400">=&gt;</span> {"{"}
+                <span className="text-blue-600">Pulse</span>.
+                <span className="text-yellow-700">syncWakaTime</span>(
+                <span className="text-gray-600">key</span>).
+                <span className="text-yellow-700">then</span>(
+                <span className="text-blue-600">stats</span>{" "}
+                <span className="text-purple-600">=&gt;</span> {"{"}
                 <br />
-                &nbsp;&nbsp;<span className="text-blue-400">console</span>.
-                <span className="text-yellow-200">log</span>(
-                <span className="text-green-400">&quot;Leveling up!&quot;</span>
+                &nbsp;&nbsp;<span className="text-blue-600">console</span>.
+                <span className="text-yellow-700">log</span>(
+                <span className="text-green-600">&quot;Leveling up!&quot;</span>
                 );
                 <br />
                 {"}"});
@@ -305,13 +305,13 @@ export default async function Home() {
         >
           <div className="text-center mb-16">
             <h2
-              className="text-3xl md:text-5xl font-bold text-white mb-4"
+              className="text-3xl md:text-5xl font-bold text-gray-900 mb-4"
               data-aos="fade-up"
             >
               Everything you need to grow.
             </h2>
             <p
-              className="text-gray-400 text-lg max-w-2xl mx-auto"
+              className="text-gray-500 text-lg max-w-2xl mx-auto"
               data-aos="fade-up"
               data-aos-delay="100"
             >
@@ -325,7 +325,7 @@ export default async function Home() {
               icon={
                 <FontAwesomeIcon
                   icon={faLock}
-                  className="w-6 h-6 text-indigo-400"
+                  className="w-6 h-6 text-indigo-600"
                 />
               }
               title="Private & Public Boards"
@@ -336,7 +336,7 @@ export default async function Home() {
               icon={
                 <FontAwesomeIcon
                   icon={faBolt}
-                  className="w-6 h-6 text-purple-400"
+                  className="w-6 h-6 text-purple-600"
                 />
               }
               title="Real-Time Integrations"
@@ -347,7 +347,7 @@ export default async function Home() {
               icon={
                 <FontAwesomeIcon
                   icon={faUsers}
-                  className="w-6 h-6 text-blue-400"
+                  className="w-6 h-6 text-blue-600"
                 />
               }
               title="Team Collaboration"
@@ -383,15 +383,15 @@ function FeatureCard({
 }) {
   return (
     <div
-      className="glass-card p-8 group hover:-translate-y-2 transition-transform duration-300 bg-white/[0.02] border-white/5 hover:border-indigo-500/20"
+      className="glass-card p-8 group hover:-translate-y-2 transition-transform duration-300 bg-gray-50 border-gray-200 hover:border-indigo-500/20"
       data-aos="fade-up"
       data-aos-delay={delay}
     >
-      <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-indigo-500/10 transition-all">
+      <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-indigo-50 transition-all">
         {icon}
       </div>
-      <h3 className="text-xl font-bold mb-3 text-white">{title}</h3>
-      <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
+      <h3 className="text-xl font-bold mb-3 text-gray-900">{title}</h3>
+      <p className="text-gray-500 text-sm leading-relaxed">{description}</p>
     </div>
   );
 }

@@ -29,7 +29,7 @@ export default function InviteFriendsButton({
   return (
     <button
       onClick={handleInvite}
-      className="flex items-center gap-2 text-sm font-medium bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600/30 hover:text-indigo-300 border border-indigo-500/30 px-4 py-2 rounded-lg transition-all"
+      className="flex items-center gap-2 text-sm font-medium bg-indigo-600/20 text-indigo-600 hover:bg-indigo-600/30 hover:text-indigo-600 border border-indigo-500/30 px-4 py-2 rounded-lg transition-all"
     >
       <FontAwesomeIcon icon={faShareNodes} className="w-4 h-4" />
       Invite Friends

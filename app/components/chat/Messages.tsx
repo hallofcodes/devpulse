@@ -66,7 +66,7 @@ export default function Messages({
       />
 
       <div
-        className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-3 space-y-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/30"
+        className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-3 space-y-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/30"
         id="chat-container"
       >
         {showScrollBtn && (
@@ -75,8 +75,8 @@ export default function Messages({
               bottomRef.current?.scrollIntoView({ behavior: "smooth" })
             }
             className="fixed right-4 bottom-24 z-50 w-9 h-9 flex items-center justify-center
-                       bg-neutral-900/80 hover:bg-neutral-800 backdrop-blur border border-white/10
-                       text-gray-300 rounded-full shadow-lg transition"
+                       bg-neutral-900/80 hover:bg-neutral-800 backdrop-blur border border-gray-200
+                       text-gray-600 rounded-full shadow-lg transition"
           >
             ↓
           </button>
@@ -155,13 +155,13 @@ export default function Messages({
                     onUserProfileClick?.(msg.sender_id, senderRow.email);
                   }}
                   title={canOpenPrivateChat ? "Start private chat" : undefined}
-                  className={`flex-shrink-0 ${avatarTranslateClass} w-8 h-8 rounded-full bg-neutral-700 border border-white/10 flex items-center justify-center aspect-square overflow-hidden ${
+                  className={`flex-shrink-0 ${avatarTranslateClass} w-8 h-8 rounded-full bg-neutral-700 border border-gray-200 flex items-center justify-center aspect-square overflow-hidden ${
                     canOpenPrivateChat
                       ? "cursor-pointer hover:border-indigo-400/60 hover:bg-neutral-700/80"
                       : ""
                   }`}
                 >
-                  <span className="text-xs font-semibold leading-none text-gray-200">
+                  <span className="text-xs font-semibold leading-none text-gray-700">
                     {senderInitial}
                   </span>
                 </div>
@@ -189,7 +189,7 @@ export default function Messages({
                           senderRow.email as string,
                         )
                       }
-                      className="text-[12px] font-semibold leading-none text-gray-200 hover:text-indigo-300 transition"
+                      className="text-[12px] font-semibold leading-none text-gray-700 hover:text-indigo-600 transition"
                       title="Start private chat"
                     >
                       {senderName}
@@ -197,7 +197,7 @@ export default function Messages({
                   ) : (
                     <span
                       className={`text-[12px] font-semibold leading-none ${
-                        isSelf ? "text-indigo-300" : "text-gray-200"
+                        isSelf ? "text-indigo-600" : "text-gray-700"
                       }`}
                     >
                       {senderName}
@@ -225,8 +225,8 @@ export default function Messages({
                   <div
                     className={`px-5 py-3 text-[14px] leading-relaxed break-words break-all overflow-x-hidden ${
                       isSelf
-                        ? "bg-indigo-600 border border-indigo-500/50 text-white rounded-2xl rounded-br-sm shadow-sm"
-                        : "bg-[rgba(15,15,40,0.6)] border border-indigo-500/15 text-gray-200 rounded-2xl rounded-bl-sm"
+                        ? "bg-indigo-600 border border-indigo-500/50 text-gray-900 rounded-2xl rounded-br-sm shadow-sm"
+                        : "bg-[rgba(15,15,40,0.6)] border border-indigo-200 text-gray-700 rounded-2xl rounded-bl-sm"
                     }`}
                   >
                     <div className="prose prose-invert prose-sm max-w-none break-words break-all whitespace-pre-wrap leading-[1.6]">
@@ -244,7 +244,7 @@ export default function Messages({
                             if (!match) {
                               return (
                                 <code
-                                  className="px-1 py-0.5 rounded bg-white/10 text-[0.85em]"
+                                  className="px-1 py-0.5 rounded bg-gray-100 text-[0.85em]"
                                   {...(props as Record<string, unknown>)}
                                 >
                                   {children}
@@ -319,7 +319,7 @@ function CodeBlock({
         type="button"
         onMouseDown={(e) => e.preventDefault()}
         onClick={handleCopy}
-        className="absolute top-2 right-2 z-10 text-[10px] px-2 py-1 rounded-md border border-white/15 bg-black/45 text-gray-300 hover:text-white hover:bg-black/60 transition opacity-0 group-hover/code:opacity-100"
+        className="absolute top-2 right-2 z-10 text-[10px] px-2 py-1 rounded-md border border-gray-200 bg-black/45 text-gray-600 hover:text-gray-900 hover:bg-black/60 transition opacity-0 group-hover/code:opacity-100"
       >
         {copied ? "Copied" : "Copy"}
       </button>
@@ -328,7 +328,7 @@ function CodeBlock({
         language={language}
         PreTag="pre"
         wrapLongLines={true}
-        className="rounded-xl text-xs border border-white/10 !bg-neutral-900/60 max-w-full"
+        className="rounded-xl text-xs border border-gray-200 !bg-neutral-900/60 max-w-full"
         codeTagProps={{
           style: {
             whiteSpace: "pre-wrap",
@@ -379,7 +379,7 @@ function getAttachments(
               filename: attachment.filename,
             })
           }
-          className="group relative block w-full max-w-[320px] sm:max-w-[380px] overflow-hidden rounded-xl border border-white/10 bg-black/30"
+          className="group relative block w-full max-w-[320px] sm:max-w-[380px] overflow-hidden rounded-xl border border-gray-200 bg-black/30"
         >
           <Image
             src={attachment.public_url}
@@ -401,7 +401,7 @@ function getAttachments(
               filename: attachment.filename,
             })
           }
-          className="group relative w-full max-w-full overflow-hidden rounded-xl border border-white/10 bg-black/35 text-left"
+          className="group relative w-full max-w-full overflow-hidden rounded-xl border border-gray-200 bg-black/35 text-left"
         >
           <video
             muted
@@ -411,7 +411,7 @@ function getAttachments(
             <source src={attachment.public_url} type={attachment.mimetype} />
           </video>
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="px-3 py-1 rounded-full bg-black/60 border border-white/20 text-xs text-gray-100">
+            <span className="px-3 py-1 rounded-full bg-black/60 border border-gray-300 text-xs text-gray-700">
               Play video
             </span>
           </div>
@@ -430,7 +430,7 @@ function getAttachments(
           href={attachment.public_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-indigo-300 hover:text-indigo-200 hover:underline text-sm"
+          className="inline-flex items-center gap-1.5 text-indigo-600 hover:text-indigo-200 hover:underline text-sm"
         >
           <FontAwesomeIcon icon={faFile} className="w-3 h-3" />
           {attachment.filename || "Open attachment"}
@@ -732,11 +732,11 @@ function AudioAttachmentPlayer({ src, type }: { src: string; type: string }) {
       </audio>
 
       <div className="px-0 py-1">
-        <div className="flex items-center gap-3 rounded-2xl bg-neutral-800/60 border border-white/10 text-gray-100 px-3.5 py-2.5">
+        <div className="flex items-center gap-3 rounded-2xl bg-neutral-800/60 border border-gray-200 text-gray-700 px-3.5 py-2.5">
           <button
             type="button"
             onClick={togglePlay}
-            className="w-10 h-10 shrink-0 rounded-full bg-white/10 border border-white/15 text-gray-100 hover:bg-white/20 transition"
+            className="w-10 h-10 shrink-0 rounded-full bg-gray-100 border border-gray-200 text-gray-700 hover:bg-gray-200 transition"
             aria-label={
               isPlaying ? "Pause voice message" : "Play voice message"
             }
@@ -765,7 +765,7 @@ function AudioAttachmentPlayer({ src, type }: { src: string; type: string }) {
             />
           </div>
 
-          <span className="tabular-nums text-[13px] font-semibold tracking-wide text-gray-300 whitespace-nowrap">
+          <span className="tabular-nums text-[13px] font-semibold tracking-wide text-gray-600 whitespace-nowrap">
             {duration > 0
               ? formatTime(Math.max(0, duration - currentTime))
               : "0:00"}

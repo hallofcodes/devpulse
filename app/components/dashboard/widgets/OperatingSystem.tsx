@@ -40,7 +40,7 @@ export default function OperatingSystem({
   return (
     <>
       <div data-aos="fade-in">
-        <h3 className="text-sm font-semibold text-white mb-4">
+        <h3 className="text-sm font-semibold text-gray-900 mb-4">
           Operating Systems
         </h3>
         <div className="space-y-4">
@@ -54,15 +54,15 @@ export default function OperatingSystem({
                     <span className="text-base opacity-70">
                       <FontAwesomeIcon
                         icon={getOperatingSystemIcon(os.name)}
-                        className="w-4 h-4 text-indigo-300"
+                        className="w-4 h-4 text-indigo-600"
                         aria-hidden="true"
                       />
                     </span>
-                    <span className="text-sm text-gray-300 font-medium">
+                    <span className="text-sm text-gray-600 font-medium">
                       {os.name}
                     </span>
                     {idx === 0 && (
-                      <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded-full font-semibold">
+                      <span className="text-[10px] bg-emerald-500/20 text-emerald-600 px-1.5 py-0.5 rounded-full font-semibold">
                         MAIN
                       </span>
                     )}
@@ -72,7 +72,7 @@ export default function OperatingSystem({
                     <span className="text-gray-500">
                       {formatHours(os.total_seconds)}
                     </span>
-                    <span className="text-emerald-400 w-8 text-right">
+                    <span className="text-emerald-600 w-8 text-right">
                       {formatPercent(percent)}
                     </span>
                   </div>

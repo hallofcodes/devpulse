@@ -21,7 +21,7 @@ export default function Banner({
   }, [name]);
 
   return (
-    <div className="w-full relative sm:rounded-2xl md:rounded-3xl overflow-hidden h-40 sm:h-56 md:h-72 shadow-2xl border-t border-b sm:border border-white/5 bg-[#121226]">
+    <div className="w-full relative sm:rounded-2xl md:rounded-3xl overflow-hidden h-40 sm:h-56 md:h-72 shadow-2xl border-t border-b sm:border border-gray-200 bg-[#121226]">
       {imageUrl ? (
         <Image
           src={imageUrl}

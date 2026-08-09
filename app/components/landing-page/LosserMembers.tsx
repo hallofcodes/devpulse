@@ -29,18 +29,18 @@ export default function LosserMembers({
         >
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
             <div>
-              <p className="text-xs uppercase tracking-[0.16em] text-indigo-300/90 font-semibold mb-3">
+              <p className="text-xs uppercase tracking-[0.16em] text-indigo-600/90 font-semibold mb-3">
                 Team Insight
               </p>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
                 Lower Activity Leaderboard
               </h2>
-              <p className="text-gray-400 text-sm md:text-base">
+              <p className="text-gray-500 text-sm md:text-base">
                 Surface developers who may need support, context, or better task
                 flow.
               </p>
             </div>
-            <span className="inline-flex items-center rounded-full border border-indigo-400/30 bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-300">
+            <span className="inline-flex items-center rounded-full border border-indigo-400/30 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">
               Under 4h tracked
             </span>
           </div>
@@ -52,14 +52,14 @@ export default function LosserMembers({
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-            <article className="lg:col-span-4 glass-card rounded-2xl border-white/5 bg-white/[0.015] p-5">
+            <article className="lg:col-span-4 glass-card rounded-2xl border-gray-200 bg-gray-50 p-5">
               <p className="text-[11px] uppercase tracking-[0.14em] text-indigo-200/80 font-semibold mb-3">
                 Management View
               </p>
-              <h3 className="text-xl font-semibold text-white mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 Productivity Radar
               </h3>
-              <p className="text-sm text-gray-400 leading-relaxed">
+              <p className="text-sm text-gray-500 leading-relaxed">
                 Use this view to identify blockers early and support developers
                 before momentum drops across the week.
               </p>
@@ -79,16 +79,16 @@ export default function LosserMembers({
                   return (
                     <article
                       key={`${member.email}-${i}`}
-                      className="glass-card border-white/5 bg-white/[0.015] rounded-xl p-4"
+                      className="glass-card border-gray-200 bg-gray-50 rounded-xl p-4"
                       data-aos="fade-up"
                       data-aos-delay={(i * 50).toString()}
                     >
                       <div className="flex items-start justify-between gap-3 mb-3">
                         <div className="flex items-center gap-2 min-w-0">
-                          <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-md bg-indigo-500/15 border border-indigo-400/30 px-1.5 text-[11px] font-bold text-indigo-300">
+                          <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-md bg-indigo-500/15 border border-indigo-400/30 px-1.5 text-[11px] font-bold text-indigo-600">
                             #{i + 1}
                           </span>
-                          <span className="text-sm text-white font-semibold truncate">
+                          <span className="text-sm text-gray-900 font-semibold truncate">
                             {member.email.split("@")[0]}
                           </span>
                         </div>
@@ -97,7 +97,7 @@ export default function LosserMembers({
                         </span>
                       </div>
 
-                      <div className="h-1.5 rounded-full bg-white/10 overflow-hidden mb-2">
+                      <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden mb-2">
                         <div
                           className="h-full bg-indigo-400/90 rounded-full"
                           style={{ width: `${progress}%` }}

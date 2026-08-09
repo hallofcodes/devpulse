@@ -45,11 +45,11 @@ export default function LanguageDestribution({
           boxShadow: "0 8px 30px rgba(0,0,0,0.35)",
         }}
       >
-        <p className="text-xs text-gray-300 font-semibold mb-1">
+        <p className="text-xs text-gray-600 font-semibold mb-1">
           {point.subject}
         </p>
-        <p className="text-xs text-indigo-300">{point.percent}% share</p>
-        <p className="text-xs text-gray-400">{formatHours(point.seconds)}</p>
+        <p className="text-xs text-indigo-600">{point.percent}% share</p>
+        <p className="text-xs text-gray-500">{formatHours(point.seconds)}</p>
       </div>
     );
   };
@@ -61,7 +61,7 @@ export default function LanguageDestribution({
         data-aos="fade-up"
         data-aos-delay="300"
       >
-        <h3 className="text-sm font-semibold text-white mb-2">
+        <h3 className="text-sm font-semibold text-gray-900 mb-2">
           Language Distribution
         </h3>
         <p className="text-xs text-gray-500">No language data available yet.</p>
@@ -76,7 +76,7 @@ export default function LanguageDestribution({
         data-aos="fade-up"
         data-aos-delay="300"
       >
-        <h3 className="text-sm font-semibold text-white mb-2">
+        <h3 className="text-sm font-semibold text-gray-900 mb-2">
           Language Distribution
         </h3>
         <div className="flex-1 min-h-[220px] flex flex-col justify-center">

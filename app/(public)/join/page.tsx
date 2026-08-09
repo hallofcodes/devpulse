@@ -83,16 +83,16 @@ export default async function JoinPage({ searchParams }: Props) {
     return (
       <div className="min-h-screen flex items-center justify-center  grid-bg">
         <div className="glass-card p-10 text-center max-w-md mx-auto">
-          <div className="w-16 h-16 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto mb-5">
+          <div className="w-16 h-16 rounded-full bg-indigo-50 border border-indigo-500/20 flex items-center justify-center mx-auto mb-5">
             <FontAwesomeIcon
               icon={faCircleInfo}
-              className="w-8 h-8 text-indigo-400"
+              className="w-8 h-8 text-indigo-600"
             />
           </div>
-          <h1 className="text-xl font-bold text-white mb-2">
+          <h1 className="text-xl font-bold text-gray-900 mb-2">
             Join a Leaderboard
           </h1>
-          <p className="text-gray-400 text-sm mb-6">
+          <p className="text-gray-500 text-sm mb-6">
             Open an invite link like{" "}
             <span className="font-mono">/join?id=XXXXXXXX</span>.
           </p>
@@ -116,13 +116,13 @@ export default async function JoinPage({ searchParams }: Props) {
           <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-5">
             <FontAwesomeIcon
               icon={faCircleXmark}
-              className="w-8 h-8 text-red-400"
+              className="w-8 h-8 text-red-600"
             />
           </div>
-          <h1 className="text-xl font-bold text-white mb-2">
+          <h1 className="text-xl font-bold text-gray-900 mb-2">
             Invite Not Found
           </h1>
-          <p className="text-gray-400 text-sm mb-6">
+          <p className="text-gray-500 text-sm mb-6">
             This invite link is invalid or has expired.
           </p>
           <Link href="/" className="btn-primary inline-block px-6 py-3 text-sm">
@@ -157,12 +157,12 @@ export default async function JoinPage({ searchParams }: Props) {
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-16">
         <div className="glass-card max-w-lg w-full p-8 md:p-10 text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.15)]">
+            <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-500/20 flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.15)]">
               <Image src="/logo.svg" alt="Devpulse" width={36} height={36} />
             </div>
           </div>
 
-          <p className="text-xs uppercase tracking-[0.2em] text-indigo-400 font-semibold mb-3">
+          <p className="text-xs uppercase tracking-[0.2em] text-indigo-600 font-semibold mb-3">
             {alreadyMember
               ? "You’re already a member of"
               : "You’ve been invited to"}
@@ -173,25 +173,25 @@ export default async function JoinPage({ searchParams }: Props) {
           </h1>
 
           {leaderboard.description && leaderboard.description.length > 0 && (
-            <p className="text-gray-400 text-sm mt-3 leading-relaxed">
+            <p className="text-gray-500 text-sm mt-3 leading-relaxed">
               {leaderboard.description}
             </p>
           )}
 
           <div className="flex items-center justify-center gap-6 mt-6 mb-8">
-            <div className="flex items-center gap-2 text-gray-400 text-sm">
+            <div className="flex items-center gap-2 text-gray-500 text-sm">
               <FontAwesomeIcon
                 icon={faUsers}
-                className="w-4 h-4 text-indigo-400"
+                className="w-4 h-4 text-indigo-600"
               />
               <span>
                 {memberCount} {memberCount === 1 ? "member" : "members"}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-gray-400 text-sm">
+            <div className="flex items-center gap-2 text-gray-500 text-sm">
               <FontAwesomeIcon
                 icon={faRankingStar}
-                className="w-4 h-4 text-purple-400"
+                className="w-4 h-4 text-purple-600"
               />
               <span>Leaderboard</span>
             </div>
@@ -209,7 +209,7 @@ export default async function JoinPage({ searchParams }: Props) {
               Powered by{" "}
               <Link
                 href="/"
-                className="text-indigo-400/70 hover:text-indigo-400 transition-colors"
+                className="text-indigo-600/70 hover:text-indigo-600 transition-colors"
               >
                 Devpulse
               </Link>{" "}

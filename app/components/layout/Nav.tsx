@@ -33,13 +33,13 @@ export default async function Nav() {
           >
             <Link
               href="/login"
-              className="text-gray-300 hover:text-white transition"
+              className="text-gray-600 hover:text-gray-900 transition"
             >
               Log in
             </Link>
             <Link
               href="/signup"
-              className="bg-white/10 hover:bg-white/20 border border-white/5 px-6 py-2.5 rounded-full transition-all shadow-lg backdrop-blur-md"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-full transition-all shadow-sm"
             >
               Sign up
             </Link>

@@ -20,7 +20,7 @@ export default function Privacy() {
           Privacy Policy
         </h1>
 
-        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10">
+        <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10">
           This Privacy Policy explains how <strong>Devpulse</strong>{" "}
           (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) collects, uses,
           and protects your information when you use
