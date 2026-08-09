@@ -1,204 +1,1008 @@
-export default function Kanban() {
-  const projects = ["Devpulse", "Client Portal", "Internal Tools"];
+"use client";
 
-  const groups = [
-    {
-      id: "status",
-      title: "Status",
-      description: "Workflow states",
-      columns: [
-        {
-          id: "backlog",
-          title: "Backlog",
-          count: 6,
-          items: [
-            { id: "DP-12", title: "Revamp billing page", tag: "UI" },
-            { id: "DP-18", title: "Audit auth edge cases", tag: "Security" },
-            { id: "DP-23", title: "Design audit logs", tag: "Design" },
-          ],
-        },
-        {
-          id: "in-progress",
-          title: "In Progress",
-          count: 3,
-          items: [
-            { id: "DP-31", title: "Realtime status service", tag: "Backend" },
-            { id: "DP-34", title: "Kanban board layout", tag: "Frontend" },
-          ],
-        },
-        {
-          id: "review",
-          title: "In Review",
-          count: 2,
-          items: [{ id: "DP-38", title: "OAuth callback flow", tag: "Auth" }],
-        },
-        {
-          id: "done",
-          title: "Done",
-          count: 8,
-          items: [{ id: "DP-05", title: "Setup rate limiter", tag: "Infra" }],
-        },
-      ],
-    },
-    {
-      id: "type",
-      title: "Type",
-      description: "Track by issue type",
-      columns: [
-        {
-          id: "bug",
-          title: "Bug",
-          count: 4,
-          items: [{ id: "DP-14", title: "Email confirm loop", tag: "Auth" }],
-        },
-        {
-          id: "feature",
-          title: "Feature",
-          count: 7,
-          items: [{ id: "DP-22", title: "Team invite flow", tag: "Growth" }],
-        },
-        {
-          id: "chore",
-          title: "Chore",
-          count: 5,
-          items: [{ id: "DP-29", title: "Upgrade UI kit", tag: "UI" }],
-        },
-      ],
-    },
-    {
-      id: "priority",
-      title: "Priority",
-      description: "Delivery focus",
-      columns: [
-        {
-          id: "p0",
-          title: "P0",
-          count: 1,
-          items: [
-            { id: "DP-41", title: "Service outage recovery", tag: "Ops" },
-          ],
-        },
-        {
-          id: "p1",
-          title: "P1",
-          count: 3,
-          items: [{ id: "DP-27", title: "Role-based access", tag: "Security" }],
-        },
-        {
-          id: "p2",
-          title: "P2",
-          count: 6,
-          items: [{ id: "DP-35", title: "Improve docs", tag: "Docs" }],
-        },
-      ],
-    },
-  ];
+import type { ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  TouchSensor,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { toast } from "react-toastify";
+
+interface KanbanIssue {
+  id: string;
+  column_id: string;
+  issue_key: string;
+  title: string;
+  tag: string;
+  type: string;
+  priority: string;
+  position: number;
+  created_at: string;
+}
+
+interface KanbanColumn {
+  id: string;
+  board_id: string;
+  title: string;
+  position: number;
+}
+
+interface KanbanBoard {
+  id: string;
+  project_id: string;
+  title: string;
+  description: string;
+}
+
+interface KanbanProject {
+  id: string;
+  name: string;
+  description: string;
+  wakatime_project_name: string;
+  color: string;
+  created_at: string;
+  board_count: number;
+  column_count: number;
+  issue_count: number;
+  completed_issue_count: number;
+  total_tracked_seconds: number;
+}
+
+interface WakaTimeProject {
+  name: string;
+  total_seconds: number;
+}
+
+const PROJECT_COLORS = [
+  { value: "indigo", label: "Indigo" },
+  { value: "cyan", label: "Cyan" },
+  { value: "emerald", label: "Emerald" },
+  { value: "amber", label: "Amber" },
+  { value: "rose", label: "Rose" },
+];
+
+const COLOR_STYLES: Record<string, string> = {
+  indigo: "from-indigo-500/25 to-violet-500/10 border-indigo-500/20",
+  cyan: "from-cyan-500/25 to-sky-500/10 border-cyan-500/20",
+  emerald: "from-emerald-500/25 to-teal-500/10 border-emerald-500/20",
+  amber: "from-amber-500/25 to-orange-500/10 border-amber-500/20",
+  rose: "from-rose-500/25 to-pink-500/10 border-rose-500/20",
+};
+
+function formatHours(seconds: number) {
+  return `${(seconds / 3600).toFixed(seconds >= 36000 ? 0 : 1)}h`;
+}
+
+function formatDate(date: string) {
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function isKanbanIssue(value: unknown): value is KanbanIssue {
+  if (!value || typeof value !== "object") return false;
+
+  const issue = value as Partial<KanbanIssue>;
+  return (
+    typeof issue.id === "string" &&
+    typeof issue.column_id === "string" &&
+    typeof issue.issue_key === "string" &&
+    typeof issue.title === "string" &&
+    typeof issue.tag === "string" &&
+    typeof issue.type === "string" &&
+    typeof issue.priority === "string" &&
+    typeof issue.position === "number"
+  );
+}
+
+function isIssueUpdate(
+  value: unknown,
+): value is Pick<KanbanIssue, "id" | "column_id" | "position"> {
+  if (!value || typeof value !== "object") return false;
+
+  const issue = value as Partial<KanbanIssue>;
+  return (
+    typeof issue.id === "string" &&
+    typeof issue.column_id === "string" &&
+    typeof issue.position === "number"
+  );
+}
+
+export default function Kanban() {
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 200, tolerance: 8 },
+    }),
+  );
+  const [projects, setProjects] = useState<KanbanProject[]>([]);
+  const [boards, setBoards] = useState<KanbanBoard[]>([]);
+  const [columns, setColumns] = useState<KanbanColumn[]>([]);
+  const [issues, setIssues] = useState<KanbanIssue[]>([]);
+  const [wakaProjects, setWakaProjects] = useState<WakaTimeProject[]>([]);
+  const [selectedProject, setSelectedProject] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [issueModalOpen, setIssueModalOpen] = useState(false);
+  const [projectModalOpen, setProjectModalOpen] = useState(false);
+  const [selectedColumn, setSelectedColumn] = useState<string | null>(null);
+  const [submittingIssue, setSubmittingIssue] = useState(false);
+  const [submittingProject, setSubmittingProject] = useState(false);
+  const [showRecentIssues, setShowRecentIssues] = useState(false);
+  const [issueForm, setIssueForm] = useState({
+    title: "",
+    tag: "",
+    type: "feature",
+    priority: "p2",
+  });
+  const [projectForm, setProjectForm] = useState({
+    name: "",
+    description: "",
+    wakatimeProjectName: "",
+    color: "indigo",
+  });
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/kanban/data");
+      if (!res.ok) throw new Error("Failed to load Kanban data.");
+
+      const data = (await res.json()) as {
+        projects?: KanbanProject[];
+        boards?: KanbanBoard[];
+        columns?: KanbanColumn[];
+        issues?: KanbanIssue[];
+        wakatime_projects?: WakaTimeProject[];
+      };
+
+      const nextProjects = data.projects ?? [];
+      setProjects(nextProjects);
+      setBoards(data.boards ?? []);
+      setColumns(data.columns ?? []);
+      setIssues(data.issues ?? []);
+      setWakaProjects(data.wakatime_projects ?? []);
+
+      setSelectedProject((current) => {
+        if (current && nextProjects.some((project) => project.id === current)) {
+          return current;
+        }
+        return nextProjects[0]?.id ?? "";
+      });
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to load Kanban.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      void load();
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
+  }, [load]);
+
+  useEffect(() => {
+    const es = new EventSource("/api/sse/kanban");
+
+    es.onmessage = (event: MessageEvent) => {
+      const envelope = JSON.parse(event.data as string) as {
+        type: string;
+        data: Record<string, unknown>;
+      };
+
+      if (envelope.type === "issue_created" && isKanbanIssue(envelope.data)) {
+        setIssues((prev) => {
+          if (prev.some((item) => item.id === envelope.data.id)) return prev;
+          return [...prev, envelope.data];
+        });
+      } else if (
+        envelope.type === "issue_updated" &&
+        isIssueUpdate(envelope.data)
+      ) {
+        setIssues((prev) =>
+          prev.map((item) =>
+            item.id === envelope.data.id
+              ? {
+                  ...item,
+                  column_id: envelope.data.column_id,
+                  position: envelope.data.position,
+                }
+              : item,
+          ),
+        );
+      }
+    };
+
+    return () => es.close();
+  }, []);
+
+  const currentProject = useMemo(
+    () => projects.find((project) => project.id === selectedProject) ?? null,
+    [projects, selectedProject],
+  );
+
+  const groupedBoards = useMemo(() => {
+    return boards
+      .filter((board) => board.project_id === selectedProject)
+      .map((board) => ({
+        ...board,
+        columns: columns
+          .filter((column) => column.board_id === board.id)
+          .sort((a, b) => a.position - b.position)
+          .map((column) => ({
+            ...column,
+            items: issues
+              .filter((issue) => issue.column_id === column.id)
+              .sort((a, b) => a.position - b.position),
+          })),
+      }));
+  }, [boards, columns, issues, selectedProject]);
+
+  const availableColumns = useMemo(
+    () => groupedBoards.flatMap((board) => board.columns),
+    [groupedBoards],
+  );
+
+  // Derive metrics from live issues state so they update on every drag
+  const liveIssueCount = useMemo(() => {
+    const colIds = new Set(availableColumns.map((c) => c.id));
+    return issues.filter((issue) => colIds.has(issue.column_id)).length;
+  }, [issues, availableColumns]);
+
+  const liveCompletedCount = useMemo(() => {
+    const doneColIds = new Set(
+      availableColumns
+        .filter((c) => c.title.toLowerCase() === "done")
+        .map((c) => c.id),
+    );
+    return issues.filter((issue) => doneColIds.has(issue.column_id)).length;
+  }, [issues, availableColumns]);
+
+  const liveCompletionRate = liveIssueCount > 0
+    ? Math.round((liveCompletedCount / liveIssueCount) * 100)
+    : 0;
+
+  const recentIssues = useMemo(() => {
+    return issues
+      .filter((issue) =>
+        availableColumns.some((column) => column.id === issue.column_id),
+      )
+      .sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      )
+      .slice(0, 5);
+  }, [availableColumns, issues]);
+
+  async function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over) return;
+
+    const issueId = String(active.id);
+    const destinationColumnId = String(over.data.current?.columnId ?? "");
+    if (!destinationColumnId) return;
+
+    const destinationIssues = issues.filter(
+      (issue) => issue.column_id === destinationColumnId && issue.id !== issueId,
+    );
+    const position = destinationIssues.length;
+
+    setIssues((prev) =>
+      prev.map((issue) =>
+        issue.id === issueId
+          ? { ...issue, column_id: destinationColumnId, position }
+          : issue,
+      ),
+    );
+
+    const res = await fetch(`/api/kanban/issues/${issueId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ column_id: destinationColumnId, position }),
+    });
+
+    if (!res.ok) {
+      toast.error("Unable to move issue.");
+      void load();
+    }
+  }
+
+  async function createIssue() {
+    if (!selectedColumn || !issueForm.title.trim()) return;
+
+    const position = issues.filter(
+      (issue) => issue.column_id === selectedColumn,
+    ).length;
+
+    setSubmittingIssue(true);
+
+    try {
+      const res = await fetch("/api/kanban/issues", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          columnId: selectedColumn,
+          title: issueForm.title,
+          tag: issueForm.tag,
+          type: issueForm.type,
+          priority: issueForm.priority,
+          position,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = (await res.json()) as { error?: string };
+        throw new Error(data.error || "Unable to create issue.");
+      }
+
+      const newIssue = (await res.json()) as KanbanIssue;
+      setIssues((prev) => {
+        if (prev.some((item) => item.id === newIssue.id)) return prev;
+        return [...prev, newIssue];
+      });
+      setIssueForm({ title: "", tag: "", type: "feature", priority: "p2" });
+      setIssueModalOpen(false);
+      toast.success("Issue created.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to create issue.",
+      );
+    } finally {
+      setSubmittingIssue(false);
+    }
+  }
+
+  async function createProject() {
+    if (!projectForm.name.trim()) return;
+
+    setSubmittingProject(true);
+
+    try {
+      const res = await fetch("/api/kanban/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(projectForm),
+      });
+
+      const data = (await res.json()) as
+        | KanbanProject
+        | { error?: string };
+
+      if (!res.ok || "error" in data) {
+        throw new Error(data.error || "Unable to create project.");
+      }
+
+      setProjects((prev) => [...prev, data]);
+      setSelectedProject(data.id);
+      setProjectForm({
+        name: "",
+        description: "",
+        wakatimeProjectName: "",
+        color: "indigo",
+      });
+      setProjectModalOpen(false);
+      toast.success("Kanban project created.");
+      void load();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to create project.",
+      );
+    } finally {
+      setSubmittingProject(false);
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-[#0a0a1a] text-white">
-      {/* Top header */}
-      <div className="sticky top-0 z-20 border-b border-white/5 bg-[#0a0a1a]/95 backdrop-blur">
-        <div className="mx-auto max-w-[1400px] px-6 py-4">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div className="min-h-screen">
+      {/* Sticky header — title + actions only */}
+      <div className="sticky top-0 z-20 border-b border-gray-200 bg-white/95 backdrop-blur">
+        <div className="mx-auto max-w-[1400px] px-4 py-3 md:px-6 md:py-4">
+          <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-indigo-400/80">
+              <p className="text-xs uppercase tracking-[0.2em] text-indigo-600/80">
                 Project Kanban
               </p>
-              <h1 className="text-2xl font-semibold">Boards</h1>
+              <h1 className="text-xl font-semibold md:text-2xl">Boards</h1>
             </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <select className="h-10 rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-gray-200">
-                {projects.map((project) => (
-                  <option key={project}>{project}</option>
-                ))}
-              </select>
-
-              <button className="h-10 rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-gray-200 hover:bg-white/10 transition">
-                Filter
-              </button>
-              <button className="h-10 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-4 text-sm text-indigo-300 hover:bg-indigo-500/20 transition">
-                + New Issue
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-gray-400">
-            <span className="rounded-full border border-white/10 px-3 py-1 bg-white/5">
-              View: Kanban
-            </span>
-            <span className="rounded-full border border-white/10 px-3 py-1 bg-white/5">
-              Group: Status
-            </span>
-            <span className="rounded-full border border-white/10 px-3 py-1 bg-white/5">
-              Sort: Priority
-            </span>
+            <button
+              onClick={() => setProjectModalOpen(true)}
+              className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-600 shadow-sm transition hover:border-indigo-300 hover:text-indigo-600"
+            >
+              + New Project
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Kanban viewport */}
-      <div className="mx-auto max-w-[1400px] px-6 pb-8">
-        <div className="h-[calc(100vh-190px)] overflow-x-auto overflow-y-hidden">
-          <div className="flex w-max gap-10 pr-10">
-            {groups.map((group) => (
-              <section key={group.id} className="min-w-[740px]">
-                <div className="flex items-end justify-between">
-                  <div>
-                    <h2 className="text-sm font-semibold text-gray-100">
-                      {group.title}
-                    </h2>
-                    <p className="text-xs text-gray-500">{group.description}</p>
-                  </div>
-                  <button className="text-xs text-indigo-300 hover:text-indigo-200">
-                    + Add column
-                  </button>
-                </div>
+      {/* Main content */}
+      <div className="mx-auto max-w-[1400px] px-4 py-4 md:px-6 md:py-6">
+        {/* Metrics row */}
+        <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+          <OverviewCard
+            label="Kanban Projects"
+            value={String(projects.length)}
+            sub="User-owned workspaces"
+          />
+          <OverviewCard
+            label="Open Issues"
+            value={String(liveIssueCount - liveCompletedCount)}
+            sub="Still in flight"
+          />
+          <OverviewCard
+            label="Completion"
+            value={`${liveCompletionRate}%`}
+            sub="Done column progress"
+          />
+          <OverviewCard
+            label="Tracked Time"
+            value={formatHours(currentProject?.total_tracked_seconds ?? 0)}
+            sub={
+              currentProject?.wakatime_project_name
+                ? "From linked WakaTime project"
+                : "No WakaTime project linked"
+            }
+          />
+        </div>
 
-                <div className="mt-4 flex gap-4">
-                  {group.columns.map((col) => (
+        {/* Workspace + Boards */}
+        <div className="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
+          {/* Left sidebar — shown below boards on mobile, beside on xl */}
+          <div className="order-2 space-y-4 xl:order-1">
+            <div className="glass-card p-4 md:p-5">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-base font-semibold text-gray-900">
+                    Project Workspace
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Switch context or create a new project.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
+                  Active Project
+                </label>
+                <select
+                  value={selectedProject}
+                  onChange={(event) => setSelectedProject(event.target.value)}
+                  className="input-field h-12 w-full"
+                >
+                  {projects.length === 0 && (
+                    <option value="">No projects yet</option>
+                  )}
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {currentProject ? (
+                <div
+                  className={`mt-4 rounded-2xl border bg-gradient-to-br p-4 ${
+                    COLOR_STYLES[currentProject.color] ?? COLOR_STYLES.indigo
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-base font-semibold text-gray-900">
+                        {currentProject.name}
+                      </h3>
+                      <p className="mt-1 text-sm text-gray-600">
+                        {currentProject.description || "No project brief yet."}
+                      </p>
+                    </div>
+                    <span className="rounded-full border border-gray-200 bg-gray-100 px-2.5 py-1 text-[11px] uppercase tracking-[0.18em] text-gray-700">
+                      {currentProject.color}
+                    </span>
+                  </div>
+
+                  <div className="mt-4 space-y-2 text-sm text-gray-600">
+                    <p>
+                      Linked WakaTime:
+                      <span className="ml-2 font-medium text-gray-900">
+                        {currentProject.wakatime_project_name || "Not linked"}
+                      </span>
+                    </p>
+                    <p>
+                      Boards:
+                      <span className="ml-2 font-medium text-gray-900">
+                        {currentProject.board_count}
+                      </span>
+                    </p>
+                    <p>
+                      Created:
+                      <span className="ml-2 font-medium text-gray-900">
+                        {formatDate(currentProject.created_at)}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <EmptyPanel
+                  title="No Kanban project yet"
+                  body="Create your first Kanban project to start linking execution with WakaTime output."
+                />
+              )}
+            </div>
+
+            <div className="glass-card p-4 md:p-5">
+              <button
+                className="flex w-full items-center justify-between gap-3 text-left xl:cursor-default"
+                onClick={() => setShowRecentIssues((v) => !v)}
+              >
+                <div>
+                  <h2 className="text-base font-semibold text-gray-900">
+                    Recent Issues
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Latest cards for the active project.
+                  </p>
+                </div>
+                <span className="text-xs text-gray-400 xl:hidden">
+                  {showRecentIssues ? "▲" : "▼"}
+                </span>
+              </button>
+
+              <div className={`mt-4 space-y-3 ${showRecentIssues ? "block" : "hidden xl:block"}`}>
+                {recentIssues.length > 0 ? (
+                  recentIssues.map((issue) => (
                     <div
-                      key={col.id}
-                      className="w-72 shrink-0 rounded-xl border border-white/10 bg-white/5 p-3"
+                      key={issue.id}
+                      className="rounded-2xl border border-gray-200 bg-gray-50 p-3"
                     >
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-semibold text-gray-100">
-                          {col.title}
-                        </h3>
-                        <span className="text-xs rounded-full bg-white/10 px-2 py-0.5 text-gray-300">
-                          {col.count}
+                      <div className="flex items-center justify-between gap-3 text-xs text-gray-500">
+                        <span>{issue.issue_key}</span>
+                        <span className="rounded-full border border-gray-200 px-2 py-1 uppercase">
+                          {issue.priority}
                         </span>
                       </div>
-
-                      <div className="mt-3 space-y-2">
-                        {col.items.map((item) => (
-                          <div
-                            key={item.id}
-                            className="rounded-lg border border-white/10 bg-[#0f0f20] p-3 hover:border-white/20 transition"
-                          >
-                            <div className="flex items-center justify-between text-xs text-gray-400">
-                              <span>{item.id}</span>
-                              <span className="rounded-full border border-white/10 px-2 py-0.5">
-                                {item.tag}
-                              </span>
-                            </div>
-                            <p className="mt-2 text-sm text-gray-200">
-                              {item.title}
-                            </p>
-                          </div>
-                        ))}
-
-                        <button className="w-full rounded-lg border border-dashed border-white/15 py-2 text-xs text-gray-400 hover:text-gray-200 hover:border-white/30 transition">
-                          + Add card
-                        </button>
+                      <p className="mt-2 text-sm font-medium text-gray-900">
+                        {issue.title}
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-gray-500">
+                        {issue.tag ? (
+                          <span className="rounded-full border border-gray-200 px-2 py-1">
+                            {issue.tag}
+                          </span>
+                        ) : null}
+                        <span className="rounded-full border border-gray-200 px-2 py-1 uppercase">
+                          {issue.type}
+                        </span>
+                        <span>{formatDate(issue.created_at)}</span>
                       </div>
                     </div>
+                  ))
+                ) : (
+                  <EmptyPanel
+                    title="No issues yet"
+                    body="Use the active project board to add the first card."
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Boards panel — shown first on mobile */}
+          <div className="order-1 glass-card overflow-hidden p-4 md:p-5 xl:order-2">
+            <div className="flex flex-col gap-2 border-b border-gray-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-base font-semibold text-gray-900">Boards</h2>
+                <p className="text-sm text-gray-500">
+                  {currentProject
+                    ? "Delivery lanes for the active project."
+                    : "Create a project first to open a board."}
+                </p>
+              </div>
+              {currentProject?.wakatime_project_name ? (
+                <div className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600">
+                  Bound to {currentProject.wakatime_project_name}
+                </div>
+              ) : null}
+            </div>
+
+            {loading ? (
+              <div className="py-16 text-center text-sm text-gray-500">
+                Loading Kanban workspace...
+              </div>
+            ) : groupedBoards.length === 0 ? (
+              <div className="py-16">
+                <EmptyPanel
+                  title="No boards for this project"
+                  body="New Kanban projects create a default board automatically. If you are seeing this on an older project, create a new project or add board data directly."
+                />
+              </div>
+            ) : (
+              <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+                <div className="mt-5 space-y-6">
+                  {groupedBoards.map((board) => (
+                    <section key={board.id} className="space-y-3">
+                      <div>
+                        <h3 className="text-sm font-semibold text-gray-900">
+                          {board.title}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {board.description || "Execution board"}
+                        </p>
+                      </div>
+
+                      {/* Horizontal scroll on mobile, grid on md+ */}
+                      <div className="flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible md:pb-0">
+                        {board.columns.map((column) => (
+                          <div key={column.id} className="min-w-[260px] flex-none md:min-w-0">
+                            <Column
+                              column={column}
+                              onAdd={() => {
+                                setSelectedColumn(column.id);
+                                setIssueModalOpen(true);
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </section>
                   ))}
                 </div>
-              </section>
-            ))}
+              </DndContext>
+            )}
           </div>
         </div>
+      </div>
+
+      {projectModalOpen ? (
+        <ModalShell
+          title="Create Kanban Project"
+          subtitle="Set up a project workspace and optionally bind it to a synced WakaTime project."
+          onClose={() => setProjectModalOpen(false)}
+        >
+          <div className="space-y-3">
+            <input
+              value={projectForm.name}
+              onChange={(event) =>
+                setProjectForm((prev) => ({
+                  ...prev,
+                  name: event.target.value,
+                }))
+              }
+              className="input-field w-full"
+              placeholder="Project name"
+            />
+
+            <textarea
+              value={projectForm.description}
+              onChange={(event) =>
+                setProjectForm((prev) => ({
+                  ...prev,
+                  description: event.target.value,
+                }))
+              }
+              className="input-field min-h-28 w-full resize-none"
+              placeholder="What is this project trying to ship?"
+            />
+
+            <select
+              value={projectForm.wakatimeProjectName}
+              onChange={(event) =>
+                setProjectForm((prev) => ({
+                  ...prev,
+                  wakatimeProjectName: event.target.value,
+                }))
+              }
+              className="input-field w-full"
+            >
+              <option value="">No WakaTime binding</option>
+              {wakaProjects.map((project) => (
+                <option key={project.name} value={project.name}>
+                  {project.name} ({formatHours(project.total_seconds)})
+                </option>
+              ))}
+            </select>
+
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
+                Accent
+              </p>
+              <div className="grid grid-cols-5 gap-2">
+                {PROJECT_COLORS.map((color) => (
+                  <button
+                    key={color.value}
+                    type="button"
+                    onClick={() =>
+                      setProjectForm((prev) => ({
+                        ...prev,
+                        color: color.value,
+                      }))
+                    }
+                    className={`rounded-xl border px-3 py-2 text-xs font-semibold transition-all ${
+                      projectForm.color === color.value
+                        ? "border-gray-400 bg-gray-100 text-gray-900"
+                        : "border-gray-200 bg-gray-50 text-gray-500"
+                    }`}
+                  >
+                    {color.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-5 flex justify-end gap-2">
+            <button
+              onClick={() => setProjectModalOpen(false)}
+              className="rounded-xl px-3 py-2 text-sm text-gray-500"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={createProject}
+              disabled={submittingProject || !projectForm.name.trim()}
+              className={`btn-primary px-4 py-2 text-sm ${
+                submittingProject || !projectForm.name.trim()
+                  ? "cursor-not-allowed opacity-50"
+                  : ""
+              }`}
+            >
+              Create Project
+            </button>
+          </div>
+        </ModalShell>
+      ) : null}
+
+      {issueModalOpen ? (
+        <ModalShell
+          title="Create Issue"
+          subtitle="Drop a new card into the right delivery lane."
+          onClose={() => setIssueModalOpen(false)}
+        >
+          <div className="space-y-3">
+            <select
+              value={selectedColumn ?? ""}
+              onChange={(event) => setSelectedColumn(event.target.value)}
+              className="input-field w-full"
+            >
+              {availableColumns.map((column) => (
+                <option key={column.id} value={column.id}>
+                  {column.title}
+                </option>
+              ))}
+            </select>
+
+            <input
+              placeholder="Issue title"
+              value={issueForm.title}
+              onChange={(event) =>
+                setIssueForm((prev) => ({ ...prev, title: event.target.value }))
+              }
+              className="input-field w-full"
+            />
+
+            <input
+              placeholder="Tag or scope"
+              value={issueForm.tag}
+              onChange={(event) =>
+                setIssueForm((prev) => ({ ...prev, tag: event.target.value }))
+              }
+              className="input-field w-full"
+            />
+
+            <div className="grid grid-cols-2 gap-3">
+              <select
+                value={issueForm.type}
+                onChange={(event) =>
+                  setIssueForm((prev) => ({
+                    ...prev,
+                    type: event.target.value,
+                  }))
+                }
+                className="input-field w-full"
+              >
+                <option value="bug">Bug</option>
+                <option value="feature">Feature</option>
+                <option value="chore">Chore</option>
+              </select>
+
+              <select
+                value={issueForm.priority}
+                onChange={(event) =>
+                  setIssueForm((prev) => ({
+                    ...prev,
+                    priority: event.target.value,
+                  }))
+                }
+                className="input-field w-full"
+              >
+                <option value="p0">P0</option>
+                <option value="p1">P1</option>
+                <option value="p2">P2</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="mt-5 flex justify-end gap-2">
+            <button
+              onClick={() => setIssueModalOpen(false)}
+              className="rounded-xl px-3 py-2 text-sm text-gray-500"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={createIssue}
+              disabled={submittingIssue || !issueForm.title.trim()}
+              className={`btn-primary px-4 py-2 text-sm ${
+                submittingIssue || !issueForm.title.trim()
+                  ? "cursor-not-allowed opacity-50"
+                  : ""
+              }`}
+            >
+              Create Issue
+            </button>
+          </div>
+        </ModalShell>
+      ) : null}
+    </div>
+  );
+}
+
+function OverviewCard({
+  label,
+  value,
+  sub,
+}: {
+  label: string;
+  value: string;
+  sub: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+      <p className="text-xs uppercase tracking-[0.2em] text-gray-500">{label}</p>
+      <p className="mt-2 text-2xl font-semibold text-gray-900">{value}</p>
+      <p className="mt-1 text-xs text-gray-500">{sub}</p>
+    </div>
+  );
+}
+
+function EmptyPanel({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-5 text-center">
+      <p className="text-sm font-semibold text-gray-900">{title}</p>
+      <p className="mt-1 text-sm text-gray-500">{body}</p>
+    </div>
+  );
+}
+
+function ModalShell({
+  title,
+  subtitle,
+  children,
+  onClose,
+}: {
+  title: string;
+  subtitle: string;
+  children: ReactNode;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-sm">
+      <div className="glass-card w-full max-w-xl border-gray-200 p-5 md:p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+            <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-full border border-gray-200 px-3 py-1 text-sm text-gray-500 hover:bg-gray-50"
+          >
+            Close
+          </button>
+        </div>
+        <div className="mt-5">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+function Column({
+  column,
+  onAdd,
+}: {
+  column: { id: string; title: string; items: KanbanIssue[] };
+  onAdd: () => void;
+}) {
+  const { setNodeRef } = useDroppable({
+    id: column.id,
+    data: { columnId: column.id },
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className="rounded-3xl border border-gray-200 bg-gray-50 p-4"
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-600">
+            {column.title}
+          </h3>
+          <p className="mt-1 text-xs text-gray-500">
+            {column.items.length} card{column.items.length === 1 ? "" : "s"}
+          </p>
+        </div>
+        <button
+          onClick={onAdd}
+          className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs text-gray-600 transition hover:border-indigo-300 hover:text-indigo-600"
+        >
+          Add
+        </button>
+      </div>
+
+      <div className="mt-4 space-y-3">
+        {column.items.map((item) => (
+          <IssueCard key={item.id} item={item} columnId={column.id} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function IssueCard({
+  item,
+  columnId,
+}: {
+  item: KanbanIssue;
+  columnId: string;
+}) {
+  const { setNodeRef, listeners, attributes, transform, isDragging } = useDraggable({
+    id: item.id,
+    data: { columnId },
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      style={{
+        transform: transform
+          ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
+          : undefined,
+        zIndex: isDragging ? 50 : undefined,
+      }}
+      className={`cursor-grab rounded-2xl border border-gray-200 bg-white p-4 shadow-sm active:cursor-grabbing ${isDragging ? "shadow-lg opacity-95" : ""}`}
+    >
+      <div className="flex items-center justify-between gap-3 text-xs text-gray-500">
+        <span>{item.issue_key}</span>
+        {item.tag ? (
+          <span className="rounded-full border border-gray-200 px-2 py-1">
+            {item.tag}
+          </span>
+        ) : null}
+      </div>
+
+      <p className="mt-3 text-sm font-medium text-gray-900">{item.title}</p>
+
+      <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-gray-500">
+        <span className="rounded-full border border-gray-200 px-2 py-1 uppercase">
+          {item.type}
+        </span>
+        <span className="rounded-full border border-gray-200 px-2 py-1 uppercase">
+          {item.priority}
+        </span>
       </div>
     </div>
   );

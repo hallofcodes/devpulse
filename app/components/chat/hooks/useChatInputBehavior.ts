@@ -16,7 +16,10 @@ type UseChatInputBehaviorParams = {
   conversationId: string | null;
   attachmentsCount: number;
   setInput: Dispatch<SetStateAction<string>>;
-  markTypingFromInput: (targetConversationId: string, nextValue: string) => void;
+  markTypingFromInput: (
+    targetConversationId: string,
+    nextValue: string,
+  ) => void;
   sendMessage: () => void;
   maxChars?: number;
 };

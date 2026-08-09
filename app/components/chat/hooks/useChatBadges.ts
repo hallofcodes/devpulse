@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/app/supabase-types";
 import { type BadgeInfo, getBadgeInfoFromHours } from "@/app/utils/badge";
 
 type ConversationLike = {
@@ -10,19 +8,14 @@ type ConversationLike = {
 };
 
 type UseChatBadgesParams = {
-  supabase: SupabaseClient<Database>;
   userId: string;
   conversations: ConversationLike[];
 };
 
-export function useChatBadges({
-  supabase,
-  userId,
-  conversations,
-}: UseChatBadgesParams) {
-  const [badgesByUserId, setBadgesByUserId] = useState<Record<string, BadgeInfo>>(
-    {},
-  );
+export function useChatBadges({ userId, conversations }: UseChatBadgesParams) {
+  const [badgesByUserId, setBadgesByUserId] = useState<
+    Record<string, BadgeInfo>
+  >({});
   const badgeCacheRef = useRef<Record<string, BadgeInfo>>({});
 
   useEffect(() => {
@@ -30,9 +23,9 @@ export function useChatBadges({
       if (!conversations.length) return;
 
       const participantIds = new Set<string>();
-      conversations.forEach((conversation) => {
-        conversation.users.forEach((user) => {
-          if (user.id) participantIds.add(user.id);
+      conversations.forEach((c) => {
+        c.users.forEach((u) => {
+          if (u.id) participantIds.add(u.id);
         });
       });
       participantIds.add(userId);
@@ -54,16 +47,18 @@ export function useChatBadges({
 
       if (missingIds.length === 0) return;
 
-      const { data } = await supabase
-        .from("top_user_stats")
-        .select("user_id, total_seconds")
-        .in("user_id", missingIds);
+      const params = missingIds
+        .map((id) => `id=${encodeURIComponent(id)}`)
+        .join("&");
+      const res = await fetch(`/api/users/badges?${params}`);
+      if (!res.ok) return;
 
-      if (!data) return;
+      const data: { user_id: string; total_seconds: number }[] =
+        await res.json();
 
       const next: Record<string, BadgeInfo> = {};
       for (const row of data) {
-        if (!row.user_id || row.total_seconds === null) continue;
+        if (!row.user_id) continue;
         const hours = Math.round((row.total_seconds || 0) / 3600);
         next[row.user_id] = getBadgeInfoFromHours(hours);
       }
@@ -75,7 +70,7 @@ export function useChatBadges({
     };
 
     void fetchBadgesForParticipants();
-  }, [conversations, supabase, userId]);
+  }, [conversations, userId]);
 
   return {
     badgesByUserId,

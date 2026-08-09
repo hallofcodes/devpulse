@@ -223,7 +223,6 @@ export default function Player({
     return { menuCenterX, arrowX };
   };
 
-
   useLayoutEffect(() => {
     if (!showSettings) return;
     const update = () => {
@@ -463,7 +462,7 @@ export default function Player({
       className={`relative group/player overflow-hidden ${
         immersive
           ? "rounded-none border-0 bg-black shadow-none"
-          : "rounded-xl border border-white/10 bg-[#05050a] shadow-2xl"
+          : "rounded-xl border border-gray-200 bg-[#05050a] shadow-2xl"
       } ${className}`}
       style={frameStyle}
     >
@@ -501,7 +500,7 @@ export default function Player({
           setShowSettings(false);
           void togglePlay();
         }}
-        className={`absolute z-30 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-11 h-11 rounded-full border border-white/20 bg-black/55 text-white transition ${
+        className={`absolute z-30 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-11 h-11 rounded-full border border-gray-300 bg-black/55 text-gray-900 transition ${
           showUi ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
@@ -533,7 +532,7 @@ export default function Player({
               onTouchStart={(e) =>
                 showHint("Download", e.currentTarget, "below")
               }
-              className="w-8 h-8 rounded-md text-white/90 hover:text-white transition"
+              className="w-8 h-8 rounded-md text-gray-900/90 hover:text-gray-900 transition"
               aria-label="Download video"
             >
               <FontAwesomeIcon icon={faDownload} className="w-3 h-3" />
@@ -551,7 +550,7 @@ export default function Player({
               onMouseEnter={(e) => showHint("Close", e.currentTarget, "below")}
               onMouseLeave={hideHint}
               onTouchStart={(e) => showHint("Close", e.currentTarget, "below")}
-              className="w-8 h-8 rounded-md text-white/90 hover:text-white transition"
+              className="w-8 h-8 rounded-md text-gray-900/90 hover:text-gray-900 transition"
               aria-label="Close viewer"
             >
               <FontAwesomeIcon icon={faXmark} className="w-3 h-3" />
@@ -566,7 +565,7 @@ export default function Player({
         }`}
       >
         <div className="px-2 py-2">
-          <div className="flex items-center gap-1.5 text-[11px] text-gray-200">
+          <div className="flex items-center gap-1.5 text-[11px] text-gray-700">
             <button
               type="button"
               onClick={() => {
@@ -582,7 +581,7 @@ export default function Player({
               onTouchStart={(e) =>
                 showHint(playing ? "Pause" : "Play", e.currentTarget)
               }
-              className="w-8 h-8 rounded-md text-white/90 hover:text-white transition"
+              className="w-8 h-8 rounded-md text-gray-900/90 hover:text-gray-900 transition"
               aria-label={playing ? "Pause" : "Play"}
             >
               <FontAwesomeIcon
@@ -609,7 +608,7 @@ export default function Player({
               }}
             />
 
-            <span className="tabular-nums text-[11px] text-gray-200/90 px-1 whitespace-nowrap">
+            <span className="tabular-nums text-[11px] text-gray-700/90 px-1 whitespace-nowrap">
               {fmt(currentTime)} / {fmt(duration)}
             </span>
 
@@ -637,7 +636,7 @@ export default function Player({
                     showHint(getVolumeHintLabel(), e.currentTarget);
                   }
                 }}
-                className="w-8 h-8 rounded-md text-white/90 hover:text-white transition"
+                className="w-8 h-8 rounded-md text-gray-900/90 hover:text-gray-900 transition"
                 aria-label={muted ? "Unmute" : "Mute"}
               >
                 <FontAwesomeIcon
@@ -647,13 +646,13 @@ export default function Player({
               </button>
 
               {showUi && showMobileVolume && (
-                <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-40 md:hidden rounded-lg border border-white/15 bg-black/75 backdrop-blur-md px-2 py-2">
-                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 bg-black/75 border-r border-b border-white/15" />
+                <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-40 md:hidden rounded-lg border border-gray-200 bg-black/75 backdrop-blur-md px-2 py-2">
+                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 bg-black/75 border-r border-b border-gray-200" />
                   <div className="flex flex-col items-center gap-2">
                     <button
                       type="button"
                       onClick={() => setMuted((v) => !v)}
-                      className="w-7 h-7 rounded-md text-white/90 hover:text-white transition"
+                      className="w-7 h-7 rounded-md text-gray-900/90 hover:text-gray-900 transition"
                       aria-label={muted ? "Unmute" : "Mute"}
                     >
                       <FontAwesomeIcon
@@ -703,7 +702,7 @@ export default function Player({
               onTouchStart={(e) => {
                 if (!showSettings) showHint("Settings", e.currentTarget);
               }}
-              className="w-8 h-8 rounded-md text-white/90 hover:text-white transition"
+              className="w-8 h-8 rounded-md text-gray-900/90 hover:text-gray-900 transition"
               aria-label="Player settings"
             >
               <FontAwesomeIcon icon={faGear} className="w-3 h-3" />
@@ -723,12 +722,12 @@ export default function Player({
               onTouchStart={(e) =>
                 showHint("Picture in Picture", e.currentTarget)
               }
-              className="w-8 h-8 rounded-md text-white/90 hover:text-white transition"
+              className="w-8 h-8 rounded-md text-gray-900/90 hover:text-gray-900 transition"
               aria-label="Picture in picture"
             >
               <FontAwesomeIcon
                 icon={faRectangleList}
-                className={`w-3 h-3 ${isPipActive ? "text-indigo-300" : ""}`}
+                className={`w-3 h-3 ${isPipActive ? "text-indigo-600" : ""}`}
               />
             </button>
             <button
@@ -752,7 +751,7 @@ export default function Player({
                   e.currentTarget,
                 )
               }
-              className="w-8 h-8 rounded-md text-white/90 hover:text-white transition"
+              className="w-8 h-8 rounded-md text-gray-900/90 hover:text-gray-900 transition"
               aria-label="Fullscreen"
             >
               <FontAwesomeIcon
@@ -766,7 +765,7 @@ export default function Player({
 
       {showUi && activeHint && hintPos && (
         <div
-          className={`absolute z-50 px-2 py-1 rounded bg-black/75 text-[10px] text-white pointer-events-none -translate-x-1/2 whitespace-nowrap ${
+          className={`absolute z-50 px-2 py-1 rounded bg-black/75 text-[10px] text-gray-900 pointer-events-none -translate-x-1/2 whitespace-nowrap ${
             hintPos.below ? "" : "-translate-y-full"
           }`}
           style={{ left: hintPos.x, top: hintPos.y }}
@@ -783,25 +782,25 @@ export default function Player({
       {showUi && showSettings && (
         <div
           ref={settingsMenuRef}
-          className="absolute bottom-14 z-40 min-w-[210px] rounded-lg border border-white/15 bg-black/75 backdrop-blur-md p-2 text-xs text-gray-100 -translate-x-1/2"
+          className="absolute bottom-14 z-40 min-w-[210px] rounded-lg border border-gray-200 bg-black/75 backdrop-blur-md p-2 text-xs text-gray-700 -translate-x-1/2"
           style={{ left: settingsMenuX ?? undefined }}
         >
           <span
-            className="absolute -bottom-1 -translate-x-1/2 w-2 h-2 rotate-45 bg-black/75 border-r border-b border-white/15"
+            className="absolute -bottom-1 -translate-x-1/2 w-2 h-2 rotate-45 bg-black/75 border-r border-b border-gray-200"
             style={{ left: settingsArrowX ?? undefined }}
           />
           <button
             type="button"
             onClick={() => setAmbientBackground((v) => !v)}
-            className="w-full flex items-center justify-between px-2 py-1.5 rounded hover:bg-white/10 transition"
+            className="w-full flex items-center justify-between px-2 py-1.5 rounded hover:bg-gray-100 transition"
           >
             <span>Ambient background</span>
-            <span className="text-[10px] text-gray-300">
+            <span className="text-[10px] text-gray-600">
               {ambientBackground ? "On" : "Off"}
             </span>
           </button>
-          <div className="mt-1 border-t border-white/10 pt-1">
-            <div className="px-2 py-1 text-[10px] text-gray-400 uppercase tracking-wide">
+          <div className="mt-1 border-t border-gray-200 pt-1">
+            <div className="px-2 py-1 text-[10px] text-gray-500 uppercase tracking-wide">
               Playback Speed
             </div>
             <div className="flex flex-wrap items-center gap-1 px-2 pb-1">
@@ -812,8 +811,8 @@ export default function Player({
                   onClick={() => setPlaybackRate(rate)}
                   className={`px-2 py-1 rounded text-[10px] transition ${
                     playbackRate === rate
-                      ? "bg-white/20 text-white"
-                      : "bg-white/5 text-gray-300 hover:bg-white/10"
+                      ? "bg-gray-200 text-gray-900"
+                      : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                   }`}
                 >
                   {rate}x
@@ -821,8 +820,8 @@ export default function Player({
               ))}
             </div>
           </div>
-          <div className="mt-1 border-t border-white/10 pt-1">
-            <div className="px-2 py-1 text-[10px] text-gray-400 uppercase tracking-wide">
+          <div className="mt-1 border-t border-gray-200 pt-1">
+            <div className="px-2 py-1 text-[10px] text-gray-500 uppercase tracking-wide">
               Quality
             </div>
             <div className="flex items-center gap-1 px-2 pb-1">
@@ -834,8 +833,8 @@ export default function Player({
                     onClick={() => setQuality(q)}
                     className={`px-2 py-1 rounded text-[10px] transition ${
                       quality === q
-                        ? "bg-white/20 text-white"
-                        : "bg-white/5 text-gray-300 hover:bg-white/10"
+                        ? "bg-gray-200 text-gray-900"
+                        : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                     }`}
                   >
                     {q}

@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type MutableRefObject,
-} from "react";
-import type { RealtimeChannel } from "@supabase/supabase-js";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type TypingState = {
   user_id: string;
@@ -15,7 +8,6 @@ type TypingState = {
 };
 
 type UseChatTypingParams = {
-  channelRef: MutableRefObject<RealtimeChannel | null>;
   userId: string;
   userEmail: string;
   typingInactiveTimeoutMs: number;
@@ -23,9 +15,7 @@ type UseChatTypingParams = {
 };
 
 export function useChatTyping({
-  channelRef,
   userId,
-  userEmail,
   typingInactiveTimeoutMs,
   typingRemoteExpireMs,
 }: UseChatTypingParams) {
@@ -38,12 +28,10 @@ export function useChatTyping({
 
   useEffect(() => {
     return () => {
-      Object.values(typingStopTimeoutRef.current).forEach((timeoutId) => {
-        window.clearTimeout(timeoutId);
-      });
-      Object.values(typingExpiryTimeoutRef.current).forEach((timeoutId) => {
-        window.clearTimeout(timeoutId);
-      });
+      Object.values(typingStopTimeoutRef.current).forEach(window.clearTimeout);
+      Object.values(typingExpiryTimeoutRef.current).forEach(
+        window.clearTimeout,
+      );
       typingStopTimeoutRef.current = {};
       typingExpiryTimeoutRef.current = {};
       localTypingByConversationRef.current = {};
@@ -52,7 +40,8 @@ export function useChatTyping({
 
   const setRemoteTypingState = useCallback(
     (targetConversationId: string, state: TypingState | null) => {
-      const activeTimeoutId = typingExpiryTimeoutRef.current[targetConversationId];
+      const activeTimeoutId =
+        typingExpiryTimeoutRef.current[targetConversationId];
       if (activeTimeoutId) {
         window.clearTimeout(activeTimeoutId);
         delete typingExpiryTimeoutRef.current[targetConversationId];
@@ -73,14 +62,17 @@ export function useChatTyping({
         [targetConversationId]: state,
       }));
 
-      typingExpiryTimeoutRef.current[targetConversationId] = window.setTimeout(() => {
-        setTypingByConversationId((prev) => {
-          if (!prev[targetConversationId]) return prev;
-          const next = { ...prev };
-          delete next[targetConversationId];
-          return next;
-        });
-      }, typingRemoteExpireMs);
+      typingExpiryTimeoutRef.current[targetConversationId] = window.setTimeout(
+        () => {
+          setTypingByConversationId((prev) => {
+            if (!prev[targetConversationId]) return prev;
+            const next = { ...prev };
+            delete next[targetConversationId];
+            return next;
+          });
+        },
+        typingRemoteExpireMs,
+      );
     },
     [typingRemoteExpireMs],
   );
@@ -88,28 +80,22 @@ export function useChatTyping({
   const emitTypingState = useCallback(
     (targetConversationId: string, isTyping: boolean) => {
       if (!targetConversationId) return;
-      const channel = channelRef.current;
-      if (!channel) return;
 
-      void channel.send({
-        type: "broadcast",
-        event: "typing",
-        payload: {
-          conversation_id: targetConversationId,
-          user_id: userId,
-          email: userEmail,
-          is_typing: isTyping,
-        },
+      void fetch(`/api/sse/chat/${targetConversationId}/typing`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ is_typing: isTyping }),
       });
     },
-    [channelRef, userEmail, userId],
+    [],
   );
 
   const stopTyping = useCallback(
     (targetConversationId: string) => {
       if (!targetConversationId) return;
 
-      const activeTimeoutId = typingStopTimeoutRef.current[targetConversationId];
+      const activeTimeoutId =
+        typingStopTimeoutRef.current[targetConversationId];
       if (activeTimeoutId) {
         window.clearTimeout(activeTimeoutId);
         delete typingStopTimeoutRef.current[targetConversationId];
@@ -138,17 +124,21 @@ export function useChatTyping({
         emitTypingState(targetConversationId, true);
       }
 
-      const activeTimeoutId = typingStopTimeoutRef.current[targetConversationId];
-      if (activeTimeoutId) {
-        window.clearTimeout(activeTimeoutId);
-      }
+      const activeTimeoutId =
+        typingStopTimeoutRef.current[targetConversationId];
+      if (activeTimeoutId) window.clearTimeout(activeTimeoutId);
 
-      typingStopTimeoutRef.current[targetConversationId] = window.setTimeout(() => {
-        stopTyping(targetConversationId);
-      }, typingInactiveTimeoutMs);
+      typingStopTimeoutRef.current[targetConversationId] = window.setTimeout(
+        () => {
+          stopTyping(targetConversationId);
+        },
+        typingInactiveTimeoutMs,
+      );
     },
     [emitTypingState, stopTyping, typingInactiveTimeoutMs],
   );
+
+  void userId;
 
   return {
     typingByConversationId,

@@ -22,7 +22,7 @@ export default function CodingActivity({
         data-aos-delay="200"
       >
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-white">Coding Activity</h3> 
+          <h3 className="text-sm font-semibold text-gray-900">Coding Activity</h3>
           <span className="text-xs text-gray-600">Last 7 days</span>
         </div>
         <div className="flex-1 min-h-[200px]">

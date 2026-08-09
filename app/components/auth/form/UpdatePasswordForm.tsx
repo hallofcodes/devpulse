@@ -1,40 +1,29 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { createClient } from "@/app/lib/supabase/client";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { toast } from "react-toastify";
 
 export default function UpdatePasswordForm() {
-  const supabase = createClient();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const captcha = useRef<HCaptcha>(null);
   const [showCaptcha, setShowCaptcha] = useState(false);
 
-  const handleCaptchaVerify = async (token: string) => {
-    // Optionally use token here when implemented to backend
-    void token;
+  const handleCaptchaVerify = async (_token: string) => {
     setShowCaptcha(false);
     setLoading(true);
 
-    const updateUserPassword = new Promise(async (resolve, reject) => {
-      try {
-        if (password !== confirmPassword) {
-          return reject(new Error("Passwords do not match!"));
-        }
-
-        const { error } = await supabase.auth.updateUser({
-          password,
-          // options: { captchaToken: token },
-        });
-
-        if (error) return reject(error);
-        resolve("Password updated!");
-      } catch (error) {
-        reject(error);
-      }
+    const updateUserPassword = fetch("/api/auth/update-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    }).then(async (res) => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      if (password !== confirmPassword)
+        throw new Error("Passwords do not match!");
     });
 
     toast.promise(updateUserPassword, {
@@ -99,7 +88,7 @@ export default function UpdatePasswordForm() {
       {showCaptcha && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 backdrop-blur-sm">
           <div className="glass-card p-8 text-center">
-            <h3 className="text-lg font-semibold mb-4 text-gray-200">
+            <h3 className="text-lg font-semibold mb-4 text-gray-700">
               Verify you are human
             </h3>
 
@@ -111,7 +100,7 @@ export default function UpdatePasswordForm() {
 
             <button
               onClick={() => setShowCaptcha(false)}
-              className="mt-4 text-sm text-gray-500 hover:text-gray-300 transition"
+              className="mt-4 text-sm text-gray-500 hover:text-gray-600 transition"
             >
               Cancel
             </button>

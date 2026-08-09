@@ -60,16 +60,16 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
 
   return (
     <div className="p-4 md:p-6 space-y-4 max-w-7xl mx-auto" data-aos="fade-up">
-      <div className="glass-card p-4 md:p-5 border border-white/10">
+      <div className="glass-card p-4 md:p-5 border border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.16em] text-indigo-300/90 font-semibold mb-2">
+            <p className="text-[11px] uppercase tracking-[0.16em] text-indigo-600/90 font-semibold mb-2">
               Account Setup
             </p>
-            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
               Complete your account
             </h1>
-            <p className="text-sm md:text-base text-gray-400 mt-2">
+            <p className="text-sm md:text-base text-gray-500 mt-2">
               Connect WakaTime to unlock your dashboard insights, rankings, and
               coding activity trends.
             </p>
@@ -81,16 +81,22 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-4" data-aos="fade-up" data-aos-delay="100">
-        <div className="xl:col-span-8 glass-card p-5 md:p-6 border border-white/10">
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 mb-4">
+      <div
+        className="grid grid-cols-1 xl:grid-cols-12 gap-4"
+        data-aos="fade-up"
+        data-aos-delay="100"
+      >
+        <div className="xl:col-span-8 glass-card p-5 md:p-6 border border-gray-200">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 mb-4">
             <p className="text-[11px] uppercase tracking-widest text-gray-500 mb-1">
               Account Email
             </p>
-            <p className="text-white font-semibold truncate">{email}</p>
+            <p className="text-gray-900 font-semibold truncate">{email}</p>
           </div>
 
-          <label className="text-sm font-medium text-gray-300">WakaTime API Key</label>
+          <label className="text-sm font-medium text-gray-600">
+            WakaTime API Key
+          </label>
           <input
             placeholder="Paste your WakaTime API key"
             className="input-field mt-2 mb-4"
@@ -116,7 +122,7 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
             <Link
               href="https://wakatime.com/settings/account"
               target="_blank"
-              className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition"
+              className="text-indigo-600 hover:text-indigo-600 underline underline-offset-2 transition"
             >
               WakaTime account settings
             </Link>
@@ -124,12 +130,12 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
           </p>
         </div>
 
-        <div className="xl:col-span-4 glass-card p-5 md:p-6 border border-white/10">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-indigo-300 mb-4">
+        <div className="xl:col-span-4 glass-card p-5 md:p-6 border border-gray-200">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-indigo-600 mb-4">
             What you unlock
           </h2>
 
-          <div className="space-y-3 text-sm text-gray-300">
+          <div className="space-y-3 text-sm text-gray-600">
             <p>Daily and weekly coding performance charts.</p>
             <p>Language, editor, machine, and category insights.</p>
             <p>Leaderboard participation and progress tracking.</p>
@@ -139,7 +145,7 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
             <p className="text-xs font-semibold uppercase tracking-wider text-cyan-300 mb-1">
               Security Note
             </p>
-            <p className="text-xs text-gray-400 leading-relaxed">
+            <p className="text-xs text-gray-500 leading-relaxed">
               Your key is used only to sync your coding data and can be updated
               anytime in settings.
             </p>
@@ -148,7 +154,8 @@ export default function DashboardWithoutKey({ email }: { email: string }) {
       </div>
 
       <p className="text-xs text-gray-500">
-        New account setup is almost done. Connect WakaTime to finish onboarding and start using your full dashboard.
+        New account setup is almost done. Connect WakaTime to finish onboarding
+        and start using your full dashboard.
       </p>
     </div>
   );

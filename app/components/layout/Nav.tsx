@@ -1,10 +1,10 @@
-import { getUserWithProfile } from "@/app/lib/supabase/help/user";
+import { getCurrentUser } from "@/app/lib/auth/user";
 import Image from "next/image";
 import Link from "next/link";
 import NavProfileDropdown from "../common/NavProfileDropdown";
 
 export default async function Nav() {
-  const { user } = await getUserWithProfile();
+  const { user } = await getCurrentUser();
 
   return (
     <header className="absolute top-0 w-full z-50">
@@ -20,14 +20,9 @@ export default async function Nav() {
 
         {user ? (
           <NavProfileDropdown
-            avatar={
-              user.user_metadata?.avatar_url ||
-              user.user_metadata?.picture ||
-              user.user_metadata?.avatar ||
-              null
-            }
-            name={user.user_metadata?.name || user.email!.split("@")[0]}
-            email={user.email!}
+            avatar={user.image ?? null}
+            name={user.name ?? user.email?.split("@")[0] ?? ""}
+            email={user.email ?? ""}
             type="navbar"
           />
         ) : (
@@ -38,13 +33,13 @@ export default async function Nav() {
           >
             <Link
               href="/login"
-              className="text-gray-300 hover:text-white transition"
+              className="text-gray-600 hover:text-gray-900 transition"
             >
               Log in
             </Link>
             <Link
               href="/signup"
-              className="bg-white/10 hover:bg-white/20 border border-white/5 px-6 py-2.5 rounded-full transition-all shadow-lg backdrop-blur-md"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-full transition-all shadow-sm"
             >
               Sign up
             </Link>

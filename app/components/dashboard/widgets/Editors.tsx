@@ -31,7 +31,7 @@ export default function Editors({
   return (
     <>
       <div data-aos="fade-in">
-        <h3 className="text-sm font-semibold text-white mb-4">Editors</h3>
+        <h3 className="text-sm font-semibold text-gray-900 mb-4">Editors</h3>
         <div className="space-y-4">
           {editorsList.slice(0, 4).map((editor, idx) => {
             const percent = Math.min(100, Math.max(0, editor.percent || 0));
@@ -43,15 +43,15 @@ export default function Editors({
                     <span className="text-base opacity-70">
                       <FontAwesomeIcon
                         icon={getEditorIcon(editor.name)}
-                        className="w-4 h-4 text-indigo-300"
+                        className="w-4 h-4 text-indigo-600"
                         aria-hidden="true"
                       />
                     </span>
-                    <span className="text-sm text-gray-300 font-medium">
+                    <span className="text-sm text-gray-600 font-medium">
                       {editor.name}
                     </span>
                     {idx === 0 && (
-                      <span className="text-[10px] bg-purple-500/20 text-purple-400 px-1.5 py-0.5 rounded-full font-semibold">
+                      <span className="text-[10px] bg-purple-500/20 text-purple-600 px-1.5 py-0.5 rounded-full font-semibold">
                         PRIMARY
                       </span>
                     )}
@@ -61,7 +61,7 @@ export default function Editors({
                     <span className="text-gray-500">
                       {formatHours(editor.total_seconds)}
                     </span>
-                    <span className="text-purple-400 w-8 text-right">
+                    <span className="text-purple-600 w-8 text-right">
                       {formatPercent(percent)}
                     </span>
                   </div>

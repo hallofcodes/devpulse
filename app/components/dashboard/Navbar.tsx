@@ -86,7 +86,7 @@ const navItems: NavItem[] = [
     category: "other",
   },
   {
-    href: "https://hallofcodes.github.io",
+    href: "https://www.hallofcodes.org",
     label: "Hall of Codes",
     icon: faGlobe,
     role: "user",
@@ -104,7 +104,7 @@ export default function DashboardLayout({
   email: string;
   name: string;
   role: string;
-  avatar: string;
+  avatar: string | null;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -139,11 +139,11 @@ export default function DashboardLayout({
     );
 
   return (
-    <div className="min-h-screen bg-[#0a0a1a] text-white">
-      <header className="md:hidden sticky top-0 z-30 flex items-center justify-between h-14 px-4 border-b border-white/5 bg-[#0a0a1a]">
+    <div className="min-h-screen ">
+      <header className="md:hidden sticky top-0 z-30 flex items-center justify-between h-14 px-4 border-b border-gray-200 bg-white">
         <button
           onClick={() => setSidebarOpen(true)}
-          className="p-2 rounded-md hover:bg-white/5"
+          className="p-2 rounded-md hover:bg-gray-100"
           aria-label="Open sidebar"
         >
           <FontAwesomeIcon icon={faBars} className="w-5 h-5" />
@@ -172,7 +172,7 @@ export default function DashboardLayout({
       <aside
         className={`
           fixed top-0 left-0 z-40 h-full flex flex-col
-          bg-[#0c0c24] border-r border-white/5
+          bg-white border-r border-gray-200
           transition-transform duration-200
           ${
             isMobile
@@ -183,7 +183,7 @@ export default function DashboardLayout({
           }
       md:w-64`}
       >
-        <div className="h-16 px-4 flex items-center justify-between border-b border-white/5">
+        <div className="h-16 px-4 flex items-center justify-between border-b border-gray-200">
           <div className="flex items-center gap-2">
             <Image src="/logo.svg" alt="Devpulse" width={22} height={22} />
             <span className="text-sm font-semibold">Devpulse</span>
@@ -205,8 +205,8 @@ export default function DashboardLayout({
                   text-sm font-medium transition
                   ${
                     pathname === item.href
-                      ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/15"
-                      : "text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]"
+                      ? "bg-indigo-50 text-indigo-600 border border-indigo-200"
+                      : "text-gray-500 hover:text-gray-600 hover:bg-gray-100"
                   }`}
                 target={item.href.startsWith("http") ? "_blank" : undefined}
                 title={item.label}
@@ -214,7 +214,7 @@ export default function DashboardLayout({
                 <FontAwesomeIcon
                   icon={item.icon}
                   className={`w-4 h-4 ${
-                    pathname === item.href ? "text-indigo-400" : "text-gray-600"
+                    pathname === item.href ? "text-indigo-600" : "text-gray-600"
                   }`}
                 />
                 {item.label}
@@ -223,7 +223,7 @@ export default function DashboardLayout({
           ))}
         </nav>
 
-        <div className="p-3 border-t border-white/5">
+        <div className="p-3 border-t border-gray-200">
           <NavProfileDropdown
             avatar={avatar}
             name={name}

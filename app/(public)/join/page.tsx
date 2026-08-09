@@ -1,5 +1,6 @@
 import { Metadata } from "next/types";
-import { createClient } from "../../lib/supabase/server";
+import { prisma } from "@/app/lib/prisma";
+import { getCurrentUser } from "@/app/lib/auth/user";
 import JoinButton from "../../components/JoinButton";
 import Footer from "@/app/components/layout/Footer";
 import Image from "next/image";
@@ -17,22 +18,21 @@ type Props = {
 };
 
 async function getLeaderboard(code: string) {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("leaderboards")
-    .select("id, name, description, slug, owner_id, created_at")
-    .eq("join_code", code)
-    .single();
-  return data;
+  return prisma.leaderboard.findUnique({
+    where: { joinCode: code },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      slug: true,
+      ownerId: true,
+      createdAt: true,
+    },
+  });
 }
 
 async function getMemberCount(leaderboardId: string) {
-  const supabase = await createClient();
-  const { count } = await supabase
-    .from("leaderboard_members_view")
-    .select("*", { count: "exact", head: true })
-    .eq("leaderboard_id", leaderboardId);
-  return count ?? 0;
+  return prisma.leaderboardMember.count({ where: { leaderboardId } });
 }
 
 export async function generateMetadata({
@@ -45,9 +45,7 @@ export async function generateMetadata({
     return {
       title: "Join - Devpulse",
       description: "Open an invite link to join a Devpulse leaderboard.",
-      alternates: {
-        canonical: "https://devpulse.hallofcodes.org/join",
-      },
+      alternates: { canonical: "https://devpulse.hallofcodes.org/join" },
     };
   }
 
@@ -56,17 +54,15 @@ export async function generateMetadata({
     return {
       title: "Invite Not Found - Devpulse",
       description: "This invite link is invalid or has expired.",
-      alternates: {
-        canonical: "https://devpulse.hallofcodes.org/join",
-      },
+      alternates: { canonical: "https://devpulse.hallofcodes.org/join" },
     };
   }
 
   const title = `You're invited to join ${leaderboard.name}!`;
   const description =
-    leaderboard.description && leaderboard.description?.length > 0
+    leaderboard.description && leaderboard.description.length > 0
       ? leaderboard.description
-      : `Join the ${leaderboard.name} leaderboard on Devpulse and compete with other developers. Track your coding activity and climb the ranks!`;
+      : `Join the ${leaderboard.name} leaderboard on Devpulse and compete with other developers.`;
 
   return {
     title: `${title} - Devpulse`,
@@ -74,18 +70,8 @@ export async function generateMetadata({
     alternates: {
       canonical: `https://devpulse.hallofcodes.org/join?id=${encodeURIComponent(code)}`,
     },
-    openGraph: {
-      title,
-      description,
-      type: "website",
-      siteName: "Devpulse",
-      url: `https://devpulse.hallofcodes.org/join?id=${encodeURIComponent(code)}`,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
+    openGraph: { title, description, type: "website", siteName: "Devpulse" },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 
@@ -95,18 +81,18 @@ export default async function JoinPage({ searchParams }: Props) {
 
   if (!code) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0a1a] text-white grid-bg">
+      <div className="min-h-screen flex items-center justify-center  grid-bg">
         <div className="glass-card p-10 text-center max-w-md mx-auto">
-          <div className="w-16 h-16 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto mb-5">
+          <div className="w-16 h-16 rounded-full bg-indigo-50 border border-indigo-500/20 flex items-center justify-center mx-auto mb-5">
             <FontAwesomeIcon
               icon={faCircleInfo}
-              className="w-8 h-8 text-indigo-400"
+              className="w-8 h-8 text-indigo-600"
             />
           </div>
-          <h1 className="text-xl font-bold text-white mb-2">
+          <h1 className="text-xl font-bold text-gray-900 mb-2">
             Join a Leaderboard
           </h1>
-          <p className="text-gray-400 text-sm mb-6">
+          <p className="text-gray-500 text-sm mb-6">
             Open an invite link like{" "}
             <span className="font-mono">/join?id=XXXXXXXX</span>.
           </p>
@@ -118,22 +104,25 @@ export default async function JoinPage({ searchParams }: Props) {
     );
   }
 
-  const leaderboard = await getLeaderboard(code);
+  const [leaderboard, { user }] = await Promise.all([
+    getLeaderboard(code),
+    getCurrentUser(),
+  ]);
 
   if (!leaderboard) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0a1a] text-white grid-bg">
+      <div className="min-h-screen flex items-center justify-center  grid-bg">
         <div className="glass-card p-10 text-center max-w-md mx-auto">
           <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-5">
             <FontAwesomeIcon
               icon={faCircleXmark}
-              className="w-8 h-8 text-red-400"
+              className="w-8 h-8 text-red-600"
             />
           </div>
-          <h1 className="text-xl font-bold text-white mb-2">
+          <h1 className="text-xl font-bold text-gray-900 mb-2">
             Invite Not Found
           </h1>
-          <p className="text-gray-400 text-sm mb-6">
+          <p className="text-gray-500 text-sm mb-6">
             This invite link is invalid or has expired.
           </p>
           <Link href="/" className="btn-primary inline-block px-6 py-3 text-sm">
@@ -146,39 +135,37 @@ export default async function JoinPage({ searchParams }: Props) {
 
   const memberCount = await getMemberCount(leaderboard.id);
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
   let alreadyMember = false;
   if (user) {
-    const { data: membership } = await supabase
-      .from("leaderboard_members")
-      .select("id")
-      .eq("leaderboard_id", leaderboard.id)
-      .eq("user_id", user.id)
-      .single();
+    const membership = await prisma.leaderboardMember.findUnique({
+      where: {
+        leaderboardId_userId: {
+          leaderboardId: leaderboard.id,
+          userId: user.id,
+        },
+      },
+      select: { id: true },
+    });
     alreadyMember = !!membership;
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a1a] text-white grid-bg relative overflow-hidden">
+    <div className="min-h-screen  grid-bg relative overflow-hidden">
       <div className="glow-orb w-[500px] h-[500px] bg-indigo-600/20 top-[-200px] left-1/2 -translate-x-1/2 absolute" />
       <div className="glow-orb w-[300px] h-[300px] bg-purple-600/15 bottom-[-100px] right-[-50px] absolute" />
 
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-16">
         <div className="glass-card max-w-lg w-full p-8 md:p-10 text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.15)]">
+            <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-500/20 flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.15)]">
               <Image src="/logo.svg" alt="Devpulse" width={36} height={36} />
             </div>
           </div>
 
-          <p className="text-xs uppercase tracking-[0.2em] text-indigo-400 font-semibold mb-3">
+          <p className="text-xs uppercase tracking-[0.2em] text-indigo-600 font-semibold mb-3">
             {alreadyMember
-              ? "You\u2019re already a member of"
-              : "You\u2019ve been invited to"}
+              ? "You’re already a member of"
+              : "You’ve been invited to"}
           </p>
 
           <h1 className="text-2xl md:text-3xl font-bold gradient-text mb-2">
@@ -186,25 +173,25 @@ export default async function JoinPage({ searchParams }: Props) {
           </h1>
 
           {leaderboard.description && leaderboard.description.length > 0 && (
-            <p className="text-gray-400 text-sm mt-3 leading-relaxed">
+            <p className="text-gray-500 text-sm mt-3 leading-relaxed">
               {leaderboard.description}
             </p>
           )}
 
           <div className="flex items-center justify-center gap-6 mt-6 mb-8">
-            <div className="flex items-center gap-2 text-gray-400 text-sm">
+            <div className="flex items-center gap-2 text-gray-500 text-sm">
               <FontAwesomeIcon
                 icon={faUsers}
-                className="w-4 h-4 text-indigo-400"
+                className="w-4 h-4 text-indigo-600"
               />
               <span>
                 {memberCount} {memberCount === 1 ? "member" : "members"}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-gray-400 text-sm">
+            <div className="flex items-center gap-2 text-gray-500 text-sm">
               <FontAwesomeIcon
                 icon={faRankingStar}
-                className="w-4 h-4 text-purple-400"
+                className="w-4 h-4 text-purple-600"
               />
               <span>Leaderboard</span>
             </div>
@@ -222,7 +209,7 @@ export default async function JoinPage({ searchParams }: Props) {
               Powered by{" "}
               <Link
                 href="/"
-                className="text-indigo-400/70 hover:text-indigo-400 transition-colors"
+                className="text-indigo-600/70 hover:text-indigo-600 transition-colors"
               >
                 Devpulse
               </Link>{" "}

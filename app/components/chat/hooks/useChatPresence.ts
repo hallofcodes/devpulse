@@ -9,8 +9,6 @@ import {
   type MutableRefObject,
   type SetStateAction,
 } from "react";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/app/supabase-types";
 
 type ParticipantPresence = {
   last_seen_at: string | null;
@@ -18,7 +16,6 @@ type ParticipantPresence = {
 };
 
 type UseChatPresenceParams = {
-  supabase: SupabaseClient<Database>;
   userId: string;
   onlineTimeoutMs: number;
   maxPresenceFutureSkewMs: number;
@@ -27,12 +24,13 @@ type UseChatPresenceParams = {
   setParticipantMetaByConversationId: Dispatch<
     SetStateAction<Record<string, ParticipantPresence>>
   >;
-  setUnreadCountByConversationId: Dispatch<SetStateAction<Record<string, number>>>;
+  setUnreadCountByConversationId: Dispatch<
+    SetStateAction<Record<string, number>>
+  >;
   lastReadSyncAtRef: MutableRefObject<Record<string, number>>;
 };
 
 export function useChatPresence({
-  supabase,
   userId,
   onlineTimeoutMs,
   maxPresenceFutureSkewMs,
@@ -54,37 +52,27 @@ export function useChatPresence({
       mode: "replace" | "merge" = "replace",
     ) => {
       if (targetConversationIds.length === 0) {
-        if (mode === "replace") {
-          setUnreadCountByConversationId({});
-        }
+        if (mode === "replace") setUnreadCountByConversationId({});
         return;
       }
 
       const countEntries = await Promise.all(
-        targetConversationIds.map(async (targetConversationId) => {
-          let query = supabase
-            .from("messages")
-            .select("id", { count: "exact", head: true })
-            .eq("conversation_id", targetConversationId)
-            .neq("sender_id", userId);
-
-          const lastReadAt = readMap[targetConversationId];
-          if (lastReadAt) {
-            query = query.gt("created_at", lastReadAt);
-          }
-
-          const { count } = await query;
-          return [targetConversationId, count ?? 0] as const;
+        targetConversationIds.map(async (id) => {
+          const res = await fetch(`/api/conversations/${id}/unread`);
+          if (!res.ok) return [id, 0] as const;
+          const { count } = (await res.json()) as { count: number };
+          return [id, count] as const;
         }),
       );
 
       const nextCounts = Object.fromEntries(countEntries);
-
       setUnreadCountByConversationId((prev) =>
         mode === "replace" ? nextCounts : { ...prev, ...nextCounts },
       );
+
+      void readMap;
     },
-    [setUnreadCountByConversationId, supabase, userId],
+    [setUnreadCountByConversationId],
   );
 
   const markConversationAsRead = useCallback(
@@ -107,48 +95,32 @@ export function useChatPresence({
 
       const now = Date.now();
       const lastSyncAt = lastReadSyncAtRef.current[targetConversationId] ?? 0;
-      if (now - lastSyncAt < readReceiptThrottleMs) {
-        return;
-      }
+      if (now - lastSyncAt < readReceiptThrottleMs) return;
       lastReadSyncAtRef.current[targetConversationId] = now;
 
-      const { error } = await supabase
-        .from("conversation_participants")
-        .update({
-          last_seen_at: timestamp,
-          last_read_at: timestamp,
-        })
-        .eq("conversation_id", targetConversationId)
-        .eq("user_id", userId);
-
-      if (error) {
-        console.error("Failed to mark conversation as read:", error);
-      }
+      await fetch(`/api/conversations/${targetConversationId}/presence`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ markRead: true }),
+      }).catch(() => {});
     },
     [
       lastReadSyncAtRef,
       readReceiptThrottleMs,
       setParticipantMetaByConversationId,
       setUnreadCountByConversationId,
-      supabase,
       userId,
     ],
   );
 
   const pingPresence = useCallback(async () => {
     if (!userId) return;
-
-    const timestamp = new Date().toISOString();
-
-    const { error } = await supabase
-      .from("conversation_participants")
-      .update({ last_seen_at: timestamp })
-      .eq("user_id", userId);
-
-    if (error) {
-      console.error("Presence ping failed:", error);
-    }
-  }, [supabase, userId]);
+    await fetch("/api/presence", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    }).catch(() => {});
+  }, [userId]);
 
   useEffect(() => {
     if (!userId) return;
@@ -181,29 +153,20 @@ export function useChatPresence({
 
   const onlineByUserId = useMemo(() => {
     const next: Record<string, boolean> = {};
-
-    Object.entries(lastSeenByUserId).forEach(([targetUserId, lastSeenAt]) => {
+    Object.entries(lastSeenByUserId).forEach(([id, lastSeenAt]) => {
       if (!lastSeenAt) {
-        next[targetUserId] = false;
+        next[id] = false;
         return;
       }
-
       const seenAt = new Date(lastSeenAt).getTime();
       const ageMs = presenceNow - seenAt;
-
-      next[targetUserId] =
+      next[id] =
         Number.isFinite(seenAt) &&
         ageMs >= -maxPresenceFutureSkewMs &&
         ageMs <= onlineTimeoutMs;
     });
-
     return next;
-  }, [
-    lastSeenByUserId,
-    maxPresenceFutureSkewMs,
-    onlineTimeoutMs,
-    presenceNow,
-  ]);
+  }, [lastSeenByUserId, maxPresenceFutureSkewMs, onlineTimeoutMs, presenceNow]);
 
   return {
     setLastSeenByUserId,

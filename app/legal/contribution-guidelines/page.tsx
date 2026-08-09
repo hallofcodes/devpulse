@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function ContributionGuidelines() {
   return (
-    <div className="min-h-screen bg-[#0a0a1a] text-white overflow-hidden grid-bg relative">
+    <div className="min-h-screen  overflow-hidden grid-bg relative">
       <Nav />
 
       <div className="relative max-w-7xl mx-auto px-6 pt-32 lg:pt-40 pb-20 lg:pb-32 min-h-[85vh]">
@@ -20,7 +20,7 @@ export default function ContributionGuidelines() {
           Contribution Guidelines
         </h1>
 
-        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10">
+        <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10">
           Thank you for considering contributing to <strong>Devpulse</strong>!
           To help maintain the quality, stability, and integrity of our codebase
           (&quot;Hall of Codes&quot;), please read and follow these guidelines.

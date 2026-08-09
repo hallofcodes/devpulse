@@ -1,53 +1,71 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/app/supabase-types";
+import { prisma } from "@/app/lib/prisma";
+import type { Prisma } from "@prisma/client";
 
-type AppSupabaseClient = SupabaseClient<Database>;
-
-export async function getExistingUserStats(
-  supabase: AppSupabaseClient,
-  userId: string,
-) {
-  return supabase
-    .from("user_stats")
-    .select(
-      `
-        *,
-        projects:user_projects (
-          projects
-        )
-      `,
-    )
-    .eq("user_id", userId)
-    .single();
+/**
+ * Fetches user's coding stats along with their project list.
+ */
+export async function getExistingUserStats(userId: string) {
+  const stats = await prisma.userStats.findUnique({
+    where: { userId },
+    include: { user: { select: { userProjects: true } } },
+  });
+  return stats;
 }
 
+/**
+ * Updates the WakaTime API key stored on the user's profile.
+ * Throws Prisma P2002 if the key is already used by another account.
+ */
 export async function updateProfileWakatimeApiKey(
-  supabase: AppSupabaseClient,
   userId: string,
   apiKey: string,
 ) {
-  return supabase.from("profiles").update({ wakatime_api_key: apiKey }).eq("id", userId);
+  return prisma.user.update({
+    where: { id: userId },
+    data: { wakatimeApiKey: apiKey },
+  });
 }
 
+/**
+ * Upserts the user's WakaTime stats row (one row per user).
+ */
 export async function upsertUserStats(
-  supabase: AppSupabaseClient,
-  payload: Database["public"]["Tables"]["user_stats"]["Insert"],
+  payload: Prisma.UserStatsUncheckedCreateInput,
 ) {
-  return supabase.from("user_stats").upsert(payload).select().single();
+  return prisma.userStats.upsert({
+    where: { userId: payload.userId },
+    create: payload,
+    update: payload,
+  });
 }
 
+/**
+ * Upserts the user's WakaTime projects row (one row per user).
+ */
 export async function upsertUserProjects(
-  supabase: AppSupabaseClient,
-  payload: Database["public"]["Tables"]["user_projects"]["Insert"],
+  payload: Prisma.UserProjectsUncheckedCreateInput,
 ) {
-  return supabase.from("user_projects").upsert(payload).select().single();
+  return prisma.userProjects.upsert({
+    where: { userId: payload.userId },
+    create: payload,
+    update: payload,
+  });
 }
 
+/**
+ * Upserts a daily dashboard snapshot for the given user and date.
+ */
 export async function upsertUserDashboardSnapshot(
-  supabase: AppSupabaseClient,
-  payload: Database["public"]["Tables"]["user_dashboard_snapshots"]["Insert"],
+  payload: Prisma.UserDashboardSnapshotUncheckedCreateInput,
 ) {
-  return supabase
-    .from("user_dashboard_snapshots")
-    .upsert(payload, { onConflict: "user_id,snapshot_date" });
+  return prisma.userDashboardSnapshot.upsert({
+    where: {
+      userId_snapshotDate: {
+        userId: payload.userId,
+        snapshotDate: payload.snapshotDate as Date,
+      },
+    },
+    create: payload,
+    update: payload,
+  });
 }

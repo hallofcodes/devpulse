@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "../../../lib/supabase/server";
-import { getUserWithProfile } from "@/app/lib/supabase/help/user";
+import { getCurrentUser } from "@/app/lib/auth/user";
 import {
   saveWakatimeApiKey,
   syncWakatimeData,
@@ -8,8 +7,7 @@ import {
 } from "@/app/lib/wakatime/sync";
 
 export async function GET(request: Request) {
-  const supabase = await createClient();
-  const { user, profile } = await getUserWithProfile();
+  const { user } = await getCurrentUser();
   const { searchParams } = new URL(request.url);
   const apiKey = searchParams.get("apiKey") || "";
   const saveOnly =
@@ -18,10 +16,7 @@ export async function GET(request: Request) {
 
   const validationError = validateWakatimeApiKey(apiKey);
   if (validationError) {
-    return NextResponse.json(
-      { error: validationError },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: validationError }, { status: 400 });
   }
 
   if (!user) {
@@ -29,32 +24,29 @@ export async function GET(request: Request) {
   }
 
   if (saveOnly) {
-    const result = await saveWakatimeApiKey({
-      supabase,
-      userId: user.id,
-      apiKey,
-    });
+    const result = await saveWakatimeApiKey({ userId: user.id, apiKey });
 
     if (!result.success) {
-      return NextResponse.json({ error: result.error }, { status: result.status });
+      return NextResponse.json(
+        { error: result.error },
+        { status: result.status },
+      );
     }
 
-    return NextResponse.json({
-      success: true,
-      data: null,
-      error: null,
-    });
+    return NextResponse.json({ success: true, data: null, error: null });
   }
 
   const result = await syncWakatimeData({
-    supabase,
     userId: user.id,
     incomingApiKey: apiKey,
-    storedApiKey: profile?.wakatime_api_key,
+    storedApiKey: user.wakatimeApiKey,
   });
 
   if (!result.success && result.status !== 200) {
-    return NextResponse.json({ error: result.error }, { status: result.status });
+    return NextResponse.json(
+      { error: result.error },
+      { status: result.status },
+    );
   }
 
   return NextResponse.json({

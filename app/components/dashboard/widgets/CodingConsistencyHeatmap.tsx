@@ -43,11 +43,11 @@ function getPeriodStartDate(today: Date, days: number) {
 function getCellTone(seconds: number) {
   const hours = seconds / 3600;
 
-  if (hours <= 0) return "bg-[#111127] border border-white/[0.03]";
-  if (hours < 0.5) return "bg-indigo-900/50 border border-indigo-800/50";
-  if (hours < 1.5) return "bg-indigo-700/55 border border-indigo-600/50";
-  if (hours < 3) return "bg-indigo-500/65 border border-indigo-400/55";
-  return "bg-indigo-300/80 border border-indigo-200/60";
+  if (hours <= 0) return "bg-gray-100 border border-gray-200";
+  if (hours < 0.5) return "bg-indigo-100 border border-indigo-200";
+  if (hours < 1.5) return "bg-indigo-200 border border-indigo-300";
+  if (hours < 3) return "bg-indigo-400 border border-indigo-500";
+  return "bg-indigo-600 border border-indigo-700";
 }
 
 export default function CodingConsistencyHeatmap({
@@ -152,7 +152,9 @@ export default function CodingConsistencyHeatmap({
     >
       <div className="flex items-center justify-between mb-2.5 gap-2.5 flex-wrap">
         <div>
-          <h3 className="text-sm font-semibold text-white">Coding Consistency</h3>
+          <h3 className="text-sm font-semibold text-gray-900">
+            Coding Consistency
+          </h3>
           <p className="text-[11px] text-gray-500 mt-0.5">Last {days} days</p>
         </div>
         <p className="text-[10px] text-gray-500">{summaryText}</p>
@@ -168,7 +170,7 @@ export default function CodingConsistencyHeatmap({
                   {monthLabels.map((label, idx) => (
                     <div
                       key={idx}
-                      className="w-2.5 text-[10px] text-gray-400 whitespace-nowrap overflow-visible leading-none"
+                      className="w-2.5 text-[10px] text-gray-500 whitespace-nowrap overflow-visible leading-none"
                     >
                       {label}
                     </div>
@@ -181,7 +183,7 @@ export default function CodingConsistencyHeatmap({
                   {["", "Mon", "", "Wed", "", "Fri", ""].map((label, idx) => (
                     <div
                       key={idx}
-                      className="h-2.5 text-[10px] text-gray-400 flex items-center"
+                      className="h-2.5 text-[10px] text-gray-500 flex items-center"
                     >
                       {label}
                     </div>
@@ -190,14 +192,20 @@ export default function CodingConsistencyHeatmap({
 
                 <div className="flex gap-0.5">
                   {weeks.map((week, weekIdx) => (
-                    <div key={weekIdx} className="grid grid-rows-7 gap-0.5 w-2.5">
+                    <div
+                      key={weekIdx}
+                      className="grid grid-rows-7 gap-0.5 w-2.5"
+                    >
                       {week.map((cell, dayIdx) => {
                         const label = cell.date.toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
                         });
                         const tone = getCellTone(cell.seconds);
-                        const delayMs = Math.min(700, weekIdx * 14 + dayIdx * 24);
+                        const delayMs = Math.min(
+                          700,
+                          weekIdx * 14 + dayIdx * 24,
+                        );
 
                         return (
                           <div
@@ -207,7 +215,8 @@ export default function CodingConsistencyHeatmap({
                               opacity: animated ? 1 : 0.25,
                               transform: animated ? "scale(1)" : "scale(0.75)",
                               transitionDuration: "360ms",
-                              transitionTimingFunction: "cubic-bezier(0.2, 1, 0.3, 1)",
+                              transitionTimingFunction:
+                                "cubic-bezier(0.2, 1, 0.3, 1)",
                               transitionDelay: `${delayMs}ms`,
                             }}
                             title={`${label}: ${
@@ -226,38 +235,51 @@ export default function CodingConsistencyHeatmap({
           </div>
 
           <div className="flex items-center justify-between text-[9px] text-gray-500">
-            <p className="text-[10px] text-gray-400">Learn how we count contributions</p>
+            <p className="text-[10px] text-gray-500">
+              Learn how we count contributions
+            </p>
             <div className="flex items-center gap-1">
               <span className="text-[10px]">Less</span>
-              <span className="w-2.5 h-2.5 rounded-[2px] bg-[#111127] border border-white/[0.03]" />
-              <span className="w-2.5 h-2.5 rounded-[2px] bg-indigo-900/50 border border-indigo-800/50" />
-              <span className="w-2.5 h-2.5 rounded-[2px] bg-indigo-700/55 border border-indigo-600/50" />
-              <span className="w-2.5 h-2.5 rounded-[2px] bg-indigo-500/65 border border-indigo-400/55" />
-              <span className="w-2.5 h-2.5 rounded-[2px] bg-indigo-300/80 border border-indigo-200/60" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-gray-100 border border-gray-200" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-indigo-100 border border-indigo-200" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-indigo-200 border border-indigo-300" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-indigo-400 border border-indigo-500" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-indigo-600 border border-indigo-700" />
               <span className="text-[10px]">More</span>
             </div>
           </div>
         </div>
 
-        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 h-fit">
+        <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 h-fit">
           <p className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-2">
             Contribution Stats
           </p>
           <div className="space-y-1.5 text-xs">
-            <p className="text-gray-300">
-              Active days: <span className="text-white font-semibold">{activeDays}</span>
+            <p className="text-gray-600">
+              Active days:{" "}
+              <span className="text-gray-900 font-semibold">{activeDays}</span>
             </p>
-            <p className="text-gray-300">
-              Period days: <span className="text-white font-semibold">{periodCells.length}</span>
+            <p className="text-gray-600">
+              Period days:{" "}
+              <span className="text-gray-900 font-semibold">
+                {periodCells.length}
+              </span>
             </p>
-            <p className="text-gray-300">
-              Consistency: <span className="text-indigo-300 font-semibold">{consistencyScore}%</span>
+            <p className="text-gray-600">
+              Consistency:{" "}
+              <span className="text-indigo-600 font-semibold">
+                {consistencyScore}%
+              </span>
             </p>
-            <p className="text-gray-300">
-              Current streak: <span className="text-emerald-300 font-semibold">{currentStreak}</span>
+            <p className="text-gray-600">
+              Current streak:{" "}
+              <span className="text-emerald-300 font-semibold">
+                {currentStreak}
+              </span>
             </p>
-            <p className="text-gray-300">
-              Best streak: <span className="text-amber-300 font-semibold">{bestStreak}</span>
+            <p className="text-gray-600">
+              Best streak:{" "}
+              <span className="text-amber-300 font-semibold">{bestStreak}</span>
             </p>
           </div>
         </div>

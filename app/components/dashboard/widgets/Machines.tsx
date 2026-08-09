@@ -20,24 +20,24 @@ export default function Machines({
   return (
     <>
       <div data-aos="fade-in">
-        <h3 className="text-sm font-semibold text-white mb-4">Machines</h3>
+        <h3 className="text-sm font-semibold text-gray-900 mb-4">Machines</h3>
         <div className="space-y-4">
           {machinesList.slice(0, 4).map((machine, idx) => (
             <div key={idx}>
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2.5">
-                  <span className="text-gray-400">
+                  <span className="text-gray-500">
                     <FontAwesomeIcon icon={faDesktop} />
                   </span>
-                  <span className="text-sm text-gray-300 font-medium truncate max-w-[120px]">
+                  <span className="text-sm text-gray-600 font-medium truncate max-w-[120px]">
                     {machine.name}
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-xs font-mono">
-                  <span className="text-gray-400">
+                  <span className="text-gray-500">
                     {formatHours(machine.total_seconds)}
                   </span>
-                  <span className="text-emerald-400 w-8 text-right">
+                  <span className="text-emerald-600 w-8 text-right">
                     {formatPercent(machine.percent)}
                   </span>
                 </div>

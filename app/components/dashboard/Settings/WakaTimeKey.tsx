@@ -88,7 +88,7 @@ export default function WakaTimeKey({
           <h3 className="text-xs font-semibold text-cyan-300 uppercase tracking-widest">
             WakaTime Connection
           </h3>
-          <p className="text-xs md:text-sm text-gray-400 mt-1.5">
+          <p className="text-xs md:text-sm text-gray-500 mt-1.5">
             Keep your token updated to sync coding activity accurately.
           </p>
         </div>
@@ -97,7 +97,7 @@ export default function WakaTimeKey({
           type="button"
           onClick={() => (isEditing ? cancelEditing() : setIsEditing(true))}
           disabled={saving}
-          className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-50"
+          className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50"
         >
           {isEditing ? "Cancel" : "Edit"}
         </button>
@@ -105,7 +105,7 @@ export default function WakaTimeKey({
 
       <p className="text-xs text-gray-500 mb-3">
         Current status:{" "}
-        <span className={isConnected ? "text-emerald-400" : "text-amber-300"}>
+        <span className={isConnected ? "text-emerald-600" : "text-amber-300"}>
           {isConnected ? "Connected" : "Not connected"}
         </span>
         {isConnected && displayMaskedKey ? (
@@ -137,7 +137,7 @@ export default function WakaTimeKey({
               type="button"
               onClick={cancelEditing}
               disabled={saving}
-              className="px-4 py-2.5 rounded-xl text-sm font-medium border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-50"
+              className="px-4 py-2.5 rounded-xl text-sm font-medium border border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50"
             >
               Discard
             </button>
@@ -154,7 +154,7 @@ export default function WakaTimeKey({
         <Link
           href="https://wakatime.com/settings/account"
           target="_blank"
-          className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2"
+          className="text-indigo-600 hover:text-indigo-600 underline underline-offset-2"
         >
           WakaTime account settings
         </Link>

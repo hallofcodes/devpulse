@@ -10,7 +10,7 @@ export default function FeatureInsights({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800">
-        <p className="text-sm text-gray-400 mb-2">Leaderboard Stats</p>
+        <p className="text-sm text-gray-500 mb-2">Leaderboard Stats</p>
         <div className="space-y-1 text-sm">
           <div className="flex justify-between">
             <span>Total</span>
@@ -29,7 +29,7 @@ export default function FeatureInsights({
       </div>
 
       <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800">
-        <p className="text-sm text-gray-400 mb-2">Flex Stats</p>
+        <p className="text-sm text-gray-500 mb-2">Flex Stats</p>
         <div className="space-y-1 text-sm">
           <div className="flex justify-between">
             <span>Total</span>

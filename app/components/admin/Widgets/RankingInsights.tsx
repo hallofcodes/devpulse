@@ -28,7 +28,7 @@ export default function RankingInsights({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
       <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800">
-        <p className="text-sm text-gray-400 mb-2">Top Coders</p>
+        <p className="text-sm text-gray-500 mb-2">Top Coders</p>
         <div className="space-y-1">
           {top3.map((u, i) => (
             <div key={i} className="flex justify-between text-sm">
@@ -44,7 +44,7 @@ export default function RankingInsights({
       </div>
 
       <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800">
-        <p className="text-sm text-gray-400 mb-2">Least Coders</p>
+        <p className="text-sm text-gray-500 mb-2">Least Coders</p>
         <div className="space-y-1">
           {bottom3.map((u, i) => (
             <div key={i} className="flex justify-between text-sm">
@@ -60,7 +60,7 @@ export default function RankingInsights({
       </div>
 
       <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800">
-        <p className="text-sm text-gray-400 mb-2">Category Stats</p>
+        <p className="text-sm text-gray-500 mb-2">Category Stats</p>
 
         <div className="space-y-1 text-sm">
           {categoryStats.map((c, i) => (
@@ -75,7 +75,7 @@ export default function RankingInsights({
       </div>
 
       <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800">
-        <p className="text-sm text-gray-400 mb-2">Vibe Coders</p>
+        <p className="text-sm text-gray-500 mb-2">Vibe Coders</p>
 
         <div className="space-y-1 text-sm">
           {aiCoders.map((c, i) => (

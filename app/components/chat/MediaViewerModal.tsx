@@ -46,7 +46,9 @@ export default function MediaViewerModal({
 }: MediaViewerModalProps) {
   const currentMediaIndex = useMemo(() => {
     if (!viewer) return -1;
-    return attachments.findIndex((attachment) => attachment.public_url === viewer.url);
+    return attachments.findIndex(
+      (attachment) => attachment.public_url === viewer.url,
+    );
   }, [attachments, viewer]);
 
   const hasPrevMedia = currentMediaIndex > 0;
@@ -74,7 +76,7 @@ export default function MediaViewerModal({
         <button
           type="button"
           onClick={(e) => navigateMedia(e, -1)}
-          className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-[10000] w-12 h-12 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80 transition shadow-lg backdrop-blur-md border border-white/10"
+          className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-[10000] w-12 h-12 flex items-center justify-center rounded-full bg-black/50 text-gray-900 hover:bg-black/80 transition shadow-lg backdrop-blur-md border border-gray-200"
         >
           <FontAwesomeIcon icon={faChevronLeft} className="w-5 h-5" />
         </button>
@@ -84,14 +86,14 @@ export default function MediaViewerModal({
         <button
           type="button"
           onClick={(e) => navigateMedia(e, 1)}
-          className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-[10000] w-12 h-12 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80 transition shadow-lg backdrop-blur-md border border-white/10"
+          className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-[10000] w-12 h-12 flex items-center justify-center rounded-full bg-black/50 text-gray-900 hover:bg-black/80 transition shadow-lg backdrop-blur-md border border-gray-200"
         >
           <FontAwesomeIcon icon={faChevronRight} className="w-5 h-5" />
         </button>
       )}
 
       <div
-        className="w-screen h-[100dvh] sm:w-full sm:h-auto sm:max-w-5xl sm:max-h-[90vh] rounded-none sm:rounded-2xl border-0 sm:border border-white/10 bg-[rgba(10,10,30,0.9)]/95 shadow-2xl overflow-hidden"
+        className="w-screen h-[100dvh] sm:w-full sm:h-auto sm:max-w-5xl sm:max-h-[90vh] rounded-none sm:rounded-2xl border-0 sm:border border-gray-200 bg-white shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div
@@ -112,8 +114,13 @@ export default function MediaViewerModal({
               <div className="absolute top-3 right-3 z-30 flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => void downloadRemoteMedia(viewer.url, viewer.filename || "media")}
-                  className="w-8 h-8 rounded-md text-white/90 hover:text-white transition"
+                  onClick={() =>
+                    void downloadRemoteMedia(
+                      viewer.url,
+                      viewer.filename || "media",
+                    )
+                  }
+                  className="w-8 h-8 rounded-md text-gray-900/90 hover:text-gray-900 transition"
                   aria-label="Download media"
                 >
                   <FontAwesomeIcon icon={faDownload} className="w-3 h-3" />
@@ -121,7 +128,7 @@ export default function MediaViewerModal({
                 <button
                   type="button"
                   onClick={() => onChange(null)}
-                  className="w-8 h-8 rounded-md text-white/90 hover:text-white transition"
+                  className="w-8 h-8 rounded-md text-gray-900/90 hover:text-gray-900 transition"
                   aria-label="Close viewer"
                 >
                   <FontAwesomeIcon icon={faXmark} className="w-3 h-3" />
@@ -134,7 +141,9 @@ export default function MediaViewerModal({
               autoPlay={true}
               immersive={true}
               className="w-full h-full"
-              onDownload={() => void downloadRemoteMedia(viewer.url, viewer.filename || "media")}
+              onDownload={() =>
+                void downloadRemoteMedia(viewer.url, viewer.filename || "media")
+              }
               onClose={() => onChange(null)}
             />
           )}

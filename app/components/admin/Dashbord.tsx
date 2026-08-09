@@ -1,8 +1,5 @@
 "use client";
 
-import { createClient } from "@/app/lib/supabase/client";
-import { Database } from "@/app/supabase-types";
-import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import TopInsights from "./Widgets/TopInsights";
 import FeatureInsights from "./Widgets/FeatureInsights";
@@ -10,18 +7,15 @@ import RankingInsights, {
   AICoderStat,
   CoderStats,
 } from "./Widgets/RankingInsights";
-import UserLists from "./Widgets/UserLists";
+import UserLists, { UserStat } from "./Widgets/UserLists";
 
-const supabase = createClient();
-
-type UserStat = Database["public"]["Views"]["top_user_stats"]["Row"];
 type CategoryStat = {
   name: string;
   users: Set<string>;
   totalSeconds: number;
 };
 
-export default function Dashboard({ user }: { user: User }) {
+export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<UserStat[]>([]);
   const [totalThreads, setTotalThreads] = useState(0);
@@ -31,45 +25,26 @@ export default function Dashboard({ user }: { user: User }) {
   const categoryMap: Record<string, CategoryStat> = {};
 
   useEffect(() => {
-    async function fetchUsers() {
+    async function fetchStats() {
       setLoading(true);
-      const [
-        { data: topUserStats },
-        { count: threads },
-        { count: messages },
-        { count: leaderboard },
-        { count: userFlexes },
-      ] = await Promise.all([
-        supabase.from("top_user_stats").select("*"),
-        supabase
-          .from("conversations")
-          .select("*", { count: "exact", head: true }),
-        supabase.from("messages").select("*", { count: "exact", head: true }),
-        supabase
-          .from("leaderboards")
-          .select("*", { count: "exact", head: true }),
-        supabase
-          .from("user_flexes")
-          .select("*", { count: "exact", head: true }),
-      ]);
-
-      setUsers(topUserStats || []);
-      setTotalThreads(threads || 0);
-      setTotalMessages(messages || 0);
-      setTotalLeaderboards(leaderboard || 0);
-      setTotalFlexes(userFlexes || 0);
+      const res = await fetch("/api/admin/stats");
+      if (res.ok) {
+        const data = await res.json();
+        setUsers(data.users ?? []);
+        setTotalThreads(data.totalThreads ?? 0);
+        setTotalMessages(data.totalMessages ?? 0);
+        setTotalLeaderboards(data.totalLeaderboards ?? 0);
+        setTotalFlexes(data.totalFlexes ?? 0);
+      }
       setLoading(false);
     }
 
-    fetchUsers();
+    fetchStats();
 
-    const interval = setInterval(fetchUsers, 5000);
+    const interval = setInterval(fetchStats, 5000);
     return () => clearInterval(interval);
-  }, [user.id]);
+  }, []);
 
-  /*
-   * total users and coding time
-   */
   const totalUsers = users.length;
   const totalSeconds = users.reduce(
     (sum, u) => sum + (u.total_seconds || 0),
@@ -79,15 +54,9 @@ export default function Dashboard({ user }: { user: User }) {
     (a, b) => (b.total_seconds || 0) - (a.total_seconds || 0),
   );
 
-  /*
-   * get the top and least coders
-   */
   const top3 = sortedUsers.slice(0, 3);
   const bottom3 = [...sortedUsers].reverse().slice(0, 3);
 
-  /*
-   * category stats
-   */
   users.forEach((u) => {
     const categories = (u.categories || []) as {
       name: string;
@@ -114,9 +83,6 @@ export default function Dashboard({ user }: { user: User }) {
     hours: Math.floor(c.totalSeconds / 3600),
   }));
 
-  /*
-   * vibe coders
-   */
   const aiCoders = users
     .map((u) => {
       const categories = (u.categories || []) as {
@@ -139,10 +105,9 @@ export default function Dashboard({ user }: { user: User }) {
 
   return (
     <div className="p-6 md:p-8 space-y-6">
-      {/* Header */}
       <div className="flex flex-row justify-between items-center w-full">
         <div>
-          <h1 className="text-3xl font-bold text-indigo-400">Admin Panel</h1>
+          <h1 className="text-3xl font-bold text-indigo-600">Admin Panel</h1>
         </div>
       </div>
 
