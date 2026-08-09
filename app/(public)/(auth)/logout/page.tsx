@@ -1,15 +1,9 @@
-import { Metadata } from "next/types";
 import { Suspense } from "react";
-import VerifyEmail from "@/app/components/auth/VerifyEmail";
+import Logout from "@/app/components/auth/Logout";
 import { auth } from "@/app/lib/auth";
 import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Verify Email - Devpulse",
-  description: "Verify your email address to activate your Devpulse account.",
-};
-
-export default async function VerifyEmailPage() {
+export default async function LogoutPage() {
   const session = await auth();
 
   if (!session) {
@@ -24,7 +18,7 @@ export default async function VerifyEmailPage() {
         </div>
       }
     >
-      <VerifyEmail sessionEmail={session?.user?.email} />
+      <Logout />
     </Suspense>
   );
 }

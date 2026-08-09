@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
 import crypto from "crypto";
+import { transporter } from "@/app/lib/smtp/nodemailer";
+
+const NODE_MAILER_USER = process.env.NODE_MAILER_USER || "";
 
 export async function POST(req: Request) {
   const { email } = await req.json();
@@ -34,6 +37,21 @@ export async function POST(req: Request) {
   const verifyUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${token}`;
 
   console.info(`Email verification link for ${email}: ${verifyUrl}`);
+
+  transporter.sendMail({
+    from: `Do Not Reply <${NODE_MAILER_USER}>`,
+    to: email,
+    subject: "Verify your email",
+    html: `
+      <p>Hi <b>${user.name}</b>,</p>
+      <p>Please click the link below to verify your email address:</p>
+      <p><a href="${verifyUrl}">Verify Email</a></p>
+      <p>Regards,</p>
+      <p>DevPulse</p>
+
+      <small>This email was sent from DevPulse. If you did not request this, please ignore this email.</small>
+    `,
+  });
 
   return NextResponse.json({ success: true });
 }

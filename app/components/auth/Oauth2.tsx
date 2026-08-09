@@ -10,7 +10,7 @@ export default function Oauth2({ redirectTo }: { redirectTo: string }) {
   const handleOAuth = (
     provider: "google" | "microsoft-entra-id" | "github",
   ) => {
-    signIn(provider, { callbackUrl: redirectTo });
+    // signIn(provider, { callbackUrl: redirectTo });
   };
 
   return (
@@ -18,7 +18,8 @@ export default function Oauth2({ redirectTo }: { redirectTo: string }) {
       <button
         type="button"
         onClick={() => handleOAuth("google")}
-        className="flex items-center justify-center gap-2 w-full py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:border-gray-300 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60"
+        disabled
+        className="disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 w-full py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:border-gray-300 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60"
       >
         <FontAwesomeIcon icon={faGoogle} className="h-5 w-5 text-red-600" />
         <span className="text-sm font-semibold">Google</span>
@@ -27,7 +28,8 @@ export default function Oauth2({ redirectTo }: { redirectTo: string }) {
       <button
         type="button"
         onClick={() => handleOAuth("microsoft-entra-id")}
-        className="flex items-center justify-center gap-2 w-full py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:border-gray-300 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60"
+        disabled
+        className="disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 w-full py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:border-gray-300 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60"
       >
         <FontAwesomeIcon icon={faMicrosoft} className="h-5 w-5 text-sky-600" />
         <span className="text-sm font-semibold">Microsoft</span>
@@ -36,7 +38,8 @@ export default function Oauth2({ redirectTo }: { redirectTo: string }) {
       <button
         type="button"
         onClick={() => handleOAuth("github")}
-        className="flex items-center justify-center gap-2 w-full py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:border-gray-300 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60"
+        disabled
+        className="disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 w-full py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:border-gray-300 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60"
       >
         <FontAwesomeIcon icon={faGithub} className="h-5 w-5 text-gray-700" />
         <span className="text-sm font-semibold">GitHub</span>

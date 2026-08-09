@@ -30,7 +30,7 @@ export default function Login() {
             className="flex items-center gap-3 w-fit hover:opacity-80 transition"
           >
             <Image src="/logo.svg" alt="Devpulse Logo" width={40} height={40} />
-            <span className="text-2xl font-bold tracking-tight">
+            <span className="text-2xl font-bold tracking-tight text-white">
               Devpulse
             </span>
           </Link>
