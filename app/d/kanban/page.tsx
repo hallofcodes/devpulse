@@ -59,6 +59,25 @@ interface WakaTimeProject {
   total_seconds: number;
 }
 
+function isKanbanProject(value: unknown): value is KanbanProject {
+  if (!value || typeof value !== "object") return false;
+
+  const project = value as Partial<KanbanProject>;
+  return (
+    typeof project.id === "string" &&
+    typeof project.name === "string" &&
+    typeof project.description === "string" &&
+    typeof project.wakatime_project_name === "string" &&
+    typeof project.color === "string" &&
+    typeof project.created_at === "string" &&
+    typeof project.board_count === "number" &&
+    typeof project.column_count === "number" &&
+    typeof project.issue_count === "number" &&
+    typeof project.completed_issue_count === "number" &&
+    typeof project.total_tracked_seconds === "number"
+  );
+}
+
 const PROJECT_COLORS = [
   { value: "indigo", label: "Indigo" },
   { value: "cyan", label: "Cyan" },
@@ -203,21 +222,23 @@ export default function Kanban() {
       };
 
       if (envelope.type === "issue_created" && isKanbanIssue(envelope.data)) {
+        const issue = envelope.data;
         setIssues((prev) => {
-          if (prev.some((item) => item.id === envelope.data.id)) return prev;
-          return [...prev, envelope.data];
+          if (prev.some((item) => item.id === issue.id)) return prev;
+          return [...prev, issue];
         });
       } else if (
         envelope.type === "issue_updated" &&
         isIssueUpdate(envelope.data)
       ) {
+        const issueUpdate = envelope.data;
         setIssues((prev) =>
           prev.map((item) =>
-            item.id === envelope.data.id
+            item.id === issueUpdate.id
               ? {
                   ...item,
-                  column_id: envelope.data.column_id,
-                  position: envelope.data.position,
+                  column_id: issueUpdate.column_id,
+                  position: issueUpdate.position,
                 }
               : item,
           ),
@@ -376,16 +397,20 @@ export default function Kanban() {
         body: JSON.stringify(projectForm),
       });
 
-      const data = (await res.json()) as
-        | KanbanProject
-        | { error?: string };
+      const data = (await res.json()) as KanbanProject | { error?: string };
 
-      if (!res.ok || "error" in data) {
-        throw new Error(data.error || "Unable to create project.");
+      if (!res.ok) {
+        const errorMessage = "error" in data ? data.error : undefined;
+        throw new Error(errorMessage || "Unable to create project.");
       }
 
-      setProjects((prev) => [...prev, data]);
-      setSelectedProject(data.id);
+      if (!isKanbanProject(data)) {
+        throw new Error("Unable to create project.");
+      }
+
+      const project = data;
+      setProjects((prev) => [...prev, project]);
+      setSelectedProject(project.id);
       setProjectForm({
         name: "",
         description: "",
