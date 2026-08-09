@@ -1,18 +1,17 @@
 "use client";
 
-import { useRef, useState } from "react";
-import HCaptcha from "@hcaptcha/react-hcaptcha";
+import { useState } from "react";
 import { toast } from "react-toastify";
 
 export default function UpdatePasswordForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const captcha = useRef<HCaptcha>(null);
-  const [showCaptcha, setShowCaptcha] = useState(false);
 
-  const handleCaptchaVerify = async (_token: string) => {
-    setShowCaptcha(false);
+  const handleUpdatePassword = async (
+    e: React.SyntheticEvent<HTMLFormElement>,
+  ) => {
+    e.preventDefault();
     setLoading(true);
 
     const updateUserPassword = fetch("/api/auth/update-password", {
@@ -30,27 +29,18 @@ export default function UpdatePasswordForm() {
       pending: "Updating password...",
       success: {
         render() {
-          if (captcha.current) captcha.current.resetCaptcha();
           setLoading(false);
           return "Password updated!";
         },
       },
       error: {
         render({ data }) {
-          if (captcha.current) captcha.current.resetCaptcha();
           setLoading(false);
           const err = data as Error;
           return err?.message || "Failed to update password. Please try again.";
         },
       },
     });
-  };
-
-  const handleUpdatePassword = async (
-    e: React.SyntheticEvent<HTMLFormElement>,
-  ) => {
-    e.preventDefault();
-    setShowCaptcha(true);
   };
 
   return (
@@ -84,29 +74,6 @@ export default function UpdatePasswordForm() {
           Update Password
         </button>
       </form>
-
-      {showCaptcha && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 backdrop-blur-sm">
-          <div className="glass-card p-8 text-center">
-            <h3 className="text-lg font-semibold mb-4 text-gray-700">
-              Verify you are human
-            </h3>
-
-            <HCaptcha
-              ref={captcha}
-              sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || ""}
-              onVerify={handleCaptchaVerify}
-            />
-
-            <button
-              onClick={() => setShowCaptcha(false)}
-              className="mt-4 text-sm text-gray-500 hover:text-gray-600 transition"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 }
