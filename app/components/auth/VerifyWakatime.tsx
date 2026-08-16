@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -9,6 +10,7 @@ export default function VerifyWakatime() {
   const [apiKey, setApiKey] = useState("");
   const [grecaptchaLoaded, setGrecaptchaLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const loadGrecaptcha = () => {
@@ -59,9 +61,17 @@ export default function VerifyWakatime() {
       error: "Failed to verify. Please try again.",
     });
 
-    verifyWakatimePromise.finally(() => {
-      setLoading(false);
-    });
+    verifyWakatimePromise
+      .then(() => {
+        router.push("/d");
+      })
+      .catch(() => {
+        // already surfaced via toast.promise
+        // avoid unhandled rejection
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (

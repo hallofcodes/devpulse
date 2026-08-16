@@ -143,6 +143,14 @@ export async function saveWakatimeApiKey({
   }
 }
 
+function serializeBigInts<T>(value: T): T {
+  return JSON.parse(
+    JSON.stringify(value, (_key, val) =>
+      typeof val === "bigint" ? val.toString() : val,
+    ),
+  );
+}
+
 /**
  * Fetches WakaTime data and upserts stats, projects, and a daily snapshot.
  * Skips the remote fetch if data is fresh (< 6 hours old) and the key hasn't changed.
@@ -171,7 +179,11 @@ export async function syncWakatimeData({
         Date.now() - lastFetch < SIX_HOURS_MS &&
         (existingDailyStats as unknown[]).length >= CONSISTENCY_DAYS
       ) {
-        return { status: 200, success: true, data: existing };
+        return {
+          status: 200,
+          success: true,
+          data: serializeBigInts(existing),
+        };
       }
     }
   }
@@ -273,6 +285,6 @@ export async function syncWakatimeData({
   return {
     status: 200,
     success: true,
-    data: mergedResult,
+    data: serializeBigInts(mergedResult),
   };
 }
