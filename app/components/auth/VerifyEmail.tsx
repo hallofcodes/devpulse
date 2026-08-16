@@ -3,37 +3,81 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-export default function VerifyEmail({ sessionEmail }: { sessionEmail?: string | null }) {
+export default function VerifyEmail({
+  sessionEmail,
+}: {
+  sessionEmail?: string | null;
+}) {
   const searchParams = useSearchParams();
-
   const emailParam = searchParams.get("email");
   const error = searchParams.get("error");
   const email = emailParam || sessionEmail || "";
+  const [grecaptchaLoaded, setGrecaptchaLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [resending, setResending] = useState(false);
+  useEffect(() => {
+    const loadGrecaptcha = () => {
+      const scriptId = "recaptcha-enterprise";
+      if (!document.getElementById(scriptId)) {
+        const script = document.createElement("script");
+        script.id = scriptId;
+        script.src = `https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`;
+        script.async = true;
+        script.onload = () => setGrecaptchaLoaded(true);
+        document.body.appendChild(script);
+      } else {
+        setGrecaptchaLoaded(true);
+      }
+    };
+
+    loadGrecaptcha();
+  }, []);
 
   const handleResend = async () => {
     if (!email) return;
-    setResending(true);
 
-    const p = fetch("/api/auth/verify-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    }).then((r) => {
-      if (!r.ok) throw new Error("Failed to resend.");
+    if (!grecaptchaLoaded || !window.grecaptcha?.enterprise) {
+      toast.error(
+        "Recaptcha Enterprise is not loaded. Please try again later.",
+      );
+      return;
+    }
+
+    setLoading(true);
+
+    const verifyEmailPromise = new Promise<void>(async (resolve, reject) => {
+      try {
+        const token = await window.grecaptcha.enterprise.execute(
+          process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? "",
+          { action: "email_verify" },
+        );
+
+        await fetch("/api/auth/verify-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, token }),
+        }).then((r) => {
+          if (!r.ok) throw new Error("Failed to resend.");
+        });
+
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
     });
 
-    toast.promise(p, {
+    toast.promise(verifyEmailPromise, {
       pending: "Sending...",
       success: "Verification email sent!",
       error: "Failed to resend. Please try again.",
     });
 
-    p.finally(() => setResending(false));
+    verifyEmailPromise.then(() => {
+      setLoading(false);
+    });
   };
 
   return (
@@ -147,10 +191,10 @@ export default function VerifyEmail({ sessionEmail }: { sessionEmail?: string | 
               {email && (
                 <button
                   onClick={handleResend}
-                  disabled={resending}
+                  disabled={loading}
                   className="w-full py-3 rounded-xl font-semibold btn-primary mb-4"
                 >
-                  {resending ? "Sending..." : "Resend verification email"}
+                  {loading ? "Sending..." : "Resend verification email"}
                 </button>
               )}
               <Link
@@ -203,10 +247,10 @@ export default function VerifyEmail({ sessionEmail }: { sessionEmail?: string | 
                 {email && (
                   <button
                     onClick={handleResend}
-                    disabled={resending}
+                    disabled={loading}
                     className="w-full py-3 rounded-xl font-semibold btn-primary"
                   >
-                    {resending ? "Sending..." : "Resend verification email"}
+                    {loading ? "Sending..." : "Resend verification email"}
                   </button>
                 )}
 

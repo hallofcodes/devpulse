@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter, useSearchParams } from "next/navigation";
 import Oauth2 from "../Oauth2";
@@ -21,9 +21,35 @@ export default function SignupForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [grecaptchaLoaded, setGrecaptchaLoaded] = useState(false);
+
+  useEffect(() => {
+    const loadGrecaptcha = () => {
+      const scriptId = "recaptcha-enterprise";
+      if (!document.getElementById(scriptId)) {
+        const script = document.createElement("script");
+        script.id = scriptId;
+        script.src = `https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`;
+        script.async = true;
+        script.onload = () => setGrecaptchaLoaded(true);
+        document.body.appendChild(script);
+      } else {
+        setGrecaptchaLoaded(true);
+      }
+    };
+
+    loadGrecaptcha();
+  }, []);
 
   const handleSignup = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!grecaptchaLoaded || !window.grecaptcha?.enterprise) {
+      toast.error(
+        "Recaptcha Enterprise is not loaded. Please try again later.",
+      );
+      return;
+    }
+
     setLoading(true);
 
     const signUp = new Promise<void>(async (resolve, reject) => {
@@ -32,10 +58,15 @@ export default function SignupForm() {
           return reject(new Error("Passwords do not match!"));
         }
 
+        const token = await window.grecaptcha.enterprise.execute(
+          process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? "",
+          { action: "register" },
+        );
+
         const res = await fetch("/api/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email, password, token }),
         });
 
         const data = await res.json();
@@ -130,15 +161,14 @@ export default function SignupForm() {
 
         <button
           type="submit"
-          // disabled={loading}
-          disabled
+          disabled={loading}
           className={`disabled:opacity-50 disabled:cursor-not-allowed w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
             loading
               ? "bg-gray-800 cursor-not-allowed opacity-60"
               : "btn-primary"
           }`}
         >
-          Comming Soon
+          Register
         </button>
 
         <div className="flex items-center justify-center gap-2">

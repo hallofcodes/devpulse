@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/app/lib/prisma";
+import { recaptcha } from "@/app/lib/recaptcha";
 
 export async function POST(req: Request) {
-  const { token, password } = await req.json();
+  const { reset_token, password, token } = await req.json();
 
-  if (!token || !password) {
+  if (!reset_token || !password) {
     return NextResponse.json(
-      { error: "Token and password are required." },
+      { error: "Reset token and password are required." },
       { status: 400 },
     );
   }
@@ -19,8 +20,19 @@ export async function POST(req: Request) {
     );
   }
 
+  if (!token) {
+    return NextResponse.json(
+      { error: "reCAPTCHA verification failed. Please try again." },
+      { status: 400 },
+    );
+  }
+
+  // recaptcha verification
+  if (!(await recaptcha(token, "reset_password")))
+    throw new Error("reCAPTCHA verification failed. Please try again.");
+
   const resetToken = await prisma.passwordResetToken.findUnique({
-    where: { token },
+    where: { token: reset_token },
   });
 
   if (!resetToken || resetToken.expiresAt < new Date()) {
@@ -37,7 +49,7 @@ export async function POST(req: Request) {
       where: { id: resetToken.userId },
       data: { password: hashed },
     }),
-    prisma.passwordResetToken.delete({ where: { token } }),
+    prisma.passwordResetToken.delete({ where: { token: reset_token } }),
   ]);
 
   return NextResponse.json({ success: true });

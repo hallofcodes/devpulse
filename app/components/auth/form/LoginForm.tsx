@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { toast } from "react-toastify";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -22,16 +22,48 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [grecaptchaLoaded, setGrecaptchaLoaded] = useState(false);
+
+  useEffect(() => {
+    const loadGrecaptcha = () => {
+      const scriptId = "recaptcha-enterprise";
+      if (!document.getElementById(scriptId)) {
+        const script = document.createElement("script");
+        script.id = scriptId;
+        script.src = `https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`;
+        script.async = true;
+        script.onload = () => setGrecaptchaLoaded(true);
+        document.body.appendChild(script);
+      } else {
+        setGrecaptchaLoaded(true);
+      }
+    };
+
+    loadGrecaptcha();
+  }, []);
 
   const handleLogin = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!grecaptchaLoaded || !window.grecaptcha?.enterprise) {
+      toast.error(
+        "Recaptcha Enterprise is not loaded. Please try again later.",
+      );
+      return;
+    }
+
     setLoading(true);
 
     const loginPromise = new Promise<void>(async (resolve, reject) => {
       try {
+        const token = await window.grecaptcha.enterprise.execute(
+          process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? "",
+          { action: "login" },
+        );
+
         const result = await signIn("credentials", {
           email,
           password,
+          token,
           redirect: false,
         });
 
