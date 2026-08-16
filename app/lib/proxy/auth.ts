@@ -17,6 +17,9 @@ export default async function Auth(req: NextRequest) {
     if (!session.user.emailVerified) {
       return NextResponse.redirect(new URL("/verify-email", req.url));
     }
+    if (!session.user.wakatimeApiKey && pathname.startsWith("/d")) {
+      return NextResponse.redirect(new URL("/verify-wakatime", req.url));
+    }
   }
 
   const authRoutes = [
@@ -30,10 +33,16 @@ export default async function Auth(req: NextRequest) {
     if (!session.user.emailVerified) {
       return NextResponse.redirect(new URL("/verify-email", req.url));
     }
+    if (!session.user.wakatimeApiKey) {
+      return NextResponse.redirect(new URL("/verify-wakatime", req.url));
+    }
     return NextResponse.redirect(new URL("/d", req.url));
   }
 
-  if (pathname === "/verify-email" && session?.user.emailVerified) {
+  if (
+    (pathname === "/verify-email" && session?.user.emailVerified) ||
+    (pathname === "/verify-wakatime" && session?.user.wakatimeApiKey)
+  ) {
     return NextResponse.redirect(new URL("/d", req.url));
   }
 

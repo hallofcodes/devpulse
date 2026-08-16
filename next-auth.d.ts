@@ -10,6 +10,7 @@ declare module "next-auth" {
       email?: string | null;
       name?: string | null;
       image?: string | null;
+      wakatimeApiKey?: string | null;
     };
   }
 
@@ -24,5 +25,6 @@ declare module "next-auth/jwt" {
     id?: string;
     role?: string;
     emailVerified?: Date | null;
+    wakatimeApiKey?: string | null;
   }
 }

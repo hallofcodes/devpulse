@@ -94,13 +94,8 @@ export default function ForgotPasswordForm() {
 
         <button
           type="submit"
-          // disabled={loading}
-          disabled
-          className={`disabled:opacity-50 disabled:cursor-not-allowed w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
-            loading
-              ? "bg-gray-800 cursor-not-allowed opacity-60"
-              : "btn-primary"
-          }`}
+          disabled={loading}
+          className="w-full py-3 rounded-xl font-semibold btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Send reset instructions
         </button>

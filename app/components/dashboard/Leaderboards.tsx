@@ -14,7 +14,7 @@ import { sanitizeTextWithBlocklist } from "@/app/utils/moderation";
 
 type ModalState = "create" | "join" | "share" | null;
 
-export default function DashboardWithKey() {
+export default function Leaderboards() {
   const [leaderboardName, setLeaderboardName] = useState("");
   const [joinCode, setJoinCode] = useState("");
   const [activeModal, setActiveModal] = useState<ModalState>(null);

@@ -100,7 +100,7 @@ export default function VerifyEmail({
 
         <div className="relative z-10 max-w-md">
           <h1 className="text-4xl font-extrabold mb-5 leading-tight text-white">
-            One step away from your dashboard.
+            Two steps away from your dashboard.
           </h1>
           <p className="text-slate-300 text-lg leading-relaxed mb-8">
             We sent a verification link to your inbox. Click it to activate your
@@ -136,7 +136,7 @@ export default function VerifyEmail({
               </div>
               <div className="flex mt-3">
                 <span className="text-emerald-600/80">
-                  {"// Welcome aboard. ✓"}
+                  {"// Next. Wakatime API key. ->"}
                 </span>
               </div>
             </div>
@@ -192,16 +192,16 @@ export default function VerifyEmail({
                 <button
                   onClick={handleResend}
                   disabled={loading}
-                  className="w-full py-3 rounded-xl font-semibold btn-primary mb-4"
+                  className="w-full py-3 rounded-xl font-semibold btn-primary mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? "Sending..." : "Resend verification email"}
+                  Resend verification email
                 </button>
               )}
               <Link
-                href="/login"
+                href="/logout"
                 className="block text-center text-sm text-indigo-600 hover:text-indigo-700 font-semibold"
               >
-                Back to login
+                Changed your mind? Log in again.
               </Link>
             </div>
           ) : (
@@ -248,17 +248,17 @@ export default function VerifyEmail({
                   <button
                     onClick={handleResend}
                     disabled={loading}
-                    className="w-full py-3 rounded-xl font-semibold btn-primary"
+                    className="w-full py-3 rounded-xl font-semibold btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {loading ? "Sending..." : "Resend verification email"}
+                    esend verification email
                   </button>
                 )}
 
                 <Link
-                  href="/login"
+                  href="/logout"
                   className="block text-center text-sm text-gray-500 hover:text-gray-700 transition-colors"
                 >
-                  Back to login
+                  Changed your mind? Log in again.
                 </Link>
               </div>
             </>

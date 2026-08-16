@@ -162,11 +162,7 @@ export default function SignupForm() {
         <button
           type="submit"
           disabled={loading}
-          className={`disabled:opacity-50 disabled:cursor-not-allowed w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
-            loading
-              ? "bg-gray-800 cursor-not-allowed opacity-60"
-              : "btn-primary"
-          }`}
+          className="w-full py-3 rounded-xl font-semibold btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Register
         </button>

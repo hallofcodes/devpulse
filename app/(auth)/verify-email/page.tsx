@@ -6,7 +6,6 @@ import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Verify Email - Devpulse",
-  description: "Verify your email address to activate your Devpulse account.",
 };
 
 export default async function VerifyEmailPage() {

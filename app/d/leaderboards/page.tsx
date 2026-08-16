@@ -1,4 +1,4 @@
-import DashboardWithKey from "@/app/components/dashboard/WithKey";
+import Leaderboards from "@/app/components/dashboard/Leaderboards";
 import LeaderboardsList from "@/app/components/dashboard/LeaderbordList";
 import { getCurrentUser } from "@/app/lib/auth/user";
 import { Metadata } from "next/types";
@@ -23,7 +23,7 @@ export default async function LeaderboardsPage() {
             Create, join, and manage your coding servers
           </p>
         </div>
-        <DashboardWithKey />
+        <Leaderboards />
       </div>
 
       <div className="w-full">

@@ -72,15 +72,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // forced re-login.
       if (
         token.sub &&
-        (typeof token.role !== "string" || !token.emailVerified)
+        (typeof token.role !== "string" ||
+          !token.emailVerified ||
+          !token.wakatimeApiKey)
       ) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.sub },
-          select: { role: true, emailVerified: true },
+          select: { role: true, emailVerified: true, wakatimeApiKey: true },
         });
         if (dbUser) {
           token.role = dbUser.role;
           token.emailVerified = dbUser.emailVerified;
+          token.wakatimeApiKey = dbUser.wakatimeApiKey;
         }
       }
 
@@ -93,6 +96,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user.role = typeof token.role === "string" ? token.role : "user";
       session.user.emailVerified =
         (token.emailVerified as Date | null | undefined) ?? null;
+      session.user.wakatimeApiKey = token.wakatimeApiKey;
       return session;
     },
     async signIn({ user, account }) {
