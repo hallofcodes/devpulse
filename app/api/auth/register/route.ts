@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/app/lib/prisma";
+import { recaptcha } from "@/app/lib/recaptcha";
 
 export async function POST(req: Request) {
-  const { email, password } = await req.json();
+  const { email, password, token } = await req.json();
 
   if (!email || !password) {
     return NextResponse.json(
@@ -18,6 +19,17 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
+
+  if (!token) {
+    return NextResponse.json(
+      { error: "reCAPTCHA verification failed. Please try again." },
+      { status: 400 },
+    );
+  }
+
+  // recaptcha verification
+  if (!(await recaptcha(token, "register")))
+    throw new Error("reCAPTCHA verification failed. Please try again.");
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {

@@ -16,6 +16,7 @@
     "@fortawesome/free-brands-svg-icons": "^7.2.0",
     "@fortawesome/free-solid-svg-icons": "^7.2.0",
     "@fortawesome/react-fontawesome": "^3.3.0",
+    "@google-cloud/recaptcha-enterprise": "^7.0.0",
     "@prisma/client": "^6.19.3",
     "@types/bcryptjs": "^2.4.6",
     "aos": "^2.3.4",

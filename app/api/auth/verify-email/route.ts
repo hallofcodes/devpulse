@@ -2,15 +2,27 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
 import crypto from "crypto";
 import { transporter } from "@/app/lib/smtp/nodemailer";
+import { recaptcha } from "@/app/lib/recaptcha";
 
 const NODE_MAILER_USER = process.env.NODE_MAILER_USER || "";
 
 export async function POST(req: Request) {
-  const { email } = await req.json();
+  const { email, token } = await req.json();
 
   if (!email) {
     return NextResponse.json({ error: "Email is required." }, { status: 400 });
   }
+
+  if (!token) {
+    return NextResponse.json(
+      { error: "reCAPTCHA verification failed. Please try again." },
+      { status: 400 },
+    );
+  }
+
+  // recaptcha verification
+  if (!(await recaptcha(token, "email_verify")))
+    throw new Error("reCAPTCHA verification failed. Please try again.");
 
   const user = await prisma.user.findUnique({ where: { email } });
 
@@ -27,14 +39,14 @@ export async function POST(req: Request) {
     where: { identifier: email },
   });
 
-  const token = crypto.randomBytes(32).toString("hex");
+  const verificationToken = crypto.randomBytes(32).toString("hex");
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
   await prisma.verificationToken.create({
-    data: { identifier: email, token, expires },
+    data: { identifier: email, token: verificationToken, expires },
   });
 
-  const verifyUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${token}`;
+  const verifyUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${verificationToken}`;
 
   console.info(`Email verification link for ${email}: ${verifyUrl}`);
 

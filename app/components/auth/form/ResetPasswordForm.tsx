@@ -1,40 +1,78 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const resetToken = searchParams.get("resetToken");
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showCaptcha, setShowCaptcha] = useState(false);
+  const [grecaptchaLoaded, setGrecaptchaLoaded] = useState(false);
+
+  useEffect(() => {
+    const loadGrecaptcha = () => {
+      const scriptId = "recaptcha-enterprise";
+      if (!document.getElementById(scriptId)) {
+        const script = document.createElement("script");
+        script.id = scriptId;
+        script.src = `https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`;
+        script.async = true;
+        script.onload = () => setGrecaptchaLoaded(true);
+        document.body.appendChild(script);
+      } else {
+        setGrecaptchaLoaded(true);
+      }
+    };
+
+    loadGrecaptcha();
+  }, []);
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!token) {
+    if (!resetToken) {
       toast.error("Invalid or missing reset token.");
+      return;
+    }
+
+    if (!grecaptchaLoaded || !window.grecaptcha?.enterprise) {
+      toast.error(
+        "Recaptcha Enterprise is not loaded. Please try again later.",
+      );
       return;
     }
 
     setLoading(true);
 
-    const updatePassword = fetch("/api/auth/reset-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, password }),
-    }).then(async (res) => {
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      if (password !== confirmPassword)
-        throw new Error("Passwords do not match.");
+    const updatePasswordPromise = new Promise<void>(async (resolve, reject) => {
+      try {
+        const token = await window.grecaptcha.enterprise.execute(
+          process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? "",
+          { action: "reset_password" },
+        );
+
+        await fetch("/api/auth/reset-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reset_token: resetToken, password, token }),
+        }).then(async (res) => {
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error);
+          if (password !== confirmPassword)
+            throw new Error("Passwords do not match.");
+        });
+
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
     });
 
-    toast.promise(updatePassword, {
+    toast.promise(updatePasswordPromise, {
       pending: "Resetting password...",
       success: {
         render() {
@@ -53,7 +91,7 @@ export default function ResetPasswordForm() {
       },
     });
 
-    updatePassword.then(() => {
+    updatePasswordPromise.then(() => {
       router.replace("/login");
     });
   };

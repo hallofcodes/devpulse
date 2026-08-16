@@ -1,26 +1,66 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [grecaptchaLoaded, setGrecaptchaLoaded] = useState(false);
+
+  useEffect(() => {
+    const loadGrecaptcha = () => {
+      const scriptId = "recaptcha-enterprise";
+      if (!document.getElementById(scriptId)) {
+        const script = document.createElement("script");
+        script.id = scriptId;
+        script.src = `https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`;
+        script.async = true;
+        script.onload = () => setGrecaptchaLoaded(true);
+        document.body.appendChild(script);
+      } else {
+        setGrecaptchaLoaded(true);
+      }
+    };
+
+    loadGrecaptcha();
+  }, []);
 
   const handleLogin = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!grecaptchaLoaded || !window.grecaptcha?.enterprise) {
+      toast.error(
+        "Recaptcha Enterprise is not loaded. Please try again later.",
+      );
+      return;
+    }
+
     setLoading(true);
 
-    const sendReset = fetch("/api/auth/forgot-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    }).then(async (res) => {
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+    const sendResetPromise = new Promise<void>(async (resolve, reject) => {
+      try {
+        const token = await window.grecaptcha.enterprise.execute(
+          process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? "",
+          { action: "forgot_password" },
+        );
+
+        await fetch("/api/auth/forgot-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, token }),
+        }).then(async (res) => {
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error);
+        });
+
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
     });
 
-    toast.promise(sendReset, {
+    toast.promise(sendResetPromise, {
       pending: "Hold tight...",
       success: "Reset instructions sent! Check your email.",
       error: {
@@ -34,7 +74,7 @@ export default function ForgotPasswordForm() {
       },
     });
 
-    sendReset.finally(() => {
+    sendResetPromise.then(() => {
       setLoading(false);
     });
   };
