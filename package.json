@@ -23,7 +23,7 @@
     "bcryptjs": "^3.0.3",
     "devtools-detector": "^2.0.25",
     "mysql2": "^3.23.1",
-    "next": "16.1.6",
+    "next": "^16.2.11",
     "next-auth": "^5.0.0-beta.32",
     "nextjs-toploader": "^3.9.17",
     "nodemailer": "^8.0.11",
