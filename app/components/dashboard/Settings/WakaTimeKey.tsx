@@ -154,7 +154,7 @@ export default function WakaTimeKey({
         <Link
           href="https://wakatime.com/settings/account"
           target="_blank"
-          className="text-indigo-600 hover:text-indigo-600 underline underline-offset-2"
+          className="text-blue-600 hover:text-blue-600 underline underline-offset-2"
         >
           WakaTime account settings
         </Link>

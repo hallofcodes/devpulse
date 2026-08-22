@@ -21,7 +21,7 @@ export async function GET(req: Request) {
 
   const participant = await prisma.conversationParticipant.findUnique({
     where: {
-      conversationId_userId: { conversationId, userId: session.user.id },
+      conversationId_user_id: { conversationId, user_id: session.user.id },
     },
   });
 
@@ -32,9 +32,9 @@ export async function GET(req: Request) {
   const messages = await prisma.message.findMany({
     where: {
       conversationId,
-      expiresAt: { gt: new Date() },
+      expires_at: { gt: new Date() },
     },
-    orderBy: { createdAt: "asc" },
+    orderBy: { created_at: "asc" },
   });
 
   return NextResponse.json(
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
 
   const participant = await prisma.conversationParticipant.findUnique({
     where: {
-      conversationId_userId: { conversationId, userId: session.user.id },
+      conversationId_user_id: { conversationId, user_id: session.user.id },
     },
   });
 
@@ -98,8 +98,8 @@ export async function POST(req: Request) {
   emitter.emit(`chat:${conversationId}`, { type: "message", data: payload });
 
   const participants = await prisma.conversationParticipant.findMany({
-    where: { conversationId, userId: { not: session.user.id } },
-    select: { userId: true },
+    where: { conversationId, user_id: { not: session.user.id } },
+    select: { user_id: true },
   });
 
   for (const p of participants) {

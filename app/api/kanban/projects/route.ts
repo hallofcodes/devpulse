@@ -58,7 +58,7 @@ export async function POST(req: Request) {
   const boardId = crypto.randomUUID();
   const safeDescription = body.description?.trim() || null;
   const safeWakaName = body.wakatimeProjectName?.trim() || null;
-  const safeColor = body.color?.trim() || "indigo";
+  const safeColor = body.color?.trim() || "blue";
   const now = new Date();
 
   await prisma.$transaction(async (tx) => {

@@ -56,7 +56,7 @@ export default function Conversations({
               <div
                 className={`flex justify-center items-center w-[38px] h-[38px] rounded-full text-[14px] font-bold transition-all border ${
                   isGlobal
-                    ? "bg-indigo-500/15 text-indigo-600 border-indigo-500/30"
+                    ? "bg-blue-500/15 text-blue-600 border-blue-500/30"
                     : "bg-neutral-800 text-gray-700 border-gray-200 shadow-sm"
                 }`}
               >
@@ -79,7 +79,7 @@ export default function Conversations({
                   </span>
                   <div className="flex items-center gap-1.5">
                     {isGlobal && (
-                      <span className="bg-indigo-500/20 border border-indigo-500/30 text-indigo-600 text-[9px] font-bold px-1.5 py-0.5 rounded-md">
+                      <span className="bg-blue-500/20 border border-blue-500/30 text-blue-600 text-[9px] font-bold px-1.5 py-0.5 rounded-md">
                         All
                       </span>
                     )}
@@ -92,7 +92,7 @@ export default function Conversations({
                 </div>
                 <span
                   className={`text-[12px] truncate font-medium ${
-                    isTyping ? "text-indigo-600" : "text-gray-500"
+                    isTyping ? "text-blue-600" : "text-gray-500"
                   }`}
                   title={sublabel}
                 >

@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   }
 
   const { count } = await prisma.message.deleteMany({
-    where: { expiresAt: { lt: new Date() } },
+    where: { expires_at: { lt: new Date() } },
   });
 
   return NextResponse.json({ deleted: count });

@@ -27,14 +27,14 @@ export interface Projects {
 
 interface FlexRow {
   id: string;
-  projectName: string;
-  projectDescription: string;
-  projectUrl: string;
-  projectTime: string;
-  isOpenSource: boolean;
-  openSourceUrl: string;
-  expiresAt: string;
-  createdAt: string;
+  project_name: string;
+  project_description: string;
+  project_url: string;
+  project_time: string;
+  is_open_source: boolean;
+  open_source_url: string;
+  expires_at: string;
+  created_at: string;
 }
 
 function toEditableFlex(row: FlexRow): Projects {
@@ -199,10 +199,10 @@ export default function Flex() {
     <div className="p-6 md:p-8 space-y-6">
       <div
         className="relative z-50 flex flex-row justify-between items-center w-full gap-4"
-        data-aos="fade-up"
+       
       >
         <div className="flex flex-col">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent truncate">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent truncate">
             Flex
           </h1>
           <p className="text-xs sm:text-sm font-medium text-gray-500 mt-1 flex items-center gap-2">

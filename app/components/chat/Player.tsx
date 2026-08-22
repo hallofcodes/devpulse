@@ -601,7 +601,7 @@ export default function Player({
               onMouseUp={() => setIsSeeking(false)}
               onTouchStart={() => setIsSeeking(true)}
               onTouchEnd={() => setIsSeeking(false)}
-              className="flex-1 accent-indigo-400 cursor-pointer h-1"
+              className="flex-1 accent-blue-400 cursor-pointer h-1"
               aria-label="Seek video"
               style={{
                 background: `linear-gradient(90deg, rgba(129,140,248,.95) ${progress}%, rgba(255,255,255,.22) ${progress}%)`,
@@ -667,7 +667,7 @@ export default function Player({
                       step={0.01}
                       value={volume}
                       onChange={(e) => setVolume(Number(e.target.value))}
-                      className="h-24 w-1.5 accent-indigo-400 cursor-pointer"
+                      className="h-24 w-1.5 accent-blue-400 cursor-pointer"
                       aria-label="Mobile volume"
                       style={{ writingMode: "vertical-lr", direction: "rtl" }}
                     />
@@ -683,7 +683,7 @@ export default function Player({
               step={0.01}
               value={volume}
               onChange={(e) => setVolume(Number(e.target.value))}
-              className="hidden md:block w-20 accent-indigo-400 h-1"
+              className="hidden md:block w-20 accent-blue-400 h-1"
               aria-label="Volume"
             />
 
@@ -727,7 +727,7 @@ export default function Player({
             >
               <FontAwesomeIcon
                 icon={faRectangleList}
-                className={`w-3 h-3 ${isPipActive ? "text-indigo-600" : ""}`}
+                className={`w-3 h-3 ${isPipActive ? "text-blue-600" : ""}`}
               />
             </button>
             <button

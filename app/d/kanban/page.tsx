@@ -79,7 +79,7 @@ function isKanbanProject(value: unknown): value is KanbanProject {
 }
 
 const PROJECT_COLORS = [
-  { value: "indigo", label: "Indigo" },
+  { value: "blue", label: "blue" },
   { value: "cyan", label: "Cyan" },
   { value: "emerald", label: "Emerald" },
   { value: "amber", label: "Amber" },
@@ -87,7 +87,7 @@ const PROJECT_COLORS = [
 ];
 
 const COLOR_STYLES: Record<string, string> = {
-  indigo: "from-indigo-500/25 to-violet-500/10 border-indigo-500/20",
+  blue: "from-blue-500/25 to-violet-500/10 border-blue-500/20",
   cyan: "from-cyan-500/25 to-sky-500/10 border-cyan-500/20",
   emerald: "from-emerald-500/25 to-teal-500/10 border-emerald-500/20",
   amber: "from-amber-500/25 to-orange-500/10 border-amber-500/20",
@@ -164,8 +164,8 @@ export default function Kanban() {
   const [projectForm, setProjectForm] = useState({
     name: "",
     description: "",
-    wakatimeProjectName: "",
-    color: "indigo",
+    wakatimeproject_name: "",
+    color: "blue",
   });
 
   const load = useCallback(async () => {
@@ -414,8 +414,8 @@ export default function Kanban() {
       setProjectForm({
         name: "",
         description: "",
-        wakatimeProjectName: "",
-        color: "indigo",
+        wakatimeproject_name: "",
+        color: "blue",
       });
       setProjectModalOpen(false);
       toast.success("Kanban project created.");
@@ -436,14 +436,14 @@ export default function Kanban() {
         <div className="mx-auto max-w-[1400px] px-4 py-3 md:px-6 md:py-4">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-indigo-600/80">
+              <p className="text-xs uppercase tracking-[0.2em] text-blue-600/80">
                 Project Kanban
               </p>
               <h1 className="text-xl font-semibold md:text-2xl">Boards</h1>
             </div>
             <button
               onClick={() => setProjectModalOpen(true)}
-              className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-600 shadow-sm transition hover:border-indigo-300 hover:text-indigo-600"
+              className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-600 shadow-sm transition hover:border-blue-300 hover:text-blue-600"
             >
               + New Project
             </button>
@@ -520,7 +520,7 @@ export default function Kanban() {
               {currentProject ? (
                 <div
                   className={`mt-4 rounded-2xl border bg-gradient-to-br p-4 ${
-                    COLOR_STYLES[currentProject.color] ?? COLOR_STYLES.indigo
+                    COLOR_STYLES[currentProject.color] ?? COLOR_STYLES.blue
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -725,7 +725,7 @@ export default function Kanban() {
               onChange={(event) =>
                 setProjectForm((prev) => ({
                   ...prev,
-                  wakatimeProjectName: event.target.value,
+                  wakatimeproject_name: event.target.value,
                 }))
               }
               className="input-field w-full"
@@ -970,7 +970,7 @@ function Column({
         </div>
         <button
           onClick={onAdd}
-          className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs text-gray-600 transition hover:border-indigo-300 hover:text-indigo-600"
+          className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs text-gray-600 transition hover:border-blue-300 hover:text-blue-600"
         >
           Add
         </button>

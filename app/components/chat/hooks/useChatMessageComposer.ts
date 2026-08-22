@@ -13,7 +13,7 @@ import type { Message } from "@/app/components/Chat";
 import { sanitizeTextWithBlocklist } from "@/app/utils/moderation";
 
 type UseChatMessageComposerParams = {
-  userId: string;
+  user_id: string;
   conversationId: string | null;
   input: string;
   badWords: string[];

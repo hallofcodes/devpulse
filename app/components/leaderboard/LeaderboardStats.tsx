@@ -115,7 +115,7 @@ export default function LeaderboardStats({
   return (
     <div
       className="w-full xl:w-64 shrink-0 h-fit rounded-2xl hidden lg:flex flex-col gap-6"
-      data-aos="fade-in"
+     
     >
       <div className="glass-card p-5 rounded-2xl flex flex-col gap-6">
         <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1 flex items-center justify-start gap-2">

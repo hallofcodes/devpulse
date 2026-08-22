@@ -14,7 +14,7 @@ export const getCurrentUser = cache(async () => {
       name: true,
       image: true,
       role: true,
-      wakatimeApiKey: true,
+      wakatime_api_key: true,
     },
   });
 

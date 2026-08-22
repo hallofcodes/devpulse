@@ -30,7 +30,7 @@ export default function Editors({
 
   return (
     <>
-      <div data-aos="fade-in">
+      <div>
         <h3 className="text-sm font-semibold text-gray-900 mb-4">Editors</h3>
         <div className="space-y-4">
           {editorsList.slice(0, 4).map((editor, idx) => {
@@ -43,7 +43,7 @@ export default function Editors({
                     <span className="text-base opacity-70">
                       <FontAwesomeIcon
                         icon={getEditorIcon(editor.name)}
-                        className="w-4 h-4 text-indigo-600"
+                        className="w-4 h-4 text-blue-600"
                         aria-hidden="true"
                       />
                     </span>
@@ -51,7 +51,7 @@ export default function Editors({
                       {editor.name}
                     </span>
                     {idx === 0 && (
-                      <span className="text-[10px] bg-purple-500/20 text-purple-600 px-1.5 py-0.5 rounded-full font-semibold">
+                      <span className="text-[10px] bg-blue-500/20 text-blue-600 px-1.5 py-0.5 rounded-full font-semibold">
                         PRIMARY
                       </span>
                     )}
@@ -61,16 +61,15 @@ export default function Editors({
                     <span className="text-gray-500">
                       {formatHours(editor.total_seconds)}
                     </span>
-                    <span className="text-purple-600 w-8 text-right">
+                    <span className="text-blue-600 w-8 text-right">
                       {formatPercent(percent)}
                     </span>
                   </div>
                 </div>
 
-                {/* The bars only run after warm-up stretches. */}
-                <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-purple-500 rounded-full transition-all duration-[2000ms] ease-in-out"
+                    className="h-full bg-blue-500 rounded-full transition-all duration-[2000ms] ease-in-out"
                     style={{ width: animated ? `${percent}%` : "0%" }}
                   />
                 </div>

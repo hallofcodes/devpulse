@@ -79,10 +79,10 @@ export default function UserProfile({ user }: { user: UserShape }) {
   }
 
   return (
-    <div className="glass-card p-5 border-t-4 border-indigo-500/50">
+    <div className="glass-card p-5 border-t-4 border-blue-500/50">
       <div className="flex items-start justify-between gap-3 mb-4">
         <div>
-          <h3 className="text-xs font-semibold text-indigo-600 uppercase tracking-widest">
+          <h3 className="text-xs font-semibold text-blue-600 uppercase tracking-widest">
             Account Profile
           </h3>
           <p className="text-xs md:text-sm text-gray-500 mt-1.5">

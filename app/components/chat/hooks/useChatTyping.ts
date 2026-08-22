@@ -8,7 +8,7 @@ type TypingState = {
 };
 
 type UseChatTypingParams = {
-  userId: string;
+  user_id: string;
   userEmail: string;
   typingInactiveTimeoutMs: number;
   typingRemoteExpireMs: number;

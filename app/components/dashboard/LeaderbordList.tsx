@@ -21,7 +21,7 @@ export default async function LeaderboardsList() {
       select: { id: true, name: true, slug: true, ownerId: true },
     }),
     prisma.leaderboardMember.findMany({
-      where: { userId: user.id, role: "member" },
+      where: { user_id: user.id, role: "member" },
       include: {
         leaderboard: {
           select: { id: true, name: true, slug: true, ownerId: true },
@@ -39,17 +39,17 @@ export default async function LeaderboardsList() {
   return (
     <div
       className="glass-card h-full flex flex-col overflow-hidden relative"
-      data-aos="fade-up"
+     
       data-aos-delay="200"
     >
-      <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-indigo-500/5 to-transparent pointer-events-none" />
+      <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-blue-500/5 to-transparent pointer-events-none" />
 
       <div className="flex items-center justify-between p-6 border-b border-gray-200 relative z-10">
         <div className="flex flex-col gap-1">
           <h3 className="text-sm font-bold text-gray-700 tracking-tight flex items-center gap-2">
             <FontAwesomeIcon
               icon={faUsers}
-              className="text-indigo-600 w-4 h-4"
+              className="text-blue-600 w-4 h-4"
             />
             Your Networks
           </h3>

@@ -56,9 +56,9 @@ export default function Login() {
             </div>
             <div className="space-y-1.5 font-mono text-sm">
               <div className="flex">
-                <span className="text-indigo-600 mr-2">import</span>
+                <span className="text-blue-600 mr-2">import</span>
                 <span className="text-gray-700">{"{ Metrics }"}</span>
-                <span className="text-indigo-600 mx-2">from</span>
+                <span className="text-blue-600 mx-2">from</span>
                 <span className="text-green-600">
                   &apos;@devpulse/core&apos;
                 </span>
@@ -107,14 +107,14 @@ export default function Login() {
 
           <LoginForm />
 
-          <div className="mt-6 flex items-center gap-3 text-sm text-indigo-600/90">
+          <div className="mt-6 flex items-center gap-3 text-sm text-blue-600/90">
             <Link
               href={
                 redirectTo
                   ? `/forgot-password?redirect=${encodeURIComponent(redirectTo)}`
                   : "/forgot-password"
               }
-              className="font-semibold transition-colors hover:text-indigo-200 underline-offset-4 hover:underline"
+              className="font-semibold transition-colors hover:text-blue-200 underline-offset-4 hover:underline"
             >
               Forgot your password?
             </Link>

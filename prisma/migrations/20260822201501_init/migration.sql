@@ -3,7 +3,7 @@ CREATE TABLE `users` (
     `id` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NULL,
     `email` VARCHAR(191) NOT NULL,
-    `emailVerified` DATETIME(3) NULL,
+    `email_verified` DATETIME(3) NULL,
     `image` VARCHAR(191) NULL,
     `password` VARCHAR(191) NULL,
     `role` VARCHAR(191) NOT NULL DEFAULT 'user',
@@ -199,9 +199,14 @@ CREATE TABLE `messages` (
 -- CreateTable
 CREATE TABLE `projects` (
     `id` VARCHAR(191) NOT NULL,
+    `user_id` VARCHAR(191) NULL,
     `name` VARCHAR(191) NOT NULL,
+    `description` VARCHAR(191) NULL,
+    `wakatime_project_name` VARCHAR(191) NULL,
+    `color` VARCHAR(191) NULL DEFAULT 'blue',
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    INDEX `projects_user_id_idx`(`user_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -288,6 +293,9 @@ ALTER TABLE `messages` ADD CONSTRAINT `messages_conversation_id_fkey` FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE `messages` ADD CONSTRAINT `messages_sender_id_fkey` FOREIGN KEY (`sender_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `projects` ADD CONSTRAINT `projects_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `boards` ADD CONSTRAINT `boards_project_id_fkey` FOREIGN KEY (`project_id`) REFERENCES `projects`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

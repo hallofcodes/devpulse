@@ -39,7 +39,7 @@ export default async function Nav() {
             </Link>
             <Link
               href="/signup"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-full transition-all shadow-sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full transition-all shadow-sm"
             >
               Sign up
             </Link>

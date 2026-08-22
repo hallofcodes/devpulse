@@ -44,10 +44,10 @@ function getCellTone(seconds: number) {
   const hours = seconds / 3600;
 
   if (hours <= 0) return "bg-gray-100 border border-gray-200";
-  if (hours < 0.5) return "bg-indigo-100 border border-indigo-200";
-  if (hours < 1.5) return "bg-indigo-200 border border-indigo-300";
-  if (hours < 3) return "bg-indigo-400 border border-indigo-500";
-  return "bg-indigo-600 border border-indigo-700";
+  if (hours < 0.5) return "bg-blue-100 border border-blue-200";
+  if (hours < 1.5) return "bg-blue-200 border border-blue-300";
+  if (hours < 3) return "bg-blue-400 border border-blue-500";
+  return "bg-blue-600 border border-blue-700";
 }
 
 export default function CodingConsistencyHeatmap({
@@ -147,7 +147,7 @@ export default function CodingConsistencyHeatmap({
   return (
     <div
       className="glass-card p-4 md:p-5 h-full flex flex-col"
-      data-aos="fade-up"
+
       data-aos-delay="260"
     >
       <div className="flex items-center justify-between mb-2.5 gap-2.5 flex-wrap">
@@ -210,7 +210,7 @@ export default function CodingConsistencyHeatmap({
                         return (
                           <div
                             key={`${cell.key}-${weekIdx}`}
-                            className={`w-2.5 h-2.5 rounded-[2px] ${tone} transition-all hover:scale-110 hover:ring-1 hover:ring-indigo-300/40`}
+                            className={`w-2.5 h-2.5 rounded-[2px] ${tone} transition-all hover:scale-110 hover:ring-1 hover:ring-blue-300/40`}
                             style={{
                               opacity: animated ? 1 : 0.25,
                               transform: animated ? "scale(1)" : "scale(0.75)",
@@ -241,10 +241,10 @@ export default function CodingConsistencyHeatmap({
             <div className="flex items-center gap-1">
               <span className="text-[10px]">Less</span>
               <span className="w-2.5 h-2.5 rounded-[2px] bg-gray-100 border border-gray-200" />
-              <span className="w-2.5 h-2.5 rounded-[2px] bg-indigo-100 border border-indigo-200" />
-              <span className="w-2.5 h-2.5 rounded-[2px] bg-indigo-200 border border-indigo-300" />
-              <span className="w-2.5 h-2.5 rounded-[2px] bg-indigo-400 border border-indigo-500" />
-              <span className="w-2.5 h-2.5 rounded-[2px] bg-indigo-600 border border-indigo-700" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-blue-100 border border-blue-200" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-blue-200 border border-blue-300" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-blue-400 border border-blue-500" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-blue-600 border border-blue-700" />
               <span className="text-[10px]">More</span>
             </div>
           </div>
@@ -267,19 +267,19 @@ export default function CodingConsistencyHeatmap({
             </p>
             <p className="text-gray-600">
               Consistency:{" "}
-              <span className="text-indigo-600 font-semibold">
+              <span className="text-gray-900 font-semibold">
                 {consistencyScore}%
               </span>
             </p>
             <p className="text-gray-600">
               Current streak:{" "}
-              <span className="text-emerald-300 font-semibold">
+              <span className="text-gray-900 font-semibold">
                 {currentStreak}
               </span>
             </p>
             <p className="text-gray-600">
               Best streak:{" "}
-              <span className="text-amber-300 font-semibold">{bestStreak}</span>
+              <span className="text-gray-900 font-semibold">{bestStreak}</span>
             </p>
           </div>
         </div>

@@ -156,9 +156,9 @@ export default function VerifyWakatime() {
           </Link>
 
           <div className="text-center mb-8">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
               <svg
-                className="h-8 w-8 text-indigo-600"
+                className="h-8 w-8 text-blue-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

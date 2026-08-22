@@ -229,7 +229,7 @@ export default function Leaderboards() {
               <>
                 <div
                   className={`absolute -top-24 -right-24 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-20 ${
-                    activeModal === "create" ? "bg-indigo-500" : "bg-blue-500"
+                    activeModal === "create" ? "bg-blue-500" : "bg-blue-500"
                   }`}
                 />
 
@@ -238,7 +238,7 @@ export default function Leaderboards() {
                     <div
                       className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border ${
                         activeModal === "create"
-                          ? "bg-indigo-50 border-indigo-500/20 text-indigo-600 shadow-[0_0_15px_rgba(99,102,241,0.15)]"
+                          ? "bg-blue-50 border-blue-500/20 text-blue-600 shadow-[0_0_15px_rgba(99,102,241,0.15)]"
                           : "bg-blue-500/10 border-blue-500/20 text-blue-600 shadow-[0_0_15px_rgba(59,130,246,0.15)]"
                       }`}
                     >
@@ -278,7 +278,7 @@ export default function Leaderboards() {
                         </label>
                         <input
                           placeholder="e.g., Top Coders"
-                          className="input-field w-full px-4 text-sm py-3.5 bg-gray-50 border border-gray-200 focus:border-indigo-500/50 focus:bg-white/[0.04] transition-all rounded-xl shadow-inner placeholder:text-gray-600"
+                          className="input-field w-full px-4 text-sm py-3.5 bg-gray-50 border border-gray-200 focus:border-blue-500/50 focus:bg-white/[0.04] transition-all rounded-xl shadow-inner placeholder:text-gray-600"
                           value={leaderboardName}
                           onChange={(e) => setLeaderboardName(e.target.value)}
                           onKeyDown={(e) =>
@@ -289,7 +289,7 @@ export default function Leaderboards() {
                       </div>
                       <button
                         onClick={createLeaderboard}
-                        className="btn-primary w-full py-3.5 text-sm font-bold shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 rounded-xl transition-all"
+                        className="btn-primary w-full py-3.5 text-sm font-bold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 rounded-xl transition-all"
                       >
                         Build Server
                       </button>

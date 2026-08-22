@@ -169,12 +169,12 @@ export async function syncWakatimeData({
 
   if (!normalizedIncomingApiKey) {
     const existing = await getExistingUserStats(userId);
-    const existingDailyStats = Array.isArray(existing?.dailyStats)
-      ? existing.dailyStats
+    const existingDailyStats = Array.isArray(existing?.daily_stats)
+      ? existing.daily_stats
       : [];
 
-    if (existing?.lastFetchedAt) {
-      const lastFetch = new Date(existing.lastFetchedAt).getTime();
+    if (existing?.last_fetched_at) {
+      const lastFetch = new Date(existing.last_fetched_at).getTime();
       if (
         Date.now() - lastFetch < SIX_HOURS_MS &&
         (existingDailyStats as unknown[]).length >= CONSISTENCY_DAYS
@@ -232,24 +232,24 @@ export async function syncWakatimeData({
 
   const [statsResult, projectsResult] = await Promise.all([
     upsertUserStats({
-      userId,
-      totalSeconds: BigInt(Math.floor(waka.stats.total_seconds || 0)),
-      dailyAverage: BigInt(Math.floor(waka.stats.daily_average || 0)),
+      user_id: userId,
+      total_seconds: BigInt(Math.floor(waka.stats.total_seconds || 0)),
+      daily_average: BigInt(Math.floor(waka.stats.daily_average || 0)),
       languages: (waka.stats.languages || []) as Prisma.InputJsonValue,
-      operatingSystems: (waka.stats.operating_systems ||
+      operating_systems: (waka.stats.operating_systems ||
         []) as Prisma.InputJsonValue,
       editors: (waka.stats.editors || []) as Prisma.InputJsonValue,
       machines: (waka.stats.machines || []) as Prisma.InputJsonValue,
       categories: (waka.stats.categories || []) as Prisma.InputJsonValue,
       dependencies: (waka.stats.dependencies || []) as Prisma.InputJsonValue,
-      bestDay: (waka.stats.best_day || {}) as Prisma.InputJsonValue,
-      dailyStats: dailyStats as unknown as Prisma.InputJsonValue,
-      lastFetchedAt: new Date(nowIso),
+      best_day: (waka.stats.best_day || {}) as Prisma.InputJsonValue,
+      daily_stats: dailyStats as unknown as Prisma.InputJsonValue,
+      last_fetched_at: new Date(nowIso),
     }),
     upsertUserProjects({
-      userId,
+      user_id: userId,
       projects: (waka.stats.projects || []) as Prisma.InputJsonValue,
-      lastFetchedAt: new Date(nowIso),
+      last_fetched_at: new Date(nowIso),
     }),
   ]);
 
@@ -260,23 +260,23 @@ export async function syncWakatimeData({
 
   try {
     await upsertUserDashboardSnapshot({
-      userId,
-      snapshotDate: new Date(endStr),
-      totalSeconds7d: BigInt(snapshotMetrics.totalSeconds7d),
-      activeDays7d: snapshotMetrics.activeDays7d,
-      consistencyPercent: snapshotMetrics.consistencyPercent,
-      currentStreak: snapshotMetrics.currentStreak,
-      bestStreak: snapshotMetrics.bestStreak,
-      peakDay: snapshotMetrics.peakDayDate
+      user_id: userId,
+      snapshot_date: new Date(endStr),
+      total_seconds_7d: BigInt(snapshotMetrics.totalSeconds7d),
+      active_days_7d: snapshotMetrics.activeDays7d,
+      consistency_percent: snapshotMetrics.consistencyPercent,
+      current_streak: snapshotMetrics.currentStreak,
+      best_streak: snapshotMetrics.bestStreak,
+      peak_day: snapshotMetrics.peakDayDate
         ? new Date(snapshotMetrics.peakDayDate)
         : null,
-      peakDaySeconds: BigInt(snapshotMetrics.peakDaySeconds),
-      topLanguage: topLanguage?.name || null,
-      topLanguagePercent:
+      peak_day_seconds: BigInt(snapshotMetrics.peakDaySeconds),
+      top_language: topLanguage?.name || null,
+      top_language_percent:
         typeof topLanguage?.percent === "number"
           ? new Prisma.Decimal(topLanguage.percent.toFixed(2))
           : null,
-      updatedAt: new Date(nowIso),
+      updated_at: new Date(nowIso),
     });
   } catch (err) {
     console.error("Failed to upsert user dashboard snapshot", err);

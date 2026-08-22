@@ -16,8 +16,8 @@ export async function GET(req: Request) {
   }
 
   const stats = await prisma.userStats.findMany({
-    where: { userId: { in: ids } },
-    select: { userId: true, totalSeconds: true },
+    where: { user_id: { in: ids } },
+    select: { user_id: true, totalSeconds: true },
   });
 
   return NextResponse.json(

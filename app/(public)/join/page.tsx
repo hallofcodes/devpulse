@@ -26,13 +26,15 @@ async function getLeaderboard(code: string) {
       description: true,
       slug: true,
       ownerId: true,
-      createdAt: true,
+      created_at: true,
     },
   });
 }
 
 async function getMemberCount(leaderboardId: string) {
-  return prisma.leaderboardMember.count({ where: { leaderboardId } });
+  return prisma.leaderboardMember.count({
+    where: { leaderboard_id: leaderboardId },
+  });
 }
 
 export async function generateMetadata({
@@ -83,10 +85,10 @@ export default async function JoinPage({ searchParams }: Props) {
     return (
       <div className="min-h-screen flex items-center justify-center  grid-bg">
         <div className="glass-card p-10 text-center max-w-md mx-auto">
-          <div className="w-16 h-16 rounded-full bg-indigo-50 border border-indigo-500/20 flex items-center justify-center mx-auto mb-5">
+          <div className="w-16 h-16 rounded-full bg-blue-50 border border-blue-500/20 flex items-center justify-center mx-auto mb-5">
             <FontAwesomeIcon
               icon={faCircleInfo}
-              className="w-8 h-8 text-indigo-600"
+              className="w-8 h-8 text-blue-600"
             />
           </div>
           <h1 className="text-xl font-bold text-gray-900 mb-2">
@@ -139,9 +141,9 @@ export default async function JoinPage({ searchParams }: Props) {
   if (user) {
     const membership = await prisma.leaderboardMember.findUnique({
       where: {
-        leaderboardId_userId: {
-          leaderboardId: leaderboard.id,
-          userId: user.id,
+        leaderboard_id_user_id: {
+          leaderboard_id: leaderboard.id,
+          user_id: user.id,
         },
       },
       select: { id: true },
@@ -151,18 +153,18 @@ export default async function JoinPage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen  grid-bg relative overflow-hidden">
-      <div className="glow-orb w-[500px] h-[500px] bg-indigo-600/20 top-[-200px] left-1/2 -translate-x-1/2 absolute" />
+      <div className="glow-orb w-[500px] h-[500px] bg-blue-600/20 top-[-200px] left-1/2 -translate-x-1/2 absolute" />
       <div className="glow-orb w-[300px] h-[300px] bg-purple-600/15 bottom-[-100px] right-[-50px] absolute" />
 
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-16">
         <div className="glass-card max-w-lg w-full p-8 md:p-10 text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-500/20 flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.15)]">
+            <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-500/20 flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.15)]">
               <Image src="/logo.svg" alt="Devpulse" width={36} height={36} />
             </div>
           </div>
 
-          <p className="text-xs uppercase tracking-[0.2em] text-indigo-600 font-semibold mb-3">
+          <p className="text-xs uppercase tracking-[0.2em] text-blue-600 font-semibold mb-3">
             {alreadyMember
               ? "You’re already a member of"
               : "You’ve been invited to"}
@@ -182,7 +184,7 @@ export default async function JoinPage({ searchParams }: Props) {
             <div className="flex items-center gap-2 text-gray-500 text-sm">
               <FontAwesomeIcon
                 icon={faUsers}
-                className="w-4 h-4 text-indigo-600"
+                className="w-4 h-4 text-blue-600"
               />
               <span>
                 {memberCount} {memberCount === 1 ? "member" : "members"}
@@ -209,7 +211,7 @@ export default async function JoinPage({ searchParams }: Props) {
               Powered by{" "}
               <Link
                 href="/"
-                className="text-indigo-600/70 hover:text-indigo-600 transition-colors"
+                className="text-blue-600/70 hover:text-blue-600 transition-colors"
               >
                 Devpulse
               </Link>{" "}

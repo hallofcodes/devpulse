@@ -9,13 +9,13 @@ export async function GET() {
   }
 
   const participantRows = await prisma.conversationParticipant.findMany({
-    where: { userId: session.user.id },
+    where: { user_id: session.user.id },
     include: {
       conversation: {
         include: {
           participants: {
             select: {
-              userId: true,
+              user_id: true,
               email: true,
               lastSeenAt: true,
               lastReadAt: true,
@@ -65,13 +65,13 @@ export async function POST(req: Request) {
       participants: {
         create: [
           {
-            userId: session.user.id,
+            user_id: session.user.id,
             email: session.user.email,
             lastSeenAt: timestamp,
             lastReadAt: timestamp,
           },
           {
-            userId: otherUserId,
+            user_id: otherUserId,
             email: otherUserEmail ?? "",
             lastSeenAt: EPOCH,
             lastReadAt: EPOCH,
@@ -81,7 +81,7 @@ export async function POST(req: Request) {
     },
     include: {
       participants: {
-        select: { userId: true, email: true, lastSeenAt: true },
+        select: { user_id: true, email: true, lastSeenAt: true },
       },
     },
   });

@@ -29,7 +29,7 @@ type ConversationApiRow = {
 };
 
 type UseChatConversationsRealtimeParams = {
-  userId: string;
+  user_id: string;
   userEmail: string;
   globalConversationId: string;
   conversationIdsRef: MutableRefObject<Set<string>>;
@@ -38,7 +38,7 @@ type UseChatConversationsRealtimeParams = {
   setParticipantMetaByConversationId: Dispatch<
     SetStateAction<Record<string, ParticipantPresence>>
   >;
-  setLastSeenByUserId: Dispatch<SetStateAction<Record<string, string | null>>>;
+  setLastSeenByuser_id: Dispatch<SetStateAction<Record<string, string | null>>>;
   fetchUnreadCountsForConversations: (
     targetConversationIds: string[],
     readMap: Record<string, string | null>,
@@ -96,7 +96,7 @@ export function useChatConversationsRealtime({
       const rows: ConversationApiRow[] = await res.json();
       const convs: Conversation[] = [];
       const nextParticipantMeta: Record<string, ParticipantPresence> = {};
-      const nextLastSeenByUserId: Record<string, string | null> = {};
+      const nextLastSeenByuser_id: Record<string, string | null> = {};
       const readMap: Record<string, string | null> = {};
 
       rows.forEach((row) => {

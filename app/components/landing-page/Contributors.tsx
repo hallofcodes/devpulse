@@ -25,7 +25,7 @@ export default async function Contributors() {
   return (
     <section
       className="max-w-5xl mx-auto px-6 pb-8 relative z-10"
-      data-aos="fade-up"
+     
     >
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div>
@@ -46,7 +46,7 @@ export default async function Contributors() {
             href={contributor.html_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="glass-card rounded-2xl border-gray-200 bg-gray-50 p-4 transition-all hover:bg-white/[0.035] hover:border-indigo-500/20"
+            className="glass-card rounded-2xl border-gray-200 bg-gray-50 p-4 transition-all hover:bg-white/[0.035] hover:border-blue-500/20"
           >
             <div className="flex items-center gap-3 mb-3">
               <Image
@@ -77,7 +77,7 @@ export default async function Contributors() {
             href={contributor.html_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="glass-card flex items-center gap-2.5 rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 transition-all hover:bg-white/[0.035] hover:border-indigo-500/20"
+            className="glass-card flex items-center gap-2.5 rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 transition-all hover:bg-white/[0.035] hover:border-blue-500/20"
           >
             <Image
               src={contributor.avatar_url}

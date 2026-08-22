@@ -11,7 +11,7 @@ export async function PATCH() {
   const timestamp = new Date();
 
   await prisma.conversationParticipant.updateMany({
-    where: { userId: session.user.id },
+    where: { user_id: session.user.id },
     data: { lastSeenAt: timestamp },
   });
 

@@ -4,11 +4,11 @@ export default function CTA() {
   return (
     <section
       className="max-w-5xl mx-auto px-6 py-8 relative z-10 border-y border-gray-200"
-      data-aos="fade-up"
+     
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
         <div className="lg:col-span-8">
-          <p className="text-xs uppercase tracking-[0.16em] text-indigo-600/80 font-semibold mb-3">
+          <p className="text-xs uppercase tracking-[0.16em] text-blue-600/80 font-semibold mb-3">
             Launch DevPulse
           </p>
           <h2 className="text-3xl md:text-4xl font-bold mb-3 gradient-text">

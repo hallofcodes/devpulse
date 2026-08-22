@@ -59,7 +59,7 @@ export default function Signup() {
                 <span className="text-purple-600 mr-2">const</span>
                 <span className="text-blue-600">dev</span>
                 <span className="text-gray-700 mx-2">=</span>
-                <span className="text-indigo-600 mr-2">new</span>
+                <span className="text-blue-600 mr-2">new</span>
                 <span className="text-yellow-700">Developer</span>
                 <span className="text-gray-700">();</span>
               </div>
@@ -117,7 +117,7 @@ export default function Signup() {
                   ? `/login?redirect=${encodeURIComponent(redirectTo)}`
                   : "/login"
               }
-              className="text-indigo-600 hover:text-indigo-600 font-semibold transition-colors underline-offset-4 hover:underline"
+              className="text-blue-600 hover:text-blue-600 font-semibold transition-colors underline-offset-4 hover:underline"
             >
               Log in
             </Link>

@@ -73,17 +73,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (
         token.sub &&
         (typeof token.role !== "string" ||
-          !token.emailVerified ||
-          !token.wakatimeApiKey)
+          !token.email_verified ||
+          !token.wakatime_api_key)
       ) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.sub },
-          select: { role: true, emailVerified: true, wakatimeApiKey: true },
+          select: { role: true, email_verified: true, wakatime_api_key: true },
         });
         if (dbUser) {
           token.role = dbUser.role;
-          token.emailVerified = dbUser.emailVerified;
-          token.wakatimeApiKey = dbUser.wakatimeApiKey;
+          token.email_verified = dbUser.email_verified;
+          token.wakatime_api_key = dbUser.wakatime_api_key;
         }
       }
 
@@ -94,23 +94,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.id = token.sub;
       }
       session.user.role = typeof token.role === "string" ? token.role : "user";
-      session.user.emailVerified =
-        (token.emailVerified as Date | null | undefined) ?? null;
-      session.user.wakatimeApiKey = token.wakatimeApiKey;
+      session.user.email_verified =
+        (token.email_verified as Date | null | undefined) ?? null;
+      session.user.wakatime_api_key = token.wakatime_api_key;
       return session;
     },
     async signIn({ user, account }) {
       if (!user.id) return true;
 
       await prisma.userStats.upsert({
-        where: { userId: user.id },
-        create: { userId: user.id },
+        where: { user_id: user.id },
+        create: { user_id: user.id },
         update: {},
       });
 
       await prisma.userProjects.upsert({
-        where: { userId: user.id },
-        create: { userId: user.id },
+        where: { user_id: user.id },
+        create: { user_id: user.id },
         update: {},
       });
 
@@ -124,14 +124,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         await prisma.conversationParticipant.upsert({
           where: {
-            conversationId_userId: {
-              conversationId: globalConversationId,
-              userId: user.id,
+            conversation_id_user_id: {
+              conversation_id: globalConversationId,
+              user_id: user.id,
             },
           },
           create: {
-            conversationId: globalConversationId,
-            userId: user.id,
+            conversation_id: globalConversationId,
+            user_id: user.id,
             email: user.email,
             type: "global",
           },

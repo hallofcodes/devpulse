@@ -13,14 +13,14 @@ export default async function SettingsPage() {
   const { user } = await getCurrentUser();
   if (!user) return redirect("/login?from=/settings");
 
-  const hasWakaKey = Boolean(user.wakatimeApiKey);
-  const maskedWakaKey = user.wakatimeApiKey
-    ? `${user.wakatimeApiKey.slice(0, 8)}...${user.wakatimeApiKey.slice(-4)}`
+  const hasWakaKey = Boolean(user.wakatime_api_key);
+  const maskedWakaKey = user.wakatime_api_key
+    ? `${user.wakatime_api_key.slice(0, 8)}...${user.wakatime_api_key.slice(-4)}`
     : null;
 
   return (
     <div className="p-4 md:p-6 space-y-4 max-w-7xl mx-auto">
-      <div className="glass-card p-4 md:p-5 border-t-4 border-indigo-500/50">
+      <div className="glass-card p-4 md:p-5 border-t-4 border-blue-500/50">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">

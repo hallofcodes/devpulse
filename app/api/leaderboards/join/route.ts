@@ -31,8 +31,8 @@ export async function POST(req: Request) {
   try {
     await prisma.leaderboardMember.create({
       data: {
-        leaderboardId: leaderboard.id,
-        userId: session.user.id,
+        leaderboard_id: leaderboard.id,
+        user_id: session.user.id,
         role: "member",
       },
     });

@@ -33,7 +33,7 @@ export default async function LeaderboardPage(props: {
   let members: NonNullableMember[] = [];
   try {
     const rows = await prisma.leaderboardMember.findMany({
-      where: { leaderboardId: leaderboard.id },
+      where: { leaderboard_id: leaderboard.id },
       include: {
         user: {
           select: {

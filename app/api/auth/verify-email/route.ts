@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true });
   }
 
-  if (user.emailVerified) {
+  if (user.email_verified) {
     return NextResponse.json({ success: true });
   }
 
@@ -93,7 +93,7 @@ export async function GET(req: Request) {
 
   await prisma.user.update({
     where: { email: record.identifier },
-    data: { emailVerified: new Date() },
+    data: { email_verified: new Date() },
   });
 
   await prisma.verificationToken.delete({ where: { token } });

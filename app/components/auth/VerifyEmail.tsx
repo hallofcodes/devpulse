@@ -199,7 +199,7 @@ export default function VerifyEmail({
               )}
               <Link
                 href="/logout"
-                className="block text-center text-sm text-indigo-600 hover:text-indigo-700 font-semibold"
+                className="block text-center text-sm text-blue-600 hover:text-blue-700 font-semibold"
               >
                 Changed your mind? Log in again.
               </Link>
@@ -207,9 +207,9 @@ export default function VerifyEmail({
           ) : (
             <>
               <div className="text-center mb-8">
-                <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100">
+                <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
                   <svg
-                    className="h-8 w-8 text-indigo-600"
+                    className="h-8 w-8 text-blue-600"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"

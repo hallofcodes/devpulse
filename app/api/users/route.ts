@@ -21,9 +21,9 @@ export async function GET(req: Request) {
   const participants = await prisma.conversationParticipant.findMany({
     where: {
       conversationId,
-      userId: { not: session.user.id },
+      user_id: { not: session.user.id },
     },
-    select: { userId: true, email: true },
+    select: { user_id: true, email: true },
   });
 
   const users = participants

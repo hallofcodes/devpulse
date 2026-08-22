@@ -1,12 +1,33 @@
-export function formatHours(seconds: number) {
-  const safeSeconds = Number.isFinite(seconds) ? Math.max(0, seconds) : 0;
-  const totalMinutes = Math.round(safeSeconds / 60);
-  const hrs = Math.floor(totalMinutes / 60);
-  const mins = totalMinutes % 60;
-  if (hrs > 0) return `${hrs}h ${mins}m`;
-  return `${mins}m`;
+/**
+ * Formats the given number of seconds as a human-readable string representing the number of hours and minutes.
+ *
+ * @param seconds The number/string of seconds to format.
+ * @returns A human-readable string representing the number of hours and minutes, or `null` if the input is invalid.
+ */
+export function formatHours(seconds: string | number) {
+  try {
+    const safeSeconds = Number(seconds);
+    if (!Number.isFinite(safeSeconds)) return null;
+
+    const totalMinutes = Math.ceil(safeSeconds / 60);
+
+    const hrs = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
+
+    if (hrs > 0) return `${hrs}h ${mins}m`;
+    return `${mins}m`;
+  } catch {
+    console.error("Invalid seconds:", seconds);
+    return null;
+  }
 }
 
+/**
+ * Returns a human-readable string representing the time elapsed since the given timestamp.
+ *
+ * @param timestamp The timestamp to compare against the current time.
+ * @returns A human-readable string representing the time elapsed since the given timestamp, or `null` if the timestamp is invalid.
+ */
 export function timeAgo(timestamp: string) {
   if (!timestamp) return null;
 

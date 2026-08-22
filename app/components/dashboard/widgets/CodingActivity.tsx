@@ -18,11 +18,13 @@ export default function CodingActivity({
     <>
       <div
         className="glass-card p-6 lg:col-span-2 h-full flex flex-col"
-        data-aos="fade-up"
+
         data-aos-delay="200"
       >
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-gray-900">Coding Activity</h3>
+          <h3 className="text-sm font-semibold text-gray-900">
+            Coding Activity
+          </h3>
           <span className="text-xs text-gray-600">Last 7 days</span>
         </div>
         <div className="flex-1 min-h-[200px]">
@@ -33,8 +35,8 @@ export default function CodingActivity({
             >
               <defs>
                 <linearGradient id="colorHours" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid
@@ -56,13 +58,12 @@ export default function CodingActivity({
               />
               <Tooltip
                 contentStyle={{
-                  background: "#0f0f28",
+                  background: "white",
                   border: "1px solid rgba(99,102,241,0.2)",
                   borderRadius: "8px",
-                  boxShadow: "0 8px 30px rgba(0,0,0,0.4)",
                 }}
                 labelStyle={{ color: "#9ca3af" }}
-                itemStyle={{ color: "#818cf8" }}
+                itemStyle={{ color: "#3B82F6" }}
                 formatter={(value) => [
                   formatHours((value as number) * 3600),
                   "Time",
@@ -71,7 +72,7 @@ export default function CodingActivity({
               <Area
                 type="monotone"
                 dataKey="hours"
-                stroke="#6366f1"
+                stroke="#3B82F6"
                 strokeWidth={2.5}
                 fillOpacity={1}
                 fill="url(#colorHours)"
@@ -81,14 +82,14 @@ export default function CodingActivity({
                 animationEasing="ease-in-out"
                 dot={{
                   r: 4,
-                  fill: "#0a0a1a",
-                  stroke: "#6366f1",
+                  fill: "#3B82F6",
+                  stroke: "#3B82F6",
                   strokeWidth: 2,
                 }}
                 activeDot={{
                   r: 6,
-                  fill: "#6366f1",
-                  stroke: "#0a0a1a",
+                  fill: "#3B82F6",
+                  stroke: "#3B82F6",
                   strokeWidth: 2,
                 }}
               />

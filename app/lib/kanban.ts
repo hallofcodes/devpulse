@@ -62,7 +62,7 @@ function normalizeWakaTimeProjects(value: unknown): WakaTimeProject[] {
 }
 
 export async function getKanbanProjectAccess(
-  userId: string,
+  user_id: string,
   projectId: string,
 ): Promise<boolean> {
   const rows = await prisma.$queryRaw<Array<{ id: string }>>`
@@ -77,13 +77,13 @@ export async function getKanbanProjectAccess(
 }
 
 export async function getColumnAccess(
-  userId: string,
+  user_id: string,
   columnId: string,
 ): Promise<
   | {
       columnId: string;
       projectId: string;
-      projectName: string;
+      project_name: string;
     }
   | null
 > {
@@ -91,7 +91,7 @@ export async function getColumnAccess(
     Array<{
       columnId: string;
       projectId: string;
-      projectName: string;
+      project_name: string;
     }>
   >`
     SELECT
@@ -110,7 +110,7 @@ export async function getColumnAccess(
 }
 
 export async function getIssueAccess(
-  userId: string,
+  user_id: string,
   issueId: string,
 ): Promise<
   | {
@@ -140,7 +140,7 @@ export async function getIssueAccess(
   return rows[0] ?? null;
 }
 
-export async function getNextIssueKey(projectId: string, projectName: string) {
+export async function getNextIssueKey(projectId: string, project_name: string) {
   const rows = await prisma.$queryRaw<Array<{ issueCount: bigint | number }>>`
     SELECT COUNT(*) AS issueCount
     FROM issues i
@@ -164,7 +164,7 @@ export async function getNextIssueKey(projectId: string, projectName: string) {
   return `${prefix}-${String(issueCount + 1).padStart(3, "0")}`;
 }
 
-export async function getKanbanData(userId: string) {
+export async function getKanbanData(user_id: string) {
   const [projectRows, boardRows, columnRows, issueRows, userProjects] =
     await Promise.all([
       prisma.$queryRaw<KanbanProjectRow[]>`
@@ -246,7 +246,7 @@ export async function getKanbanData(userId: string) {
       name: project.name,
       description: project.description ?? "",
       wakatime_project_name: project.wakatime_project_name ?? "",
-      color: project.color ?? "indigo",
+      color: project.color ?? "blue",
       created_at: project.created_at.toISOString(),
       board_count: boards.length,
       column_count: columns.length,

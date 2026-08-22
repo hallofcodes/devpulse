@@ -16,7 +16,7 @@ export async function POST(
 
   const participant = await prisma.conversationParticipant.findUnique({
     where: {
-      conversationId_userId: { conversationId, userId: session.user.id },
+      conversationId_user_id: { conversationId, user_id: session.user.id },
     },
   });
 

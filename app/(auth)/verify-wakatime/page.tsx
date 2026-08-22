@@ -15,7 +15,7 @@ export default async function VerifyWakatimePage() {
     return redirect("/login");
   }
 
-  if (session.user.wakatimeApiKey) {
+  if (session.user.wakatime_api_key) {
     return redirect("/");
   }
 

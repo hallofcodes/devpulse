@@ -58,8 +58,8 @@ export const metadata: Metadata = {
 
 export default async function Flexs() {
   const flexes = await prisma.userFlex.findMany({
-    where: { expiresAt: { gt: new Date() } },
-    orderBy: { createdAt: "desc" },
+    where: { expires_at: { gt: new Date() } },
+    orderBy: { created_at: "desc" },
   });
 
   return (

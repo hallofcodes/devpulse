@@ -17,7 +17,7 @@ export default function Categories({
 
   return (
     <>
-      <div data-aos="fade-in">
+      <div>
         <h3 className="text-sm font-semibold text-gray-900 mb-4">Categories</h3>
         <div className="space-y-4">
           {categoriesList.slice(0, 4).map((category, idx) => {
@@ -31,7 +31,7 @@ export default function Categories({
                       {category.name}
                     </span>
                     {idx === 0 && (
-                      <span className="text-[10px] bg-orange-500/20 text-orange-400 px-1.5 py-0.5 rounded-full font-semibold">
+                      <span className="text-[10px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded-full font-semibold">
                         MAIN
                       </span>
                     )}
@@ -41,15 +41,15 @@ export default function Categories({
                     <span className="text-gray-500">
                       {formatHours(category.total_seconds)}
                     </span>
-                    <span className="text-orange-400 w-8 text-right">
+                    <span className="text-blue-400 w-8 text-right">
                       {formatPercent(percent)}
                     </span>
                   </div>
                 </div>
 
-                <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-orange-500 rounded-full transition-all duration-[2000ms] ease-in-out"
+                    className="h-full bg-blue-500 rounded-full transition-all duration-[2000ms] ease-in-out"
                     style={{ width: animated ? `${percent}%` : "0%" }}
                   />
                 </div>

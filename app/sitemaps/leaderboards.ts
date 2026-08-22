@@ -4,7 +4,7 @@ import { prisma } from "../lib/prisma";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const leaderboards = await prisma.leaderboard.findMany({
     select: { slug: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: { created_at: "desc" },
   });
 
   return leaderboards.map((lb) => ({

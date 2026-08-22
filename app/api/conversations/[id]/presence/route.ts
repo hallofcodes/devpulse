@@ -25,7 +25,7 @@ export async function PATCH(
   }
 
   await prisma.conversationParticipant.updateMany({
-    where: { conversationId, userId: session.user.id },
+    where: { conversationId, user_id: session.user.id },
     data,
   });
 
