@@ -59,7 +59,7 @@ export const metadata: Metadata = {
 export default async function Leaderboards() {
   const leaderboards = await prisma.leaderboard.findMany({
     select: { id: true, name: true, slug: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: { created_at: "desc" },
   });
 
   return (
@@ -89,17 +89,17 @@ export default async function Leaderboards() {
               <a
                 key={board.id}
                 href={`/leaderboard/${board.slug}`}
-                className="stat-card flex justify-between items-center px-6 py-4 group bg-gray-100 hover:bg-gray-100 transition-all border border-gray-200 rounded-xl rounded-tl-sm hover:border-indigo-500/30"
-                data-aos="fade-up"
+                className="stat-card flex justify-between items-center px-6 py-4 group bg-gray-100 hover:bg-gray-100 transition-all border border-gray-200 rounded-xl rounded-tl-sm hover:border-blue-500/30"
+               
                 data-aos-delay={(i * 50).toString()}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-indigo-500 group-hover:shadow-[0_0_10px_rgba(99,102,241,0.8)] transition-all" />
+                  <div className="w-2 h-2 rounded-full bg-blue-500 group-hover:shadow-[0_0_10px_rgba(99,102,241,0.8)] transition-all" />
                   <span className="text-gray-700 font-semibold group-hover:text-gray-900 transition">
                     {board.name}
                   </span>
                 </div>
-                <span className="text-gray-500 text-sm group-hover:text-indigo-600 transition flex items-center gap-2">
+                <span className="text-gray-500 text-sm group-hover:text-blue-600 transition flex items-center gap-2">
                   View{" "}
                   <FontAwesomeIcon icon={faArrowRight} className="w-4 h-4" />
                 </span>

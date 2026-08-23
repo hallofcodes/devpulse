@@ -48,8 +48,8 @@ export default function LanguageDestribution({
         <p className="text-xs text-gray-600 font-semibold mb-1">
           {point.subject}
         </p>
-        <p className="text-xs text-indigo-600">{point.percent}% share</p>
-        <p className="text-xs text-gray-500">{formatHours(point.seconds)}</p>
+        <p className="text-xs text-blue-600">{point.percent}% share</p>
+        <p className="text-xs text-gray-200">{formatHours(point.seconds)}</p>
       </div>
     );
   };
@@ -58,7 +58,7 @@ export default function LanguageDestribution({
     return (
       <div
         className="glass-card p-6 h-full flex flex-col justify-center"
-        data-aos="fade-up"
+       
         data-aos-delay="300"
       >
         <h3 className="text-sm font-semibold text-gray-900 mb-2">
@@ -73,7 +73,7 @@ export default function LanguageDestribution({
     <>
       <div
         className="glass-card p-6 h-full flex flex-col"
-        data-aos="fade-up"
+       
         data-aos-delay="300"
       >
         <h3 className="text-sm font-semibold text-gray-900 mb-2">
@@ -105,14 +105,14 @@ export default function LanguageDestribution({
               />
               <Radar
                 dataKey="percent"
-                stroke="#818cf8"
+                stroke="#3B82F6"
                 strokeWidth={2.5}
-                fill="#6366f1"
+                fill="#3B82F6"
                 fillOpacity={0.2}
                 dot={{
                   r: 4,
-                  fill: "#818cf8",
-                  stroke: "#a5b4fc",
+                  fill: "#3B82F6",
+                  stroke: "#3B82F6",
                   strokeWidth: 1.5,
                 }}
                 isAnimationActive={true}

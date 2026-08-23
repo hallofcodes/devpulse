@@ -27,25 +27,25 @@ export interface Projects {
 
 interface FlexRow {
   id: string;
-  projectName: string;
-  projectDescription: string;
-  projectUrl: string;
-  projectTime: string;
-  isOpenSource: boolean;
-  openSourceUrl: string;
-  expiresAt: string;
-  createdAt: string;
+  project_name: string;
+  project_description: string;
+  project_url: string;
+  project_time: string;
+  is_open_source: boolean;
+  open_source_url: string;
+  expires_at: string;
+  created_at: string;
 }
 
 function toEditableFlex(row: FlexRow): Projects {
   return {
-    name: row.projectName ?? "",
-    text: row.projectTime ?? "",
-    project_description: row.projectDescription ?? "",
-    project_url: row.projectUrl ?? "",
-    project_time: row.projectTime ?? "",
-    is_open_source: row.isOpenSource ?? false,
-    open_source_url: row.openSourceUrl ?? "",
+    name: row.project_name ?? "",
+    text: row.project_time ?? "",
+    project_description: row.project_description ?? "",
+    project_url: row.project_url ?? "",
+    project_time: row.project_time ?? "",
+    is_open_source: row.is_open_source ?? false,
+    open_source_url: row.open_source_url ?? "",
   };
 }
 
@@ -187,7 +187,7 @@ export default function Flex() {
       const data: { projects: Projects[] } = await res.json();
       const projects: Projects[] = data.projects ?? [];
       const newProjects = projects.filter(
-        (p) => !userFlexes.some((f) => f.projectName === p.name),
+        (p) => !userFlexes.some((f) => f.project_name === p.name),
       );
       setFlexes(newProjects);
     }
@@ -197,19 +197,13 @@ export default function Flex() {
 
   return (
     <div className="p-6 md:p-8 space-y-6">
-      <div
-        className="relative z-50 flex flex-row justify-between items-center w-full gap-4"
-        data-aos="fade-up"
-      >
+      <div className="relative z-50 flex flex-row justify-between items-center w-full gap-4">
         <div className="flex flex-col">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent truncate">
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
             Flex
           </h1>
-          <p className="text-xs sm:text-sm font-medium text-gray-500 mt-1 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)] shrink-0"></span>
-            <span className="truncate">
-              Share your flexes with the community
-            </span>
+          <p className="text-sm text-gray-500 font-medium tracking-wide mt-1">
+            Share your projects with the community
           </p>
         </div>
 
@@ -327,7 +321,7 @@ export default function Flex() {
           {userFlexes.map((f) => (
             <div key={f.id} className="glass-card p-4 flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold">{f.projectName}</h3>
+                <h3 className="text-lg font-bold">{f.project_name}</h3>
                 <div className="flex flex-col items-end">
                   <div className="relative" data-flex-menu>
                     <button
@@ -383,14 +377,14 @@ export default function Flex() {
                     )}
                   </div>
                   <span className="mt-1 text-sm text-gray-600 leading-none">
-                    {f.projectTime}
+                    {f.project_time}
                   </span>
                 </div>
               </div>
-              <p className="text-sm text-gray-500">{f.projectDescription}</p>
+              <p className="text-sm text-gray-500">{f.project_description}</p>
               <a
                 className="text-sm text-gray-500 truncate"
-                href={f.projectUrl}
+                href={f.project_url}
                 title="Click to view project"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -399,23 +393,23 @@ export default function Flex() {
                   icon={faExternalLink}
                   className="w-3 h-3 text-gray-500 me-1"
                 />
-                {f.projectUrl}
+                {f.project_url}
               </a>
-              {f.isOpenSource && (
+              {f.is_open_source && (
                 <a
                   className="text-sm text-green-600 truncate"
-                  href={f.openSourceUrl}
+                  href={f.open_source_url}
                 >
                   <FontAwesomeIcon
                     icon={faCode}
                     className="w-3 h-3 text-green-600 me-1"
                   />
-                  {f.openSourceUrl}
+                  {f.open_source_url}
                 </a>
               )}
               <span className="text-xs">
-                Expires in {expireAt(f.expiresAt || "")} • Posted{" "}
-                {timeAgo(f.createdAt)}
+                Expires in {expireAt(f.expires_at || "")} • Posted{" "}
+                {timeAgo(f.created_at)}
               </span>
             </div>
           ))}

@@ -6,10 +6,11 @@ declare module "next-auth" {
     user: {
       id: string;
       role: string;
-      emailVerified: Date | null;
+      email_verified: Date | null;
       email?: string | null;
       name?: string | null;
       image?: string | null;
+      wakatime_api_key?: string | null;
     };
   }
 
@@ -23,6 +24,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id?: string;
     role?: string;
-    emailVerified?: Date | null;
+    email_verified?: Date | null;
+    wakatime_api_key?: string | null;
   }
 }

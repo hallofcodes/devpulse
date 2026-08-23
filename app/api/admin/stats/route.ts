@@ -21,22 +21,22 @@ export async function GET() {
     await Promise.all([
       prisma.userStats.findMany({
         select: {
-          userId: true,
-          totalSeconds: true,
+          user_id: true,
+          total_seconds: true,
           categories: true,
           user: { select: { email: true } },
         },
       }),
       prisma.conversation.count(),
-      prisma.message.count({ where: { expiresAt: { gt: new Date() } } }),
+      prisma.message.count({ where: { expires_at: { gt: new Date() } } }),
       prisma.leaderboard.count(),
-      prisma.userFlex.count({ where: { expiresAt: { gt: new Date() } } }),
+      prisma.userFlex.count({ where: { expires_at: { gt: new Date() } } }),
     ]);
 
   const users = topUserStats.map((row) => ({
-    user_id: row.userId,
+    user_id: row.user_id,
     email: row.user.email,
-    total_seconds: Number(row.totalSeconds),
+    total_seconds: Number(row.total_seconds),
     categories: row.categories,
   }));
 

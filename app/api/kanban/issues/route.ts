@@ -23,33 +23,30 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { columnId, title, tag, type, priority, issueKey, position } =
+  const { column_id, title, tag, type, priority, issue_key, position } =
     await req.json();
 
-  if (!columnId || !title?.trim()) {
+  if (!column_id || !title?.trim()) {
     return NextResponse.json(
       { error: "columnId and title are required." },
       { status: 400 },
     );
   }
 
-  const columnAccess = await getColumnAccess(session.user.id, columnId);
+  const columnAccess = await getColumnAccess(session.user.id, column_id);
   if (!columnAccess) {
     return NextResponse.json({ error: "Column not found." }, { status: 404 });
   }
 
   const resolvedIssueKey =
-    typeof issueKey === "string" && issueKey.trim().length > 0
-      ? issueKey.trim()
-      : await getNextIssueKey(
-          columnAccess.projectId,
-          columnAccess.projectName,
-        );
+    typeof issue_key === "string" && issue_key.trim().length > 0
+      ? issue_key.trim()
+      : await getNextIssueKey(columnAccess.project_id, columnAccess.project_name);
 
   const issue = await prisma.issue.create({
     data: {
-      columnId,
-      issueKey: resolvedIssueKey,
+      column_id: column_id,
+      issue_key: resolvedIssueKey,
       title: title.trim(),
       tag: tag ?? "",
       type: TYPE_MAP[type] ?? "FEATURE",
@@ -60,14 +57,14 @@ export async function POST(req: Request) {
 
   const payload = {
     id: issue.id,
-    column_id: issue.columnId,
-    issue_key: issue.issueKey,
+    column_id: issue.column_id,
+    issue_key: issue.issue_key,
     title: issue.title,
     tag: issue.tag ?? "",
     type: issue.type.toLowerCase(),
     priority: issue.priority.toLowerCase(),
     position: issue.position,
-    created_at: issue.createdAt.toISOString(),
+    created_at: issue.created_at.toISOString(),
   };
 
   emitter.emit("kanban", { type: "issue_created", data: payload });

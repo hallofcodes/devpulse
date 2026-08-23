@@ -46,11 +46,11 @@ export default function TopLeaderboard({
       {top_members && top_members.length > 0 && (
         <section
           className="max-w-5xl mx-auto px-6 pb-8 relative z-10"
-          data-aos="fade-up"
+         
         >
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
             <div>
-              <p className="text-xs uppercase tracking-[0.16em] text-indigo-600/90 font-semibold mb-3">
+              <p className="text-xs uppercase tracking-[0.16em] text-blue-600/90 font-semibold mb-3">
                 Real Leaderboard
               </p>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
@@ -61,7 +61,7 @@ export default function TopLeaderboard({
                 progress to the top.
               </p>
             </div>
-            <div className="inline-flex items-center rounded-full border border-indigo-400/30 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">
+            <div className="inline-flex items-center rounded-full border border-blue-400/30 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">
               {rankedTopMembers.length} ranked developers
             </div>
           </div>
@@ -93,7 +93,7 @@ export default function TopLeaderboard({
                   <div
                     key={`${member.email}-${rank}`}
                     className="grid grid-cols-[72px_minmax(0,1fr)_110px] md:grid-cols-[72px_minmax(0,1fr)_120px_180px] gap-3 items-center px-4 py-3 transition-colors bg-white/[0.01] hover:bg-gray-100"
-                    data-aos="fade-up"
+                   
                     data-aos-delay={(i * 45).toString()}
                   >
                     <span

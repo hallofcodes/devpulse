@@ -59,7 +59,7 @@ export default function NavProfileDropdown({
           className="w-8 h-8 rounded-full object-cover"
         />
       ) : (
-        <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
           {email.charAt(0).toUpperCase()}
         </div>
       )}
@@ -141,6 +141,7 @@ export default function NavProfileDropdown({
             <FontAwesomeIcon icon={faGear} className="w-4 h-4" />
             Settings
           </Link>
+          
           {type === "navbar" && (
             <Link
               href="/d/logout"

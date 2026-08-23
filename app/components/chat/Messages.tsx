@@ -25,7 +25,7 @@ export default function Messages({
   conversations: Conversation[];
   bottomRef: React.RefObject<HTMLDivElement | null>;
   badgesByUserId?: Record<string, BadgeInfo>;
-  onUserProfileClick?: (targetUserId: string, targetEmail: string) => void;
+  onUserProfileClick?: (targetuser_id: string, targetEmail: string) => void;
 }) {
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [mediaViewer, setMediaViewer] = useState<MediaViewerPayload | null>(
@@ -157,7 +157,7 @@ export default function Messages({
                   title={canOpenPrivateChat ? "Start private chat" : undefined}
                   className={`flex-shrink-0 ${avatarTranslateClass} w-8 h-8 rounded-full bg-neutral-700 border border-gray-200 flex items-center justify-center aspect-square overflow-hidden ${
                     canOpenPrivateChat
-                      ? "cursor-pointer hover:border-indigo-400/60 hover:bg-neutral-700/80"
+                      ? "cursor-pointer hover:border-blue-400/60 hover:bg-neutral-700/80"
                       : ""
                   }`}
                 >
@@ -189,7 +189,7 @@ export default function Messages({
                           senderRow.email as string,
                         )
                       }
-                      className="text-[12px] font-semibold leading-none text-gray-700 hover:text-indigo-600 transition"
+                      className="text-[12px] font-semibold leading-none text-gray-700 hover:text-blue-600 transition"
                       title="Start private chat"
                     >
                       {senderName}
@@ -197,7 +197,7 @@ export default function Messages({
                   ) : (
                     <span
                       className={`text-[12px] font-semibold leading-none ${
-                        isSelf ? "text-indigo-600" : "text-gray-700"
+                        isSelf ? "text-blue-600" : "text-gray-700"
                       }`}
                     >
                       {senderName}
@@ -225,8 +225,8 @@ export default function Messages({
                   <div
                     className={`px-5 py-3 text-[14px] leading-relaxed break-words break-all overflow-x-hidden ${
                       isSelf
-                        ? "bg-indigo-600 border border-indigo-500/50 text-gray-900 rounded-2xl rounded-br-sm shadow-sm"
-                        : "bg-[rgba(15,15,40,0.6)] border border-indigo-200 text-gray-700 rounded-2xl rounded-bl-sm"
+                        ? "bg-blue-600 border border-blue-500/50 text-gray-900 rounded-2xl rounded-br-sm shadow-sm"
+                        : "bg-[rgba(15,15,40,0.6)] border border-blue-200 text-gray-700 rounded-2xl rounded-bl-sm"
                     }`}
                   >
                     <div className="prose prose-invert prose-sm max-w-none break-words break-all whitespace-pre-wrap leading-[1.6]">
@@ -430,7 +430,7 @@ function getAttachments(
           href={attachment.public_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-indigo-600 hover:text-indigo-200 hover:underline text-sm"
+          className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-200 hover:underline text-sm"
         >
           <FontAwesomeIcon icon={faFile} className="w-3 h-3" />
           {attachment.filename || "Open attachment"}

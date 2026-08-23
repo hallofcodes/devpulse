@@ -33,18 +33,18 @@ export default async function LeaderboardPage(props: {
   let members: NonNullableMember[] = [];
   try {
     const rows = await prisma.leaderboardMember.findMany({
-      where: { leaderboardId: leaderboard.id },
+      where: { leaderboard_id: leaderboard.id },
       include: {
         user: {
           select: {
             id: true,
             email: true,
             role: true,
-            userStats: {
+            user_stats: {
               select: {
-                totalSeconds: true,
+                total_seconds: true,
                 languages: true,
-                operatingSystems: true,
+                operating_systems: true,
                 editors: true,
               },
             },
@@ -56,14 +56,14 @@ export default async function LeaderboardPage(props: {
     members = rows
       .filter((r) => r.user.email)
       .map((r) => ({
-        user_id: r.userId,
+        user_id: r.user.id,
         role: r.role,
         email: r.user.email!,
-        total_seconds: Number(r.user.userStats?.totalSeconds ?? 0),
-        languages: (r.user.userStats?.languages as { name: string }[]) ?? [],
+        total_seconds: Number(r.user.user_stats?.total_seconds ?? 0),
+        languages: (r.user.user_stats?.languages as { name: string }[]) ?? [],
         operating_systems:
-          (r.user.userStats?.operatingSystems as { name: string }[]) ?? [],
-        editors: (r.user.userStats?.editors as { name: string }[]) ?? [],
+          (r.user.user_stats?.operating_systems as { name: string }[]) ?? [],
+        editors: (r.user.user_stats?.editors as { name: string }[]) ?? [],
       }));
   } catch {
     return InternalServerError();
@@ -112,7 +112,7 @@ export default async function LeaderboardPage(props: {
 
             <div className="mb-2 sm:mb-3 shrink-0 scale-90 sm:scale-95 origin-bottom-right">
               <InviteFriendsButton
-                joinCode={leaderboard.joinCode}
+                joinCode={leaderboard.join_code}
                 leaderboardName={leaderboard.name}
               />
             </div>

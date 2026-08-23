@@ -27,8 +27,7 @@ export async function POST(req: Request) {
   const body = (await req.json()) as {
     name?: string;
     description?: string;
-    wakatimeProjectName?: string;
-    color?: string;
+    wakatime_project_name?: string;
   };
 
   const name = body.name?.trim();
@@ -57,8 +56,7 @@ export async function POST(req: Request) {
   const projectId = crypto.randomUUID();
   const boardId = crypto.randomUUID();
   const safeDescription = body.description?.trim() || null;
-  const safeWakaName = body.wakatimeProjectName?.trim() || null;
-  const safeColor = body.color?.trim() || "indigo";
+  const safeWakaName = body.wakatime_project_name?.trim() || null;
   const now = new Date();
 
   await prisma.$transaction(async (tx) => {
@@ -69,7 +67,6 @@ export async function POST(req: Request) {
         name,
         description,
         wakatime_project_name,
-        color,
         created_at
       ) VALUES (
         ${projectId},
@@ -77,7 +74,6 @@ export async function POST(req: Request) {
         ${name},
         ${safeDescription},
         ${safeWakaName},
-        ${safeColor},
         ${now}
       )
     `;

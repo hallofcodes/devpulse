@@ -14,7 +14,7 @@ export default function Dependencies({
 
   return (
     <>
-      <div className="glass-card p-6 h-full flex flex-col" data-aos="fade-in">
+      <div className="glass-card p-6 h-full flex flex-col">
         <h3 className="text-sm font-semibold text-gray-900 mb-4 lg:mb-6">
           Dependencies
         </h3>
@@ -30,18 +30,18 @@ export default function Dependencies({
                     {dep.name}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-xs font-mono ml-6">
+                <div className="flex items-center justify-between text-xs font-mono">
                   <span className="text-gray-500">
                     {formatHours(dep.total_seconds)}
                   </span>
-                  <span className="text-cyan-400 font-semibold">
+                  <span className="text-blue-500 font-semibold">
                     {dep.percent.toFixed(0)}%
                   </span>
                 </div>
               </div>
-              <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
+              <div className="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-cyan-500 rounded-full transition-all duration-[2000ms] ease-in-out"
+                  className="h-full bg-blue-500 rounded-full transition-all duration-[2000ms] ease-in-out"
                   style={{ width: animated ? `${dep.percent}%` : "0%" }}
                 />
               </div>

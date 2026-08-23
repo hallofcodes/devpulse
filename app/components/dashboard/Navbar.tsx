@@ -16,6 +16,7 @@ import {
   faCodeBranch,
   faBars,
   faProjectDiagram,
+  faGear,
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import NavProfileDropdown from "../common/NavProfileDropdown";
@@ -72,6 +73,13 @@ const navItems: NavItem[] = [
     category: "dev",
   },
   {
+    href: "/d/settings",
+    label: "Settings",
+    icon: faGear,
+    role: "user",
+    category: "dev",
+  },
+  {
     href: "https://hallofcodes.github.io/html-editor",
     label: "HTML Editor",
     icon: faEdit,
@@ -93,6 +101,10 @@ const navItems: NavItem[] = [
     category: "other",
   },
 ];
+
+// Primary items shown directly in the bottom nav (mobile).
+// Keep this to 4 so the "More" button fits as the 5th slot.
+const BOTTOM_NAV_HREFS = ["/d", "/d/chat", "/d/kanban", "/d/leaderboards"];
 
 export default function DashboardLayout({
   email,
@@ -126,42 +138,29 @@ export default function DashboardLayout({
   const canSee = (itemRole: string, userRole: string) =>
     itemRole !== "admin" || userRole === "admin";
 
-  const groupedNavItems = navItems
-    .filter((item) => canSee(item.role, role))
-    .reduce(
-      (acc, item) => {
-        const last = acc[acc.length - 1];
-        const showCategory = !last || last.category !== item.category;
-        acc.push({ ...item, showCategory });
-        return acc;
-      },
-      [] as Array<NavItem & { showCategory: boolean }>,
-    );
+  const visibleNavItems = navItems.filter((item) => canSee(item.role, role));
+
+  const groupedNavItems = visibleNavItems.reduce(
+    (acc, item) => {
+      const last = acc[acc.length - 1];
+      const showCategory = !last || last.category !== item.category;
+      acc.push({ ...item, showCategory });
+      return acc;
+    },
+    [] as Array<NavItem & { showCategory: boolean }>,
+  );
+
+  const bottomNavItems = visibleNavItems.filter((item) =>
+    BOTTOM_NAV_HREFS.includes(item.href),
+  );
+
+  const isSidebarItemActive = (href: string) => pathname === href;
+  const isAnyMoreItemActive = visibleNavItems.some(
+    (item) => !BOTTOM_NAV_HREFS.includes(item.href) && pathname === item.href,
+  );
 
   return (
-    <div className="min-h-screen ">
-      <header className="md:hidden sticky top-0 z-30 flex items-center justify-between h-14 px-4 border-b border-gray-200 bg-white">
-        <button
-          onClick={() => setSidebarOpen(true)}
-          className="p-2 rounded-md hover:bg-gray-100"
-          aria-label="Open sidebar"
-        >
-          <FontAwesomeIcon icon={faBars} className="w-5 h-5" />
-        </button>
-
-        <div className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="Devpulse" width={22} height={22} />
-          <span className="text-sm font-semibold">Devpulse</span>
-        </div>
-
-        <NavProfileDropdown
-          avatar={avatar}
-          name={name}
-          email={email}
-          type="navbar"
-        />
-      </header>
-
+    <div className="min-h-screen">
       {isMobile && sidebarOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/40"
@@ -190,22 +189,26 @@ export default function DashboardLayout({
           </div>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-1">
-          {groupedNavItems.map((item) => (
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {groupedNavItems.map((item, idx) => (
             <div key={item.href}>
               {item.showCategory && (
-                <p className="text-[10px] uppercase tracking-[0.15em] text-gray-600 font-semibold px-3 mb-3">
+                <p
+                  className={`text-[10px] uppercase tracking-[0.15em] text-gray-600 font-semibold px-3 mb-3 ${
+                    idx !== 0 ? "mt-5" : ""
+                  }`}
+                >
                   {item.category}
                 </p>
               )}
-
               <Link
                 href={item.href}
+                onClick={() => isMobile && setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg
                   text-sm font-medium transition
                   ${
-                    pathname === item.href
-                      ? "bg-indigo-50 text-indigo-600 border border-indigo-200"
+                    isSidebarItemActive(item.href)
+                      ? "bg-blue-50 text-blue-600 border border-blue-200"
                       : "text-gray-500 hover:text-gray-600 hover:bg-gray-100"
                   }`}
                 target={item.href.startsWith("http") ? "_blank" : undefined}
@@ -214,7 +217,9 @@ export default function DashboardLayout({
                 <FontAwesomeIcon
                   icon={item.icon}
                   className={`w-4 h-4 ${
-                    pathname === item.href ? "text-indigo-600" : "text-gray-600"
+                    isSidebarItemActive(item.href)
+                      ? "text-blue-600"
+                      : "text-gray-600"
                   }`}
                 />
                 {item.label}
@@ -236,12 +241,64 @@ export default function DashboardLayout({
       <main
         className="min-h-screen grid-bg relative overflow-x-hidden
           transition-[padding-left] duration-200
-          md:pt-0
           md:pl-64
-          pt-0"
+          pt-0
+          pb-16 md:pb-0"
       >
         <div className="relative z-10">{children}</div>
       </main>
+
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 z-30
+          h-16 bg-white border-t border-gray-200
+          flex items-stretch justify-around px-1"
+      >
+        {bottomNavItems.map((item) => {
+          const active = isSidebarItemActive(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="flex-1 flex flex-col items-center justify-center gap-1 text-[10px] font-medium"
+            >
+              <FontAwesomeIcon
+                icon={item.icon}
+                className={`${active ? "text-blue-600" : "text-gray-500"}`}
+                size="xl"
+              />
+              <span className={active ? "text-blue-600" : "text-gray-500"}>
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+
+        <button
+          type="button"
+          onClick={() => setSidebarOpen(true)}
+          className="flex-1 flex flex-col items-center justify-center gap-1 text-[10px] font-medium"
+          aria-label="Open menu"
+        >
+          <FontAwesomeIcon
+            icon={faBars}
+            className={`${
+              isAnyMoreItemActive || sidebarOpen
+                ? "text-blue-600"
+                : "text-gray-500"
+            }`}
+            size="xl"
+          />
+          <span
+            className={
+              isAnyMoreItemActive || sidebarOpen
+                ? "text-blue-600"
+                : "text-gray-500"
+            }
+          >
+            More
+          </span>
+        </button>
+      </nav>
     </div>
   );
 }

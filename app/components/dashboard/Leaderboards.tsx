@@ -14,7 +14,7 @@ import { sanitizeTextWithBlocklist } from "@/app/utils/moderation";
 
 type ModalState = "create" | "join" | "share" | null;
 
-export default function DashboardWithKey() {
+export default function Leaderboards() {
   const [leaderboardName, setLeaderboardName] = useState("");
   const [joinCode, setJoinCode] = useState("");
   const [activeModal, setActiveModal] = useState<ModalState>(null);
@@ -49,7 +49,7 @@ export default function DashboardWithKey() {
         const body = await res.json();
         throw new Error(body.error || "Failed to create. Please try again.");
       }
-      return res.json() as Promise<{ joinCode: string }>;
+      return res.json() as Promise<{ join_code: string }>;
     });
 
     toast.promise(createPromise, {
@@ -65,7 +65,7 @@ export default function DashboardWithKey() {
     });
 
     createPromise.then((data) => {
-      setCreatedCode(data.joinCode);
+      setCreatedCode(data.join_code);
       setLeaderboardName("");
       setActiveModal("share");
     });
@@ -80,7 +80,7 @@ export default function DashboardWithKey() {
     const joinPromise = fetch("/api/leaderboards/join", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ joinCode: joinCode.trim() }),
+      body: JSON.stringify({ join_code: joinCode.trim() }),
     }).then(async (res) => {
       if (!res.ok) {
         const body = await res.json();
@@ -229,7 +229,7 @@ export default function DashboardWithKey() {
               <>
                 <div
                   className={`absolute -top-24 -right-24 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-20 ${
-                    activeModal === "create" ? "bg-indigo-500" : "bg-blue-500"
+                    activeModal === "create" ? "bg-blue-500" : "bg-blue-500"
                   }`}
                 />
 
@@ -238,7 +238,7 @@ export default function DashboardWithKey() {
                     <div
                       className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border ${
                         activeModal === "create"
-                          ? "bg-indigo-50 border-indigo-500/20 text-indigo-600 shadow-[0_0_15px_rgba(99,102,241,0.15)]"
+                          ? "bg-blue-50 border-blue-500/20 text-blue-600 shadow-[0_0_15px_rgba(99,102,241,0.15)]"
                           : "bg-blue-500/10 border-blue-500/20 text-blue-600 shadow-[0_0_15px_rgba(59,130,246,0.15)]"
                       }`}
                     >
@@ -278,7 +278,7 @@ export default function DashboardWithKey() {
                         </label>
                         <input
                           placeholder="e.g., Top Coders"
-                          className="input-field w-full px-4 text-sm py-3.5 bg-gray-50 border border-gray-200 focus:border-indigo-500/50 focus:bg-white/[0.04] transition-all rounded-xl shadow-inner placeholder:text-gray-600"
+                          className="input-field w-full px-4 text-sm py-3.5 bg-gray-50 border border-gray-200 focus:border-blue-500/50 focus:bg-white/[0.04] transition-all rounded-xl shadow-inner placeholder:text-gray-600"
                           value={leaderboardName}
                           onChange={(e) => setLeaderboardName(e.target.value)}
                           onKeyDown={(e) =>
@@ -289,7 +289,7 @@ export default function DashboardWithKey() {
                       </div>
                       <button
                         onClick={createLeaderboard}
-                        className="btn-primary w-full py-3.5 text-sm font-bold shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 rounded-xl transition-all"
+                        className="btn-primary w-full py-3.5 text-sm font-bold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 rounded-xl transition-all"
                       >
                         Build Server
                       </button>

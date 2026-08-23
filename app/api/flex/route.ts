@@ -9,8 +9,8 @@ export async function GET() {
   }
 
   const flexes = await prisma.userFlex.findMany({
-    where: { userId: session.user.id },
-    orderBy: { createdAt: "desc" },
+    where: { user_id: session.user.id },
+    orderBy: { created_at: "desc" },
   });
 
   return NextResponse.json(flexes);
@@ -43,15 +43,15 @@ export async function POST(req: Request) {
 
   const flex = await prisma.userFlex.create({
     data: {
-      userId: session.user.id,
-      userEmail: session.user.email,
-      projectName: project_name.trim(),
-      projectDescription: project_description ?? "",
-      projectUrl: project_url ?? "",
-      projectTime: project_time ?? "",
-      isOpenSource: is_open_source ?? false,
-      openSourceUrl: is_open_source ? (open_source_url ?? "") : "",
-      expiresAt,
+      user_id: session.user.id,
+      user_email: session.user.email,
+      project_name: project_name.trim(),
+      project_description: project_description ?? "",
+      project_url: project_url ?? "",
+      project_time: project_time ?? "",
+      is_open_source: is_open_source ?? false,
+      open_source_url: is_open_source ? (open_source_url ?? "") : "",
+      expires_at: expiresAt,
     },
   });
 

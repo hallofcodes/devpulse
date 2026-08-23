@@ -35,37 +35,37 @@ export default async function Home() {
   const [leaderboards, losserStatsRows, topStatsRows] = await Promise.all([
     prisma.leaderboard.findMany({
       select: { id: true, name: true, slug: true },
-      orderBy: { createdAt: "desc" },
+      orderBy: { created_at: "desc" },
       take: 5,
     }),
     prisma.userStats.findMany({
-      where: { totalSeconds: { gt: 0, lt: 14400 } },
+      where: { total_seconds: { gt: 0, lt: 14400 } },
       select: {
-        userId: true,
-        totalSeconds: true,
+        user_id: true,
+        total_seconds: true,
         categories: true,
         user: { select: { email: true } },
       },
-      orderBy: { totalSeconds: "asc" },
+      orderBy: { total_seconds: "asc" },
       take: 50,
     }),
     prisma.userStats.findMany({
-      where: { totalSeconds: { gt: 0 } },
+      where: { total_seconds: { gt: 0 } },
       select: {
-        userId: true,
-        totalSeconds: true,
+        user_id: true,
+        total_seconds: true,
         categories: true,
         user: { select: { email: true } },
       },
-      orderBy: { totalSeconds: "desc" },
+      orderBy: { total_seconds: "desc" },
       take: 50,
     }),
   ]);
 
   const toMember = (row: (typeof topStatsRows)[number]): RawMember => ({
-    user_id: row.userId,
+    user_id: row.user_id,
     email: row.user.email,
-    total_seconds: Number(row.totalSeconds),
+    total_seconds: Number(row.total_seconds),
     categories: row.categories as MemberCategory[] | null,
   });
 
@@ -157,7 +157,7 @@ export default async function Home() {
 
             <h1
               className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] text-gray-900 mb-6"
-              data-aos="fade-up"
+             
               data-aos-delay="100"
             >
               Measure your <br />
@@ -166,7 +166,7 @@ export default async function Home() {
 
             <p
               className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10"
-              data-aos="fade-up"
+             
               data-aos-delay="200"
             >
               Turn your daily coding activity into competitive, shareable
@@ -176,7 +176,7 @@ export default async function Home() {
 
             <div
               className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4"
-              data-aos="fade-up"
+             
               data-aos-delay="300"
             >
               <Link
@@ -215,13 +215,13 @@ export default async function Home() {
                 </div>
                 <div className="text-xs text-gray-500 mb-4">Last 7 days</div>
                 <div className="h-1.5 w-full bg-gray-50 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 w-3/4 rounded-full" />
+                  <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 w-3/4 rounded-full" />
                 </div>
               </div>
             </div>
 
             {/* Card 2 */}
-            <div data-aos="fade-up" data-aos-delay="400">
+            <div data-aos-delay="400">
               <div className="absolute top-44 left-10 lg:-left-10 w-[280px] glass-card p-5 border-gray-200 shadow-2xl -skew-y-3 rotate-3 z-20 backdrop-blur-xl bg-white/90 transition-all duration-700 hover:rotate-0 hover:skew-y-0 text-left">
                 <h4 className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-4">
                   Top Languages
@@ -306,13 +306,13 @@ export default async function Home() {
           <div className="text-center mb-16">
             <h2
               className="text-3xl md:text-5xl font-bold text-gray-900 mb-4"
-              data-aos="fade-up"
+             
             >
               Everything you need to grow.
             </h2>
             <p
               className="text-gray-500 text-lg max-w-2xl mx-auto"
-              data-aos="fade-up"
+             
               data-aos-delay="100"
             >
               Devpulse integrates seamlessly with your tools to provide
@@ -325,7 +325,7 @@ export default async function Home() {
               icon={
                 <FontAwesomeIcon
                   icon={faLock}
-                  className="w-6 h-6 text-indigo-600"
+                  className="w-6 h-6 text-blue-600"
                 />
               }
               title="Private & Public Boards"
@@ -383,11 +383,11 @@ function FeatureCard({
 }) {
   return (
     <div
-      className="glass-card p-8 group hover:-translate-y-2 transition-transform duration-300 bg-gray-50 border-gray-200 hover:border-indigo-500/20"
-      data-aos="fade-up"
+      className="glass-card p-8 group hover:-translate-y-2 transition-transform duration-300 bg-gray-50 border-gray-200 hover:border-blue-500/20"
+     
       data-aos-delay={delay}
     >
-      <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-indigo-50 transition-all">
+      <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-blue-50 transition-all">
         {icon}
       </div>
       <h3 className="text-xl font-bold mb-3 text-gray-900">{title}</h3>

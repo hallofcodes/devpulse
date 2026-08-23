@@ -23,14 +23,14 @@ export async function PUT(
   } = body;
 
   const flex = await prisma.userFlex.updateMany({
-    where: { id, userId: session.user.id },
+    where: { id, user_id: session.user.id },
     data: {
-      projectName: project_name?.trim(),
-      projectDescription: project_description ?? "",
-      projectUrl: project_url ?? "",
-      projectTime: project_time ?? "",
-      isOpenSource: is_open_source ?? false,
-      openSourceUrl: is_open_source ? (open_source_url ?? "") : "",
+      project_name: project_name?.trim(),
+      project_description: project_description ?? "",
+      project_url: project_url ?? "",
+      project_time: project_time ?? "",
+      is_open_source: is_open_source ?? false,
+      open_source_url: is_open_source ? (open_source_url ?? "") : "",
     },
   });
 
@@ -54,7 +54,7 @@ export async function DELETE(
   const { id } = await params;
 
   await prisma.userFlex.deleteMany({
-    where: { id, userId: session.user.id },
+    where: { id, user_id: session.user.id },
   });
 
   return NextResponse.json({ success: true });

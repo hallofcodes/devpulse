@@ -27,7 +27,7 @@ export async function PATCH(
 
   if (column_id !== undefined) {
     const columnAccess = await getColumnAccess(session.user.id, column_id);
-    if (!columnAccess || columnAccess.projectId !== issueAccess.projectId) {
+    if (!columnAccess || columnAccess.project_id !== issueAccess.project_id) {
       return NextResponse.json(
         { error: "Cannot move issue to that column." },
         { status: 400 },
@@ -36,7 +36,7 @@ export async function PATCH(
   }
 
   const data: Record<string, unknown> = {};
-  if (column_id !== undefined) data.columnId = column_id;
+  if (column_id !== undefined) data.column_id = column_id;
   if (position !== undefined) data.position = position;
 
   if (Object.keys(data).length === 0) {
@@ -45,18 +45,22 @@ export async function PATCH(
 
   const issue = await prisma.issue.update({
     where: { id },
-    data: { ...data, updatedAt: new Date() },
+    data: { ...data, updated_at: new Date() },
   });
 
   const payload = {
     type: "issue_updated",
-    data: { id: issue.id, column_id: issue.columnId, position: issue.position },
+    data: {
+      id: issue.id,
+      column_id: issue.column_id,
+      position: issue.position,
+    },
   };
   emitter.emit("kanban", payload);
 
   return NextResponse.json({
     id: issue.id,
-    column_id: issue.columnId,
+    column_id: issue.column_id,
     position: issue.position,
   });
 }

@@ -39,7 +39,7 @@ export async function GET(request: Request) {
   const result = await syncWakatimeData({
     userId: user.id,
     incomingApiKey: apiKey,
-    storedApiKey: user.wakatimeApiKey,
+    storedApiKey: user.wakatime_api_key,
   });
 
   if (!result.success && result.status !== 200) {

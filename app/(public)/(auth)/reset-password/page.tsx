@@ -47,7 +47,7 @@ export const metadata: Metadata = {
 
 export default async function ResetPassword() {
   return (
-    <div className="min-h-screen flex  relative">
+    <div className="min-h-screen flex grid-bg relative">
       {/* Left Side - Visual / Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 md:p-16 xl:p-24 border-r border-gray-200 bg-blue-600 overflow-hidden">
         {/* Background elements */}
@@ -88,7 +88,7 @@ export default async function ResetPassword() {
                 <span className="text-purple-600 mr-2">const</span>
                 <span className="text-blue-600">dev</span>
                 <span className="text-gray-700 mx-2">=</span>
-                <span className="text-indigo-600">getAccount</span>
+                <span className="text-blue-600">getAccount</span>
                 <span className="text-gray-700">(</span>
                 <span className="text-yellow-700">this</span>
                 <span className="text-gray-700">);</span>

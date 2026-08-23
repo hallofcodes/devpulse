@@ -15,14 +15,14 @@ export async function DELETE(
 
   const leaderboard = await prisma.leaderboard.findUnique({
     where: { id },
-    select: { ownerId: true },
+    select: { owner_id: true },
   });
 
   if (!leaderboard) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
 
-  if (leaderboard.ownerId !== session.user.id) {
+  if (leaderboard.owner_id !== session.user.id) {
     return NextResponse.json({ error: "Forbidden." }, { status: 403 });
   }
 

@@ -367,12 +367,12 @@ export default function Chat({ user }: { user: ChatUserShape }) {
               </h2>
               <button
                 onClick={() => setShowModal(true)}
-                className="w-8 h-8 rounded-full bg-indigo-50 border border-indigo-500/20 flex items-center justify-center hover:bg-indigo-500/20 transition"
+                className="w-8 h-8 rounded-full bg-blue-50 border border-blue-500/20 flex items-center justify-center hover:bg-blue-500/20 transition"
                 title="New conversation"
               >
                 <FontAwesomeIcon
                   icon={faPlus}
-                  className="text-indigo-600 w-3.5 h-3.5"
+                  className="text-blue-600 w-3.5 h-3.5"
                 />
               </button>
             </div>
@@ -387,7 +387,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                 value={messageSearch}
                 onChange={(e) => setMessageSearch(e.target.value)}
                 placeholder="Search Message..."
-                className="w-full bg-gray-50 border border-transparent rounded-xl py-2 pl-9 pr-4 text-sm text-gray-700 placeholder:text-gray-500 outline-none focus:border-indigo-500/50 transition-colors shadow-inner"
+                className="w-full bg-gray-50 border border-transparent rounded-xl py-2 pl-9 pr-4 text-sm text-gray-700 placeholder:text-gray-500 outline-none focus:border-blue-500/50 transition-colors shadow-inner"
               />
             </div>
           </div>
@@ -436,7 +436,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                           setDmSortOrder("newest");
                           setIsDmSortOpen(false);
                         }}
-                        className={`w-full text-left px-3 py-1.5 hover:bg-gray-100 transition-colors ${dmSortOrder === "newest" ? "text-indigo-600 bg-gray-50" : "text-gray-600"}`}
+                        className={`w-full text-left px-3 py-1.5 hover:bg-gray-100 transition-colors ${dmSortOrder === "newest" ? "text-blue-600 bg-gray-50" : "text-gray-600"}`}
                       >
                         Newest
                       </button>
@@ -445,7 +445,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                           setDmSortOrder("oldest");
                           setIsDmSortOpen(false);
                         }}
-                        className={`w-full text-left px-3 py-1.5 hover:bg-gray-100 transition-colors ${dmSortOrder === "oldest" ? "text-indigo-600 bg-gray-50" : "text-gray-600"}`}
+                        className={`w-full text-left px-3 py-1.5 hover:bg-gray-100 transition-colors ${dmSortOrder === "oldest" ? "text-blue-600 bg-gray-50" : "text-gray-600"}`}
                       >
                         Oldest
                       </button>
@@ -454,7 +454,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                           setDmSortOrder("az");
                           setIsDmSortOpen(false);
                         }}
-                        className={`w-full text-left px-3 py-1.5 hover:bg-gray-100 transition-colors ${dmSortOrder === "az" ? "text-indigo-600 bg-gray-50" : "text-gray-600"}`}
+                        className={`w-full text-left px-3 py-1.5 hover:bg-gray-100 transition-colors ${dmSortOrder === "az" ? "text-blue-600 bg-gray-50" : "text-gray-600"}`}
                       >
                         A-Z
                       </button>
@@ -463,7 +463,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                           setDmSortOrder("za");
                           setIsDmSortOpen(false);
                         }}
-                        className={`w-full text-left px-3 py-1.5 hover:bg-gray-100 transition-colors ${dmSortOrder === "za" ? "text-indigo-600 bg-gray-50" : "text-gray-600"}`}
+                        className={`w-full text-left px-3 py-1.5 hover:bg-gray-100 transition-colors ${dmSortOrder === "za" ? "text-blue-600 bg-gray-50" : "text-gray-600"}`}
                       >
                         Z-A
                       </button>
@@ -505,7 +505,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                   </button>
                   <div className="relative">
                     <div
-                      className={`flex justify-center items-center w-11 h-11 rounded-full text-[16px] font-bold shadow-sm ${isGlobalActive ? "bg-indigo-500/15 text-indigo-600 border border-indigo-500/30" : "bg-neutral-800 text-gray-700 border border-gray-200"}`}
+                      className={`flex justify-center items-center w-11 h-11 rounded-full text-[16px] font-bold shadow-sm ${isGlobalActive ? "bg-blue-500/15 text-blue-600 border border-blue-500/30" : "bg-neutral-800 text-gray-700 border border-gray-200"}`}
                     >
                       {activeInitials}
                     </div>
@@ -525,7 +525,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setShowRightSidebar(!showRightSidebar)}
-                    className={`w-9 h-9 rounded-full ${showRightSidebar ? "bg-indigo-500/20 text-indigo-600 border-indigo-500/30" : "bg-gray-50 text-gray-500 border-gray-200"} border hover:bg-gray-100 flex items-center justify-center transition`}
+                    className={`w-9 h-9 rounded-full ${showRightSidebar ? "bg-blue-500/20 text-blue-600 border-blue-500/30" : "bg-gray-50 text-gray-500 border-gray-200"} border hover:bg-gray-100 flex items-center justify-center transition`}
                     title="Toggle Info"
                   >
                     <FontAwesomeIcon
@@ -549,11 +549,11 @@ export default function Chat({ user }: { user: ChatUserShape }) {
 
               {activeTypingState && (
                 <div className="px-4 pb-1.5">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-indigo-50 border border-indigo-500/20 px-3 py-1 text-[12px] text-indigo-600">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-500/20 px-3 py-1 text-[12px] text-blue-600">
                     <div className="flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-300 animate-pulse" />
-                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-300 animate-pulse [animation-delay:150ms]" />
-                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-300 animate-pulse [animation-delay:300ms]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-300 animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-300 animate-pulse [animation-delay:150ms]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-300 animate-pulse [animation-delay:300ms]" />
                     </div>
                     <span className="font-medium">{typingIndicatorText}</span>
                   </div>
@@ -605,8 +605,8 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                   onDragLeave={onDragLeave}
                   className={`${
                     isDraggingOver
-                      ? "border-indigo-500/60 bg-indigo-50 shadow-lg shadow-indigo-500/10"
-                      : "border-gray-200 bg-gray-50 hover:border-gray-300 focus-within:border-indigo-500/50 focus-within:bg-white focus-within:shadow-[0_0_15px_rgba(99,102,241,0.1)]"
+                      ? "border-blue-500/60 bg-blue-50 shadow-lg shadow-blue-500/10"
+                      : "border-gray-200 bg-gray-50 hover:border-gray-300 focus-within:border-blue-500/50 focus-within:bg-white focus-within:shadow-[0_0_15px_rgba(99,102,241,0.1)]"
                   } transition-all duration-300 rounded-[24px] border flex items-end gap-2 p-2 shadow-sm backdrop-blur-md`}
                 >
                   <button
@@ -615,7 +615,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                     className="w-10 h-10 mb-[2px] rounded-full bg-transparent hover:bg-gray-100 flex items-center justify-center transition-all duration-300 flex-shrink-0 group"
                     title="Attach file"
                   >
-                    <div className="w-[28px] h-[28px] rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-indigo-500/20 group-hover:text-indigo-600 text-gray-500 transition-colors">
+                    <div className="w-[28px] h-[28px] rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:text-blue-600 text-gray-500 transition-colors">
                       <FontAwesomeIcon icon={faPlus} className="w-3.5 h-3.5" />
                     </div>
                   </button>
@@ -646,7 +646,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                       className={`h-10 px-5 rounded-[20px] font-semibold text-[14px] flex items-center gap-2.5 transition-all duration-300 flex-shrink-0
                       ${
                         canSendMessage
-                          ? "bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-400 hover:to-violet-400 text-gray-900 shadow-md shadow-indigo-500/25 active:scale-95"
+                          ? "bg-gradient-to-r from-blue-500 to-violet-500 hover:from-blue-400 hover:to-violet-400 text-gray-900 shadow-md shadow-blue-500/25 active:scale-95"
                           : "bg-gray-50 text-gray-500 cursor-not-allowed"
                       }
                     `}
@@ -665,7 +665,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
             </>
           ) : (
             <div className="flex flex-col items-center justify-center py-16 text-center h-full">
-              <div className="w-16 h-16 rounded-full bg-indigo-50 border border-indigo-500/20 flex items-center justify-center mb-4 text-indigo-600">
+              <div className="w-16 h-16 rounded-full bg-blue-50 border border-blue-500/20 flex items-center justify-center mb-4 text-blue-600">
                 <FontAwesomeIcon icon={faPaperPlane} className="w-6 h-6" />
               </div>
               <p className="text-gray-700 text-lg font-bold mb-2">
@@ -694,7 +694,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
             </div>
             <div className="flex flex-col items-center justify-center p-8 border-b border-transparent">
               <div
-                className={`flex justify-center items-center w-[100px] h-[100px] rounded-full text-4xl font-bold mb-5 shadow-lg ${isGlobalActive ? "bg-indigo-50 text-indigo-600 border border-indigo-500/20" : "bg-neutral-800 text-gray-700 border border-gray-200"}`}
+                className={`flex justify-center items-center w-[100px] h-[100px] rounded-full text-4xl font-bold mb-5 shadow-lg ${isGlobalActive ? "bg-blue-50 text-blue-600 border border-blue-500/20" : "bg-neutral-800 text-gray-700 border border-gray-200"}`}
               >
                 {activeInitials}
               </div>
@@ -713,7 +713,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                       input.focus();
                     }
                   }}
-                  className="w-11 h-11 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:text-indigo-600 hover:bg-gray-100 transition shadow-sm"
+                  className="w-11 h-11 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-gray-100 transition shadow-sm"
                   title="Search Message"
                 >
                   <FontAwesomeIcon icon={faSearch} className="w-4 h-4" />
@@ -806,7 +806,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                     {allMediaAttachments.length > 9 && !showAllMedia && (
                       <button
                         onClick={() => setShowAllMedia(true)}
-                        className="w-full mt-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 text-gray-900 text-[13px] font-bold hover:from-indigo-400 hover:to-violet-400 transition shadow-sm"
+                        className="w-full mt-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-violet-500 text-gray-900 text-[13px] font-bold hover:from-blue-400 hover:to-violet-400 transition shadow-sm"
                       >
                         View All ({allMediaAttachments.length})
                       </button>
@@ -821,7 +821,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                     )}
                   </>
                 ) : (
-                  <div className="flex flex-col items-center justify-center py-8 bg-gray-50 rounded-xl border border-indigo-200 border-dashed">
+                  <div className="flex flex-col items-center justify-center py-8 bg-gray-50 rounded-xl border border-blue-200 border-dashed">
                     <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center mb-2">
                       <FontAwesomeIcon
                         icon={faFile}
@@ -862,7 +862,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                     onClick={() => createConversation(u)}
                     className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-100 cursor-pointer transition"
                   >
-                    <div className="flex justify-center items-center w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 font-bold shadow-sm">
+                    <div className="flex justify-center items-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 font-bold shadow-sm">
                       {u.email[0].toUpperCase()}
                     </div>
                     <div className="w-full flex flex-col">

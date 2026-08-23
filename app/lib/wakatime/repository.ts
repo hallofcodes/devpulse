@@ -4,12 +4,16 @@ import type { Prisma } from "@prisma/client";
 /**
  * Fetches user's coding stats along with their project list.
  */
-export async function getExistingUserStats(userId: string) {
+export async function getExistingUserStats(user_id: string) {
   const stats = await prisma.userStats.findUnique({
-    where: { userId },
-    include: { user: { select: { userProjects: true } } },
+    where: { user_id },
+    include: { user: { select: { user_projects: true } } },
   });
-  return stats;
+
+  return {
+    ...stats,
+    projects: stats?.user.user_projects?.projects,
+  };
 }
 
 /**
@@ -17,12 +21,12 @@ export async function getExistingUserStats(userId: string) {
  * Throws Prisma P2002 if the key is already used by another account.
  */
 export async function updateProfileWakatimeApiKey(
-  userId: string,
+  user_id: string,
   apiKey: string,
 ) {
   return prisma.user.update({
-    where: { id: userId },
-    data: { wakatimeApiKey: apiKey },
+    where: { id: user_id },
+    data: { wakatime_api_key: apiKey },
   });
 }
 
@@ -33,7 +37,7 @@ export async function upsertUserStats(
   payload: Prisma.UserStatsUncheckedCreateInput,
 ) {
   return prisma.userStats.upsert({
-    where: { userId: payload.userId },
+    where: { user_id: payload.user_id },
     create: payload,
     update: payload,
   });
@@ -46,7 +50,7 @@ export async function upsertUserProjects(
   payload: Prisma.UserProjectsUncheckedCreateInput,
 ) {
   return prisma.userProjects.upsert({
-    where: { userId: payload.userId },
+    where: { user_id: payload.user_id },
     create: payload,
     update: payload,
   });
@@ -60,9 +64,9 @@ export async function upsertUserDashboardSnapshot(
 ) {
   return prisma.userDashboardSnapshot.upsert({
     where: {
-      userId_snapshotDate: {
-        userId: payload.userId,
-        snapshotDate: payload.snapshotDate as Date,
+      user_id_snapshot_date: {
+        user_id: payload.user_id,
+        snapshot_date: payload.snapshot_date as Date,
       },
     },
     create: payload,

@@ -14,8 +14,11 @@ export default async function Auth(req: NextRequest) {
     if (!session) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
-    if (!session.user.emailVerified) {
+    if (!session.user.email_verified) {
       return NextResponse.redirect(new URL("/verify-email", req.url));
+    }
+    if (!session.user.wakatime_api_key && pathname.startsWith("/d")) {
+      return NextResponse.redirect(new URL("/verify-wakatime", req.url));
     }
   }
 
@@ -27,13 +30,19 @@ export default async function Auth(req: NextRequest) {
   ];
 
   if (authRoutes.includes(pathname) && session) {
-    if (!session.user.emailVerified) {
+    if (!session.user.email_verified) {
       return NextResponse.redirect(new URL("/verify-email", req.url));
+    }
+    if (!session.user.wakatime_api_key) {
+      return NextResponse.redirect(new URL("/verify-wakatime", req.url));
     }
     return NextResponse.redirect(new URL("/d", req.url));
   }
 
-  if (pathname === "/verify-email" && session?.user.emailVerified) {
+  if (
+    (pathname === "/verify-email" && session?.user.email_verified) ||
+    (pathname === "/verify-wakatime" && session?.user.wakatime_api_key)
+  ) {
     return NextResponse.redirect(new URL("/d", req.url));
   }
 

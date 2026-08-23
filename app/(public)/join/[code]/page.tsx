@@ -10,7 +10,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { code } = await params;
 
   const leaderboard = await prisma.leaderboard.findUnique({
-    where: { joinCode: code },
+    where: { join_code: code },
     select: { name: true, description: true },
   });
 

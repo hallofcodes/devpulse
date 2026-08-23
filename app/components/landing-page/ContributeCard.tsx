@@ -22,7 +22,7 @@ export default function ContributeCard() {
   return (
     <section
       className="max-w-5xl mx-auto px-6 pt-4 pb-10 relative z-10"
-      data-aos="fade-up"
+     
     >
       <p className="text-xs uppercase tracking-[0.16em] text-gray-500/90 font-semibold mb-3">
         Open Source

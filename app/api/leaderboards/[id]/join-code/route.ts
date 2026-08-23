@@ -15,14 +15,14 @@ export async function GET(
 
   const leaderboard = await prisma.leaderboard.findUnique({
     where: { id },
-    select: { joinCode: true, ownerId: true },
+    select: { join_code: true, owner_id: true },
   });
 
-  if (!leaderboard || leaderboard.ownerId !== session.user.id) {
+  if (!leaderboard || leaderboard.owner_id !== session.user.id) {
     return NextResponse.json({ error: "Forbidden." }, { status: 403 });
   }
 
-  return NextResponse.json({ joinCode: leaderboard.joinCode });
+  return NextResponse.json({ join_code: leaderboard.join_code });
 }
 
 export async function PATCH(
@@ -38,10 +38,10 @@ export async function PATCH(
 
   const leaderboard = await prisma.leaderboard.findUnique({
     where: { id },
-    select: { ownerId: true },
+    select: { owner_id: true },
   });
 
-  if (!leaderboard || leaderboard.ownerId !== session.user.id) {
+  if (!leaderboard || leaderboard.owner_id !== session.user.id) {
     return NextResponse.json({ error: "Forbidden." }, { status: 403 });
   }
 
@@ -49,8 +49,8 @@ export async function PATCH(
 
   await prisma.leaderboard.update({
     where: { id },
-    data: { joinCode },
+    data: { join_code: joinCode },
   });
 
-  return NextResponse.json({ success: true, joinCode });
+  return NextResponse.json({ success: true, join_code: joinCode });
 }

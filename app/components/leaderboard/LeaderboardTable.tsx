@@ -45,7 +45,7 @@ function LeaderboardPodium({
         return (
           <div
             key={user.user_id}
-            className="glass-card p-5 flex flex-col justify-between relative overflow-hidden group hover:border-indigo-500/30 transition-all duration-300"
+            className="glass-card p-5 flex flex-col justify-between relative overflow-hidden group hover:border-blue-500/30 transition-all duration-300"
           >
             {/* Minimal Background Glow based on rank */}
             <div
@@ -184,7 +184,7 @@ export default function LeaderboardTable({
                   >
                     {/* Background Progress Bar */}
                     <div
-                      className="absolute left-0 bottom-0 h-[1px] bg-gradient-to-r from-indigo-500/50 to-transparent"
+                      className="absolute left-0 bottom-0 h-[1px] bg-gradient-to-r from-blue-500/50 to-transparent"
                       style={{ width: `${pct}%` }}
                     />
 

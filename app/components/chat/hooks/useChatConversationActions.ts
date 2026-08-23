@@ -71,7 +71,7 @@ export function useChatConversationActions({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            otherUserId: otherUser.user_id,
+            otheruser_id: otherUser.user_id,
             otherUserEmail: otherUser.email,
           }),
         });

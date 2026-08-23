@@ -81,7 +81,7 @@ export default function VerifyEmail({
   };
 
   return (
-    <div className="min-h-screen flex relative">
+    <div className="min-h-screen flex grid-bg relative">
       {/* Left Side - Visual / Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 md:p-16 xl:p-24 border-r border-gray-200 bg-slate-800 overflow-hidden">
         <div className="absolute inset-0 grid-bg opacity-30" />
@@ -100,7 +100,7 @@ export default function VerifyEmail({
 
         <div className="relative z-10 max-w-md">
           <h1 className="text-4xl font-extrabold mb-5 leading-tight text-white">
-            One step away from your dashboard.
+            Two steps away from your dashboard.
           </h1>
           <p className="text-slate-300 text-lg leading-relaxed mb-8">
             We sent a verification link to your inbox. Click it to activate your
@@ -136,7 +136,7 @@ export default function VerifyEmail({
               </div>
               <div className="flex mt-3">
                 <span className="text-emerald-600/80">
-                  {"// Welcome aboard. ✓"}
+                  {"// Next. Wakatime API key. ->"}
                 </span>
               </div>
             </div>
@@ -192,24 +192,24 @@ export default function VerifyEmail({
                 <button
                   onClick={handleResend}
                   disabled={loading}
-                  className="w-full py-3 rounded-xl font-semibold btn-primary mb-4"
+                  className="w-full py-3 rounded-xl font-semibold btn-primary mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? "Sending..." : "Resend verification email"}
+                  Resend verification email
                 </button>
               )}
               <Link
-                href="/login"
-                className="block text-center text-sm text-indigo-600 hover:text-indigo-700 font-semibold"
+                href="/logout"
+                className="block text-center text-sm text-blue-600 hover:text-blue-700 font-semibold"
               >
-                Back to login
+                Changed your mind? Log in again.
               </Link>
             </div>
           ) : (
             <>
               <div className="text-center mb-8">
-                <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100">
+                <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
                   <svg
-                    className="h-8 w-8 text-indigo-600"
+                    className="h-8 w-8 text-blue-600"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -248,17 +248,17 @@ export default function VerifyEmail({
                   <button
                     onClick={handleResend}
                     disabled={loading}
-                    className="w-full py-3 rounded-xl font-semibold btn-primary"
+                    className="w-full py-3 rounded-xl font-semibold btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {loading ? "Sending..." : "Resend verification email"}
+                    Resend verification email
                   </button>
                 )}
 
                 <Link
-                  href="/login"
+                  href="/logout"
                   className="block text-center text-sm text-gray-500 hover:text-gray-700 transition-colors"
                 >
-                  Back to login
+                  Changed your mind? Log in again.
                 </Link>
               </div>
             </>

@@ -34,14 +34,14 @@ export default function NotFound() {
           <div className="text-4xl font-extrabold text-gray-900 mb-2">42h 15m</div>
           <div className="text-xs text-gray-500 mb-4">Last 7 days</div>
           <div className="h-1.5 w-full bg-gray-50 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 w-3/4 rounded-full" />
+            <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 w-3/4 rounded-full" />
           </div>
         </div>
 
         {/* Card 2 */}
         <div
           className="absolute top-44 left-10 lg:-left-10 w-[280px] glass-card p-5 border-gray-200 shadow-2xl -skew-y-3 rotate-3 z-20 backdrop-blur-xl bg-white/90 transition-transform duration-700 hover:rotate-0 hover:skew-y-0 text-left"
-          data-aos="fade-up"
+         
           data-aos-delay="400"
         >
           <h4 className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-4">
@@ -86,7 +86,7 @@ export default function NotFound() {
         {/* Card 3 (Code terminal) */}
         <div
           className="absolute bottom-5 right-20 w-[300px] glass-card p-4 border border-gray-200 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-30 bg-white/95 transition-transform duration-700 hover:-translate-y-2 text-left"
-          data-aos="fade-up"
+         
           data-aos-delay="600"
         >
           <div className="flex gap-1.5 mb-3">

@@ -9,7 +9,7 @@ export async function GET() {
   }
 
   const userProjects = await prisma.userProjects.findUnique({
-    where: { userId: session.user.id },
+    where: { user_id: session.user.id },
     select: { projects: true },
   });
 

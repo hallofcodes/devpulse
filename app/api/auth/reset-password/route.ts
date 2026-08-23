@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     where: { token: reset_token },
   });
 
-  if (!resetToken || resetToken.expiresAt < new Date()) {
+  if (!resetToken || resetToken.expires_at < new Date()) {
     return NextResponse.json(
       { error: "Invalid or expired reset link." },
       { status: 400 },
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
 
   await prisma.$transaction([
     prisma.user.update({
-      where: { id: resetToken.userId },
+      where: { id: resetToken.user_id },
       data: { password: hashed },
     }),
     prisma.passwordResetToken.delete({ where: { token: reset_token } }),

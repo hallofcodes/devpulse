@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/app/lib/prisma";
 import { recaptcha } from "@/app/lib/recaptcha";
+import verifyEmail from "@/app/lib/auth/verify-email";
 
 export async function POST(req: Request) {
   const { email, password, token } = await req.json();
@@ -48,6 +49,8 @@ export async function POST(req: Request) {
       name: email.split("@")[0],
     },
   });
+  
+  verifyEmail(email);
 
   return NextResponse.json({ success: true }, { status: 201 });
 }

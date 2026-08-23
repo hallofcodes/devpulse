@@ -30,7 +30,7 @@ export default function JoinButton({
     return (
       <Link
         href={`/leaderboard/${leaderboardSlug}`}
-        className="btn-primary inline-flex items-center justify-center gap-2 w-full py-4 text-sm font-bold rounded-xl shadow-lg shadow-indigo-500/20"
+        className="btn-primary inline-flex items-center justify-center gap-2 w-full py-4 text-sm font-bold rounded-xl shadow-lg shadow-blue-500/20"
       >
         <FontAwesomeIcon icon={faCheck} className="w-5 h-5" />
         <span className="sm:hidden">View</span>
@@ -44,7 +44,7 @@ export default function JoinButton({
       <div className="space-y-3">
         <Link
           href={`/login?redirect=${encodeURIComponent(`/join?id=${code}`)}`}
-          className="btn-primary inline-flex items-center justify-center gap-2 w-full py-4 text-sm font-bold rounded-xl shadow-lg shadow-indigo-500/20"
+          className="btn-primary inline-flex items-center justify-center gap-2 w-full py-4 text-sm font-bold rounded-xl shadow-lg shadow-blue-500/20"
         >
           <FontAwesomeIcon icon={faArrowRightToBracket} className="w-5 h-5" />
           Log In to Join
@@ -53,7 +53,7 @@ export default function JoinButton({
           Don&apos;t have an account?{" "}
           <Link
             href={`/signup?redirect=${encodeURIComponent(`/join?id=${code}`)}`}
-            className="text-indigo-600 hover:text-indigo-600 transition-colors"
+            className="text-blue-600 hover:text-blue-600 transition-colors"
           >
             Sign up free
           </Link>
@@ -68,7 +68,7 @@ export default function JoinButton({
     const joinPromise = fetch("/api/leaderboards/join", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ joinCode: code }),
+      body: JSON.stringify({ join_code: code }),
     }).then(async (res) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -97,7 +97,7 @@ export default function JoinButton({
     <button
       onClick={handleJoin}
       disabled={joining}
-      className="btn-primary inline-flex items-center justify-center gap-2 w-full py-4 text-sm font-bold rounded-xl shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+      className="btn-primary inline-flex items-center justify-center gap-2 w-full py-4 text-sm font-bold rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {joining ? (
         <>

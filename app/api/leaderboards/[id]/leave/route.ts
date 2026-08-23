@@ -14,7 +14,7 @@ export async function DELETE(
   const { id } = await params;
 
   await prisma.leaderboardMember.deleteMany({
-    where: { leaderboardId: id, userId: session.user.id },
+    where: { leaderboard_id: id, user_id: session.user.id },
   });
 
   return NextResponse.json({ success: true });

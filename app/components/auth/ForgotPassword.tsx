@@ -18,7 +18,7 @@ export default function ForgotPassword() {
       : undefined;
 
   return (
-    <div className="min-h-screen flex  relative">
+    <div className="min-h-screen flex grid-bg relative">
       {/* Left Side - Visual / Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 md:p-16 xl:p-24 border-r border-gray-200 bg-slate-800 overflow-hidden">
         {/* Background elements */}
@@ -60,7 +60,7 @@ export default function ForgotPassword() {
                 <span className="text-purple-600 mr-2">const</span>
                 <span className="text-blue-600">auth</span>
                 <span className="text-gray-700 mx-2">=</span>
-                <span className="text-indigo-600 mr-2">new</span>
+                <span className="text-blue-600 mr-2">new</span>
                 <span className="text-yellow-400">SupabaseAuth</span>
                 <span className="text-gray-700">();</span>
               </div>
@@ -119,7 +119,7 @@ export default function ForgotPassword() {
                   ? `/login?redirect=${encodeURIComponent(redirectTo)}`
                   : "/login"
               }
-              className="text-indigo-600 hover:text-indigo-600 font-semibold transition-colors underline-offset-4 hover:underline"
+              className="text-blue-600 hover:text-blue-600 font-semibold transition-colors underline-offset-4 hover:underline"
             >
               Log in
             </Link>

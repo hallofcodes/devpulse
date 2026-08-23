@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { useBadWords } from "@/app/hooks/useBadWords";
 import { sanitizeTextWithBlocklist } from "@/app/utils/moderation";
 
@@ -79,26 +81,31 @@ export default function UserProfile({ user }: { user: UserShape }) {
   }
 
   return (
-    <div className="glass-card p-5 border-t-4 border-indigo-500/50">
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <div>
-          <h3 className="text-xs font-semibold text-indigo-600 uppercase tracking-widest">
+    <div className="glass-card p-5 relative overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center">
+            <FontAwesomeIcon
+              icon={faUser}
+              className="w-3.5 h-3.5 text-gray-600"
+            />
+          </div>
+          <h3 className="font-bold text-gray-900 tracking-tight">
             Account Profile
           </h3>
-          <p className="text-xs md:text-sm text-gray-500 mt-1.5">
-            Keep your profile details accurate for a better dashboard
-            experience.
-          </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => (isEditing ? cancelEditing() : setIsEditing(true))}
-          disabled={loading}
-          className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50"
-        >
-          {isEditing ? "Cancel" : "Edit"}
-        </button>
+        {!isEditing && (
+          <button
+            type="button"
+            onClick={() => setIsEditing(true)}
+            disabled={loading}
+            className="px-3 py-1.5 rounded-lg text-[11px] font-semibold border border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 hover:border-gray-300 transition-colors disabled:opacity-50"
+          >
+            Edit
+          </button>
+        )}
       </div>
 
       <div className="flex items-center gap-3 mb-4">
@@ -110,62 +117,67 @@ export default function UserProfile({ user }: { user: UserShape }) {
           className="rounded-full border border-gray-200"
         />
         <div>
-          <p className="text-gray-900 font-semibold leading-none mb-1">
+          <p className="text-gray-900 font-semibold leading-none mb-1.5">
             {originalName}
           </p>
-          <p className="text-xs text-gray-500">{user.email || "No email"}</p>
+          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+            <FontAwesomeIcon
+              icon={faEnvelope}
+              className="w-3 h-3 text-gray-400"
+            />
+            {user.email || "No email"}
+          </div>
         </div>
       </div>
 
-      <div className="space-y-3">
-        <div>
-          <label className="text-xs md:text-sm text-gray-500 font-medium">
-            Display Name
-          </label>
-          <input
-            type="text"
-            className={`input-field mt-1 ${!isEditing ? "opacity-70" : ""}`}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            disabled={!isEditing || loading}
-          />
-        </div>
+      {isEditing && (
+        <div className="mt-3 space-y-3 animate-[fadeIn_0.15s_ease-out]">
+          <div>
+            <label className="block text-[11px] font-semibold text-gray-600 mb-1.5">
+              Display name
+            </label>
+            <input
+              type="text"
+              className="input-field text-sm"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={loading}
+              autoFocus
+            />
+          </div>
 
-        <div>
-          <label className="text-xs md:text-sm text-gray-500 font-medium">
-            Email
-          </label>
-          <input
-            type="email"
-            className="input-field mt-1 opacity-70"
-            value={user.email || ""}
-            disabled
-          />
-        </div>
-      </div>
+          <div>
+            <label className="block text-[11px] font-semibold text-gray-600 mb-1.5">
+              Email
+            </label>
+            <input
+              type="email"
+              className="input-field text-sm opacity-70"
+              value={user.email || ""}
+              disabled
+            />
+          </div>
 
-      {isEditing ? (
-        <div className="mt-4 flex items-center gap-2.5">
-          <button
-            onClick={updateProfile}
-            disabled={!isEdited || loading}
-            className={`btn-primary ${!isEdited || loading ? "opacity-50 cursor-not-allowed" : ""}`}
-          >
-            {loading ? "Saving..." : "Save Changes"}
-          </button>
-          <button
-            type="button"
-            onClick={cancelEditing}
-            disabled={loading}
-            className="px-4 py-2.5 rounded-xl text-sm font-medium border border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50"
-          >
-            Discard
-          </button>
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={updateProfile}
+              disabled={!isEdited || loading}
+              className={`btn-primary ${
+                !isEdited || loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              {loading ? "Saving..." : "Save Changes"}
+            </button>
+            <button
+              type="button"
+              onClick={cancelEditing}
+              disabled={loading}
+              className="px-4 py-2.5 rounded-xl text-sm font-medium border border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
-      ) : (
-        <p className="mt-4 text-xs text-gray-500">
-          Profile fields are locked. Click Edit to make changes.
-        </p>
       )}
     </div>
   );
