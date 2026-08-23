@@ -27,7 +27,7 @@ export async function POST(req: Request) {
   const body = (await req.json()) as {
     name?: string;
     description?: string;
-    wakatimeProjectName?: string;
+    wakatime_project_name?: string;
     color?: string;
   };
 
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
   const projectId = crypto.randomUUID();
   const boardId = crypto.randomUUID();
   const safeDescription = body.description?.trim() || null;
-  const safeWakaName = body.wakatimeProjectName?.trim() || null;
+  const safeWakaName = body.wakatime_project_name?.trim() || null;
   const safeColor = body.color?.trim() || "blue";
   const now = new Date();
 

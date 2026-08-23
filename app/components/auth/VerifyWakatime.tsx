@@ -57,25 +57,25 @@ export default function VerifyWakatime() {
 
     toast.promise(verifyWakatimePromise, {
       pending: "Verifying...",
-      success: "Verification successful!",
-      error: "Failed to verify. Please try again.",
-    });
+      success: {
+        render() {
+          router.push("/d");
 
-    verifyWakatimePromise
-      .then(() => {
-        router.push("/d");
-      })
-      .catch(() => {
-        // already surfaced via toast.promise
-        // avoid unhandled rejection
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+          return "Verification successful!";
+        },
+      },
+      error: {
+        render({ data }) {
+          setLoading(false);
+          const err = data as Error;
+          return err?.message || "Failed to verify. Please try again.";
+        },
+      },
+    });
   };
 
   return (
-    <div className="min-h-screen flex relative">
+    <div className="min-h-screen flex grid-bg relative">
       {/* Left Side - Visual / Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 md:p-16 xl:p-24 border-r border-gray-200 bg-slate-800 overflow-hidden">
         <div className="absolute inset-0 grid-bg opacity-30" />

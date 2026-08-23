@@ -18,7 +18,7 @@ export default function Login() {
       : undefined;
 
   return (
-    <div className="min-h-screen flex  relative">
+    <div className="min-h-screen flex grid-bg relative">
       {/* Left Side - Visual / Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 md:p-16 xl:p-24 border-r border-gray-200 bg-slate-800 overflow-hidden">
         {/* Background elements */}

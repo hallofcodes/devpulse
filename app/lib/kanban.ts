@@ -12,7 +12,6 @@ interface KanbanProjectRow {
   name: string;
   description: string | null;
   wakatime_project_name: string | null;
-  color: string | null;
   created_at: Date;
 }
 
@@ -62,7 +61,7 @@ function normalizeWakaTimeProjects(value: unknown): WakaTimeProject[] {
 }
 
 export async function getKanbanProjectAccess(
-  user_id: string,
+  userId: string,
   projectId: string,
 ): Promise<boolean> {
   const rows = await prisma.$queryRaw<Array<{ id: string }>>`
@@ -77,27 +76,24 @@ export async function getKanbanProjectAccess(
 }
 
 export async function getColumnAccess(
-  user_id: string,
+  userId: string,
   columnId: string,
-): Promise<
-  | {
-      columnId: string;
-      projectId: string;
-      project_name: string;
-    }
-  | null
-> {
+): Promise<{
+  column_id: string;
+  project_id: string;
+  project_name: string;
+} | null> {
   const rows = await prisma.$queryRaw<
     Array<{
-      columnId: string;
-      projectId: string;
+      column_id: string;
+      project_id: string;
       project_name: string;
     }>
   >`
     SELECT
-      c.id AS columnId,
-      p.id AS projectId,
-      p.name AS projectName
+      c.id AS column_id,
+      p.id AS project_id,
+      p.name AS project_name
     FROM columns c
     INNER JOIN boards b ON b.id = c.board_id
     INNER JOIN projects p ON p.id = b.project_id
@@ -110,24 +106,21 @@ export async function getColumnAccess(
 }
 
 export async function getIssueAccess(
-  user_id: string,
+  userId: string,
   issueId: string,
-): Promise<
-  | {
-      issueId: string;
-      projectId: string;
-    }
-  | null
-> {
+): Promise<{
+  issue_id: string;
+  project_id: string;
+} | null> {
   const rows = await prisma.$queryRaw<
     Array<{
-      issueId: string;
-      projectId: string;
+      issue_id: string;
+      project_id: string;
     }>
   >`
     SELECT
-      i.id AS issueId,
-      p.id AS projectId
+      i.id AS issue_id,
+      p.id AS project_id
     FROM issues i
     INNER JOIN columns c ON c.id = i.column_id
     INNER JOIN boards b ON b.id = c.board_id
@@ -140,7 +133,7 @@ export async function getIssueAccess(
   return rows[0] ?? null;
 }
 
-export async function getNextIssueKey(projectId: string, project_name: string) {
+export async function getNextIssueKey(projectId: string, projectName: string) {
   const rows = await prisma.$queryRaw<Array<{ issueCount: bigint | number }>>`
     SELECT COUNT(*) AS issueCount
     FROM issues i
@@ -153,18 +146,19 @@ export async function getNextIssueKey(projectId: string, project_name: string) {
   const issueCount =
     typeof rawCount === "bigint" ? Number(rawCount) : Number(rawCount);
 
-  const prefix = projectName
-    .replace(/[^a-zA-Z0-9 ]/g, " ")
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 3)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("") || "DP";
+  const prefix =
+    projectName
+      .replace(/[^a-zA-Z0-9 ]/g, " ")
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 3)
+      .map((part) => part[0]?.toUpperCase() ?? "")
+      .join("") || "DP";
 
   return `${prefix}-${String(issueCount + 1).padStart(3, "0")}`;
 }
 
-export async function getKanbanData(user_id: string) {
+export async function getKanbanData(userId: string) {
   const [projectRows, boardRows, columnRows, issueRows, userProjects] =
     await Promise.all([
       prisma.$queryRaw<KanbanProjectRow[]>`
@@ -221,7 +215,7 @@ export async function getKanbanData(user_id: string) {
         ORDER BY i.position ASC, i.created_at ASC
       `,
       prisma.userProjects.findUnique({
-        where: { userId },
+        where: { user_id: userId },
         select: { projects: true },
       }),
     ]);
@@ -229,7 +223,9 @@ export async function getKanbanData(user_id: string) {
   const projects = projectRows.map((project) => {
     const boards = boardRows.filter((board) => board.project_id === project.id);
     const boardIds = new Set(boards.map((board) => board.id));
-    const columns = columnRows.filter((column) => boardIds.has(column.board_id));
+    const columns = columnRows.filter((column) =>
+      boardIds.has(column.board_id),
+    );
     const columnIds = new Set(columns.map((column) => column.id));
     const issues = issueRows.filter((issue) => columnIds.has(issue.column_id));
     const doneColumnIds = new Set(
@@ -246,7 +242,6 @@ export async function getKanbanData(user_id: string) {
       name: project.name,
       description: project.description ?? "",
       wakatime_project_name: project.wakatime_project_name ?? "",
-      color: project.color ?? "blue",
       created_at: project.created_at.toISOString(),
       board_count: boards.length,
       column_count: columns.length,

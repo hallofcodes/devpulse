@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
-import crypto from "crypto";
-import { transporter } from "@/app/lib/smtp/nodemailer";
 import { recaptcha } from "@/app/lib/recaptcha";
-
-const NODE_MAILER_USER = process.env.NODE_MAILER_USER || "";
+import verifyEmail from "@/app/lib/auth/verify-email";
+import { NODE_MAILER_USER, transporter } from "@/app/lib/smtp/nodemailer";
+import emailTemplate from "@/app/lib/smtp/template";
 
 export async function POST(req: Request) {
   const { email, token } = await req.json();
@@ -24,46 +23,7 @@ export async function POST(req: Request) {
   if (!(await recaptcha(token, "email_verify")))
     throw new Error("reCAPTCHA verification failed. Please try again.");
 
-  const user = await prisma.user.findUnique({ where: { email } });
-
-  if (!user) {
-    return NextResponse.json({ success: true });
-  }
-
-  if (user.email_verified) {
-    return NextResponse.json({ success: true });
-  }
-
-  // Delete any existing verification token for this email before creating a new one
-  await prisma.verificationToken.deleteMany({
-    where: { identifier: email },
-  });
-
-  const verificationToken = crypto.randomBytes(32).toString("hex");
-  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
-  await prisma.verificationToken.create({
-    data: { identifier: email, token: verificationToken, expires },
-  });
-
-  const verifyUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${verificationToken}`;
-
-  console.info(`Email verification link for ${email}: ${verifyUrl}`);
-
-  transporter.sendMail({
-    from: `Do Not Reply <${NODE_MAILER_USER}>`,
-    to: email,
-    subject: "Verify your email",
-    html: `
-      <p>Hi <b>${user.name}</b>,</p>
-      <p>Please click the link below to verify your email address:</p>
-      <p><a href="${verifyUrl}">Verify Email</a></p>
-      <p>Regards,</p>
-      <p>DevPulse</p>
-
-      <small>This email was sent from DevPulse. If you did not request this, please ignore this email.</small>
-    `,
-  });
+  await verifyEmail(email);
 
   return NextResponse.json({ success: true });
 }
@@ -91,12 +51,36 @@ export async function GET(req: Request) {
     );
   }
 
-  await prisma.user.update({
+  const user = await prisma.user.update({
     where: { email: record.identifier },
     data: { email_verified: new Date() },
   });
 
   await prisma.verificationToken.delete({ where: { token } });
+
+  transporter.sendMail({
+    from: `Do Not Reply <${NODE_MAILER_USER}>`,
+    to: user.email,
+    subject: "Welcome to Devpulse",
+    html: emailTemplate({
+      title: "Welcome to Devpulse",
+      bodyHtml: `
+        <p>Hi <b>${user.name}</b>,</p>
+        <p>I'm Melvin Jones Repol, founder of Hall of Codes, the team behind Devpulse. Thank you for joining us, we're excited to have you on board.</p>
+        <p>Devpulse is built to help you measure and understand your coding pulse, and we're just getting started. Your feedback will play a big part in shaping where we go next.</p>
+        <div style="background-color: #f9fafb; border-left: 4px solid #1a1f2e; padding: 14px 18px; margin: 24px 0; border-radius: 4px;">
+          <p style="margin: 0; font-size: 14px;">
+            Have a suggestion or ran into an issue? Please don't hesitate to reach out at
+            <a href="https://www.hallofcodes.org" style="color: #4f46e5; text-decoration: none; font-weight: bold;">hallofcodes.org</a>.
+            We'd love to hear from you.
+          </p>
+        </div>
+        <p>Welcome aboard, and happy coding!</p>
+        <p style="margin-bottom: 0;">Melvin Jones Repol</p>
+        <p style="margin-top: 2px; color: #6b7280; font-size: 13px;">Founder, Hall of Codes</p>
+      `,
+    }),
+  });
 
   return NextResponse.redirect(new URL("/login?verified=1", req.url));
 }

@@ -13,6 +13,8 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { toast } from "react-toastify";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 interface KanbanIssue {
   id: string;
@@ -45,7 +47,6 @@ interface KanbanProject {
   name: string;
   description: string;
   wakatime_project_name: string;
-  color: string;
   created_at: string;
   board_count: number;
   column_count: number;
@@ -77,22 +78,6 @@ function isKanbanProject(value: unknown): value is KanbanProject {
     typeof project.total_tracked_seconds === "number"
   );
 }
-
-const PROJECT_COLORS = [
-  { value: "blue", label: "blue" },
-  { value: "cyan", label: "Cyan" },
-  { value: "emerald", label: "Emerald" },
-  { value: "amber", label: "Amber" },
-  { value: "rose", label: "Rose" },
-];
-
-const COLOR_STYLES: Record<string, string> = {
-  blue: "from-blue-500/25 to-violet-500/10 border-blue-500/20",
-  cyan: "from-cyan-500/25 to-sky-500/10 border-cyan-500/20",
-  emerald: "from-emerald-500/25 to-teal-500/10 border-emerald-500/20",
-  amber: "from-amber-500/25 to-orange-500/10 border-amber-500/20",
-  rose: "from-rose-500/25 to-pink-500/10 border-rose-500/20",
-};
 
 function formatHours(seconds: number) {
   return `${(seconds / 3600).toFixed(seconds >= 36000 ? 0 : 1)}h`;
@@ -164,8 +149,7 @@ export default function Kanban() {
   const [projectForm, setProjectForm] = useState({
     name: "",
     description: "",
-    wakatimeproject_name: "",
-    color: "blue",
+    wakatime_project_name: "",
   });
 
   const load = useCallback(async () => {
@@ -291,9 +275,10 @@ export default function Kanban() {
     return issues.filter((issue) => doneColIds.has(issue.column_id)).length;
   }, [issues, availableColumns]);
 
-  const liveCompletionRate = liveIssueCount > 0
-    ? Math.round((liveCompletedCount / liveIssueCount) * 100)
-    : 0;
+  const liveCompletionRate =
+    liveIssueCount > 0
+      ? Math.round((liveCompletedCount / liveIssueCount) * 100)
+      : 0;
 
   const recentIssues = useMemo(() => {
     return issues
@@ -312,11 +297,12 @@ export default function Kanban() {
     if (!over) return;
 
     const issueId = String(active.id);
-    const destinationColumnId = String(over.data.current?.columnId ?? "");
+    const destinationColumnId = String(over.data.current?.column_id ?? "");
     if (!destinationColumnId) return;
 
     const destinationIssues = issues.filter(
-      (issue) => issue.column_id === destinationColumnId && issue.id !== issueId,
+      (issue) =>
+        issue.column_id === destinationColumnId && issue.id !== issueId,
     );
     const position = destinationIssues.length;
 
@@ -354,7 +340,7 @@ export default function Kanban() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          columnId: selectedColumn,
+          column_id: selectedColumn,
           title: issueForm.title,
           tag: issueForm.tag,
           type: issueForm.type,
@@ -414,8 +400,7 @@ export default function Kanban() {
       setProjectForm({
         name: "",
         description: "",
-        wakatimeproject_name: "",
-        color: "blue",
+        wakatime_project_name: "",
       });
       setProjectModalOpen(false);
       toast.success("Kanban project created.");
@@ -430,99 +415,80 @@ export default function Kanban() {
   }
 
   return (
-    <div className="min-h-screen">
-      {/* Sticky header — title + actions only */}
-      <div className="sticky top-0 z-20 border-b border-gray-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto max-w-[1400px] px-4 py-3 md:px-6 md:py-4">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-blue-600/80">
-                Project Kanban
-              </p>
-              <h1 className="text-xl font-semibold md:text-2xl">Boards</h1>
-            </div>
-            <button
-              onClick={() => setProjectModalOpen(true)}
-              className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-600 shadow-sm transition hover:border-blue-300 hover:text-blue-600"
-            >
-              + New Project
-            </button>
-          </div>
-        </div>
+    <div className="p-6 md:p-8 space-y-6">
+      {/* Metrics row */}
+      <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+        <OverviewCard
+          label="Kanban Projects"
+          value={String(projects.length)}
+          sub="User-owned workspaces"
+        />
+        <OverviewCard
+          label="Open Issues"
+          value={String(liveIssueCount - liveCompletedCount)}
+          sub="Still in flight"
+        />
+        <OverviewCard
+          label="Completion"
+          value={`${liveCompletionRate}%`}
+          sub="Done column progress"
+        />
+        <OverviewCard
+          label="Tracked Time"
+          value={formatHours(currentProject?.total_tracked_seconds ?? 0)}
+          sub={
+            currentProject?.wakatime_project_name
+              ? "From linked WakaTime project"
+              : "No WakaTime project linked"
+          }
+        />
       </div>
 
-      {/* Main content */}
-      <div className="mx-auto max-w-[1400px] px-4 py-4 md:px-6 md:py-6">
-        {/* Metrics row */}
-        <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-          <OverviewCard
-            label="Kanban Projects"
-            value={String(projects.length)}
-            sub="User-owned workspaces"
-          />
-          <OverviewCard
-            label="Open Issues"
-            value={String(liveIssueCount - liveCompletedCount)}
-            sub="Still in flight"
-          />
-          <OverviewCard
-            label="Completion"
-            value={`${liveCompletionRate}%`}
-            sub="Done column progress"
-          />
-          <OverviewCard
-            label="Tracked Time"
-            value={formatHours(currentProject?.total_tracked_seconds ?? 0)}
-            sub={
-              currentProject?.wakatime_project_name
-                ? "From linked WakaTime project"
-                : "No WakaTime project linked"
-            }
-          />
-        </div>
-
-        {/* Workspace + Boards */}
-        <div className="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
-          {/* Left sidebar — shown below boards on mobile, beside on xl */}
-          <div className="order-2 space-y-4 xl:order-1">
-            <div className="glass-card p-4 md:p-5">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-base font-semibold text-gray-900">
-                    Project Workspace
-                  </h2>
-                  <p className="text-sm text-gray-500">
-                    Switch context or create a new project.
-                  </p>
-                </div>
+      {/* Workspace + Boards */}
+      <div className="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
+        {/* Left sidebar — shown below boards on mobile, beside on xl */}
+        <div className="order-2 space-y-4 xl:order-1">
+          <div className="glass-card p-4 md:p-5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-semibold text-gray-900">
+                  Project Workspace
+                </h2>
+                <p className="text-sm text-gray-500">
+                  Switch context or create a new project.
+                </p>
               </div>
+              <button
+                onClick={() => setProjectModalOpen(true)}
+                className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-600 shadow-sm transition hover:border-blue-300 hover:text-blue-600"
+              >
+                <FontAwesomeIcon icon={faPlus} />
+              </button>
+            </div>
 
-              <div className="mt-4">
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
-                  Active Project
-                </label>
-                <select
-                  value={selectedProject}
-                  onChange={(event) => setSelectedProject(event.target.value)}
-                  className="input-field h-12 w-full"
-                >
-                  {projects.length === 0 && (
-                    <option value="">No projects yet</option>
-                  )}
-                  {projects.map((project) => (
-                    <option key={project.id} value={project.id}>
-                      {project.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div className="mt-4">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
+                Active Project
+              </label>
+              <select
+                value={selectedProject}
+                onChange={(event) => setSelectedProject(event.target.value)}
+                className="input-field h-12 w-full"
+              >
+                {projects.length === 0 && (
+                  <option value="">No projects yet</option>
+                )}
+                {projects.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
+            <div className="mt-4">
               {currentProject ? (
-                <div
-                  className={`mt-4 rounded-2xl border bg-gradient-to-br p-4 ${
-                    COLOR_STYLES[currentProject.color] ?? COLOR_STYLES.blue
-                  }`}
-                >
+                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <h3 className="text-base font-semibold text-gray-900">
@@ -532,9 +498,6 @@ export default function Kanban() {
                         {currentProject.description || "No project brief yet."}
                       </p>
                     </div>
-                    <span className="rounded-full border border-gray-200 bg-gray-100 px-2.5 py-1 text-[11px] uppercase tracking-[0.18em] text-gray-700">
-                      {currentProject.color}
-                    </span>
                   </div>
 
                   <div className="mt-4 space-y-2 text-sm text-gray-600">
@@ -565,127 +528,132 @@ export default function Kanban() {
                 />
               )}
             </div>
-
-            <div className="glass-card p-4 md:p-5">
-              <button
-                className="flex w-full items-center justify-between gap-3 text-left xl:cursor-default"
-                onClick={() => setShowRecentIssues((v) => !v)}
-              >
-                <div>
-                  <h2 className="text-base font-semibold text-gray-900">
-                    Recent Issues
-                  </h2>
-                  <p className="text-sm text-gray-500">
-                    Latest cards for the active project.
-                  </p>
-                </div>
-                <span className="text-xs text-gray-400 xl:hidden">
-                  {showRecentIssues ? "▲" : "▼"}
-                </span>
-              </button>
-
-              <div className={`mt-4 space-y-3 ${showRecentIssues ? "block" : "hidden xl:block"}`}>
-                {recentIssues.length > 0 ? (
-                  recentIssues.map((issue) => (
-                    <div
-                      key={issue.id}
-                      className="rounded-2xl border border-gray-200 bg-gray-50 p-3"
-                    >
-                      <div className="flex items-center justify-between gap-3 text-xs text-gray-500">
-                        <span>{issue.issue_key}</span>
-                        <span className="rounded-full border border-gray-200 px-2 py-1 uppercase">
-                          {issue.priority}
-                        </span>
-                      </div>
-                      <p className="mt-2 text-sm font-medium text-gray-900">
-                        {issue.title}
-                      </p>
-                      <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-gray-500">
-                        {issue.tag ? (
-                          <span className="rounded-full border border-gray-200 px-2 py-1">
-                            {issue.tag}
-                          </span>
-                        ) : null}
-                        <span className="rounded-full border border-gray-200 px-2 py-1 uppercase">
-                          {issue.type}
-                        </span>
-                        <span>{formatDate(issue.created_at)}</span>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <EmptyPanel
-                    title="No issues yet"
-                    body="Use the active project board to add the first card."
-                  />
-                )}
-              </div>
-            </div>
           </div>
 
-          {/* Boards panel — shown first on mobile */}
-          <div className="order-1 glass-card overflow-hidden p-4 md:p-5 xl:order-2">
-            <div className="flex flex-col gap-2 border-b border-gray-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="glass-card p-4 md:p-5">
+            <button
+              className="flex w-full items-center justify-between gap-3 text-left xl:cursor-default"
+              onClick={() => setShowRecentIssues((v) => !v)}
+            >
               <div>
-                <h2 className="text-base font-semibold text-gray-900">Boards</h2>
+                <h2 className="text-base font-semibold text-gray-900">
+                  Recent Issues
+                </h2>
                 <p className="text-sm text-gray-500">
-                  {currentProject
-                    ? "Delivery lanes for the active project."
-                    : "Create a project first to open a board."}
+                  Latest cards for the active project.
                 </p>
               </div>
-              {currentProject?.wakatime_project_name ? (
-                <div className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600">
-                  Bound to {currentProject.wakatime_project_name}
-                </div>
-              ) : null}
-            </div>
+              <span className="text-xs text-gray-400 xl:hidden">
+                {showRecentIssues ? "▲" : "▼"}
+              </span>
+            </button>
 
-            {loading ? (
-              <div className="py-16 text-center text-sm text-gray-500">
-                Loading Kanban workspace...
-              </div>
-            ) : groupedBoards.length === 0 ? (
-              <div className="py-16">
+            <div
+              className={`mt-4 space-y-3 ${showRecentIssues ? "block" : "hidden xl:block"}`}
+            >
+              {recentIssues.length > 0 ? (
+                recentIssues.map((issue) => (
+                  <div
+                    key={issue.id}
+                    className="rounded-2xl border border-gray-200 bg-gray-50 p-3"
+                  >
+                    <div className="flex items-center justify-between gap-3 text-xs text-gray-500">
+                      <span>{issue.issue_key}</span>
+                      <span className="rounded-full border border-gray-200 px-2 py-1 uppercase">
+                        {issue.priority}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm font-medium text-gray-900">
+                      {issue.title}
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-gray-500">
+                      {issue.tag ? (
+                        <span className="rounded-full border border-gray-200 px-2 py-1">
+                          {issue.tag}
+                        </span>
+                      ) : null}
+                      <span className="rounded-full border border-gray-200 px-2 py-1 uppercase">
+                        {issue.type}
+                      </span>
+                      <span>{formatDate(issue.created_at)}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
                 <EmptyPanel
-                  title="No boards for this project"
-                  body="New Kanban projects create a default board automatically. If you are seeing this on an older project, create a new project or add board data directly."
+                  title="No issues yet"
+                  body="Use the active project board to add the first card."
                 />
-              </div>
-            ) : (
-              <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-                <div className="mt-5 space-y-6">
-                  {groupedBoards.map((board) => (
-                    <section key={board.id} className="space-y-3">
-                      <div>
-                        <h3 className="text-sm font-semibold text-gray-900">
-                          {board.title}
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          {board.description || "Execution board"}
-                        </p>
-                      </div>
-
-                      {/* Horizontal scroll on mobile, grid on md+ */}
-                      <div className="flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible md:pb-0">
-                        {board.columns.map((column) => (
-                          <div key={column.id} className="min-w-[260px] flex-none md:min-w-0">
-                            <Column
-                              column={column}
-                              onAdd={() => {
-                                setSelectedColumn(column.id);
-                                setIssueModalOpen(true);
-                              }}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                  ))}
-                </div>
-              </DndContext>
-            )}
+              )}
+            </div>
           </div>
+        </div>
+
+        {/* Boards panel — shown first on mobile */}
+        <div className="order-1 glass-card overflow-hidden p-4 md:p-5 xl:order-2">
+          <div className="flex flex-col gap-2 border-b border-gray-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-gray-900">Boards</h2>
+              <p className="text-sm text-gray-500">
+                {currentProject
+                  ? "Delivery lanes for the active project."
+                  : "Create a project first to open a board."}
+              </p>
+            </div>
+            {currentProject?.wakatime_project_name ? (
+              <div className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600">
+                Bound to {currentProject.wakatime_project_name}
+              </div>
+            ) : null}
+          </div>
+
+          {loading ? (
+            <div className="py-16 text-center text-sm text-gray-500">
+              Loading Kanban workspace...
+            </div>
+          ) : groupedBoards.length === 0 ? (
+            <div className="py-16">
+              <EmptyPanel
+                title="No boards for this project"
+                body="New Kanban projects create a default board automatically. If you are seeing this on an older project, create a new project or add board data directly."
+              />
+            </div>
+          ) : (
+            <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+              <div className="mt-5 space-y-6">
+                {groupedBoards.map((board) => (
+                  <section key={board.id} className="space-y-3">
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-900">
+                        {board.title}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        {board.description || "Execution board"}
+                      </p>
+                    </div>
+
+                    {/* Horizontal scroll on mobile, grid on md+ */}
+                    <div className="flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible md:pb-0">
+                      {board.columns.map((column) => (
+                        <div
+                          key={column.id}
+                          className="min-w-[260px] flex-none md:min-w-0"
+                        >
+                          <Column
+                            column={column}
+                            onAdd={() => {
+                              setSelectedColumn(column.id);
+                              setIssueModalOpen(true);
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            </DndContext>
+          )}
         </div>
       </div>
 
@@ -721,11 +689,11 @@ export default function Kanban() {
             />
 
             <select
-              value={projectForm.wakatimeProjectName}
+              value={projectForm.wakatime_project_name}
               onChange={(event) =>
                 setProjectForm((prev) => ({
                   ...prev,
-                  wakatimeproject_name: event.target.value,
+                  wakatime_project_name: event.target.value,
                 }))
               }
               className="input-field w-full"
@@ -737,33 +705,6 @@ export default function Kanban() {
                 </option>
               ))}
             </select>
-
-            <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
-                Accent
-              </p>
-              <div className="grid grid-cols-5 gap-2">
-                {PROJECT_COLORS.map((color) => (
-                  <button
-                    key={color.value}
-                    type="button"
-                    onClick={() =>
-                      setProjectForm((prev) => ({
-                        ...prev,
-                        color: color.value,
-                      }))
-                    }
-                    className={`rounded-xl border px-3 py-2 text-xs font-semibold transition-all ${
-                      projectForm.color === color.value
-                        ? "border-gray-400 bg-gray-100 text-gray-900"
-                        : "border-gray-200 bg-gray-50 text-gray-500"
-                    }`}
-                  >
-                    {color.label}
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
 
           <div className="mt-5 flex justify-end gap-2">
@@ -894,7 +835,9 @@ function OverviewCard({
 }) {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-      <p className="text-xs uppercase tracking-[0.2em] text-gray-500">{label}</p>
+      <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
+        {label}
+      </p>
       <p className="mt-2 text-2xl font-semibold text-gray-900">{value}</p>
       <p className="mt-1 text-xs text-gray-500">{sub}</p>
     </div>
@@ -951,13 +894,13 @@ function Column({
 }) {
   const { setNodeRef } = useDroppable({
     id: column.id,
-    data: { columnId: column.id },
+    data: { column_id: column.id },
   });
 
   return (
     <div
       ref={setNodeRef}
-      className="rounded-3xl border border-gray-200 bg-gray-50 p-4"
+      className="rounded-3xl border border-gray-200 bg-gray-50 p-4 h-full"
     >
       <div className="flex items-center justify-between gap-3">
         <div>
@@ -992,10 +935,11 @@ function IssueCard({
   item: KanbanIssue;
   columnId: string;
 }) {
-  const { setNodeRef, listeners, attributes, transform, isDragging } = useDraggable({
-    id: item.id,
-    data: { columnId },
-  });
+  const { setNodeRef, listeners, attributes, transform, isDragging } =
+    useDraggable({
+      id: item.id,
+      data: { column_id: columnId },
+    });
 
   return (
     <div

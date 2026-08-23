@@ -81,7 +81,7 @@ export default function VerifyEmail({
   };
 
   return (
-    <div className="min-h-screen flex relative">
+    <div className="min-h-screen flex grid-bg relative">
       {/* Left Side - Visual / Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 md:p-16 xl:p-24 border-r border-gray-200 bg-slate-800 overflow-hidden">
         <div className="absolute inset-0 grid-bg opacity-30" />
@@ -250,7 +250,7 @@ export default function VerifyEmail({
                     disabled={loading}
                     className="w-full py-3 rounded-xl font-semibold btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    esend verification email
+                    Resend verification email
                   </button>
                 )}
 

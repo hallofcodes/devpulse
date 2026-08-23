@@ -44,7 +44,7 @@ export default function LoginForm() {
 
   const handleLogin = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (!grecaptchaLoaded || !window.grecaptcha?.enterprise) {
       toast.error(
         "Recaptcha Enterprise is not loaded. Please try again later.",
@@ -97,7 +97,7 @@ export default function LoginForm() {
     <>
       {justVerified && (
         <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-          Email verified successfully. You can now log in.
+          Thank you for verifying your email!
         </div>
       )}
       <form onSubmit={handleLogin} className="space-y-4">

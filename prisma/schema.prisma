@@ -239,7 +239,6 @@ model Project {
   name                  String
   description           String?
   wakatime_project_name String?
-  color                 String?  @default("blue")
   created_at            DateTime @default(now())
 
   user   User?   @relation(fields: [user_id], references: [id], onDelete: Cascade)

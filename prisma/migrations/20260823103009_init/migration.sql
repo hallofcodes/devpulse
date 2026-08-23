@@ -203,7 +203,6 @@ CREATE TABLE `projects` (
     `name` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NULL,
     `wakatime_project_name` VARCHAR(191) NULL,
-    `color` VARCHAR(191) NULL DEFAULT 'blue',
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     INDEX `projects_user_id_idx`(`user_id`),

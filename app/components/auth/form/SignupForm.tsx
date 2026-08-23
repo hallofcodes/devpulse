@@ -90,7 +90,8 @@ export default function SignupForm() {
         render() {
           setLoading(false);
           router.push(`/verify-email?email=${encodeURIComponent(email)}`);
-          return "Account created! Please verify your email.";
+          
+          return "Please check your email to verify your account.";
         },
       },
       error: {
