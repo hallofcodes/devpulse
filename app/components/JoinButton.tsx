@@ -68,7 +68,7 @@ export default function JoinButton({
     const joinPromise = fetch("/api/leaderboards/join", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ joinCode: code }),
+      body: JSON.stringify({ join_code: code }),
     }).then(async (res) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);

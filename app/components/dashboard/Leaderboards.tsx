@@ -49,7 +49,7 @@ export default function Leaderboards() {
         const body = await res.json();
         throw new Error(body.error || "Failed to create. Please try again.");
       }
-      return res.json() as Promise<{ joinCode: string }>;
+      return res.json() as Promise<{ join_code: string }>;
     });
 
     toast.promise(createPromise, {
@@ -65,7 +65,7 @@ export default function Leaderboards() {
     });
 
     createPromise.then((data) => {
-      setCreatedCode(data.joinCode);
+      setCreatedCode(data.join_code);
       setLeaderboardName("");
       setActiveModal("share");
     });
@@ -80,7 +80,7 @@ export default function Leaderboards() {
     const joinPromise = fetch("/api/leaderboards/join", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ joinCode: joinCode.trim() }),
+      body: JSON.stringify({ join_code: joinCode.trim() }),
     }).then(async (res) => {
       if (!res.ok) {
         const body = await res.json();

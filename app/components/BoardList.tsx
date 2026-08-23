@@ -8,8 +8,6 @@ import {
   faKey,
   faRotateRight,
   faTrashAlt,
-  faChevronRight,
-  faServer,
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
@@ -102,7 +100,7 @@ export default function BoardList({
       async (res) => {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
-        return data.joinCode as string;
+        return data.join_code as string;
       },
     );
 
@@ -124,17 +122,11 @@ export default function BoardList({
 
   return (
     <>
-      <div className="flex justify-between items-center group/card p-4 sm:p-5">
+      <div className="flex justify-between items-center p-4 sm:p-5">
         <Link
           href={`/leaderboard/${board.slug}`}
           className="flex-1 flex items-center min-w-0 pr-4"
         >
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/5 to-white/10 border border-gray-200 flex items-center justify-center shrink-0 mr-4 shadow-sm group-hover/card:border-blue-500/30 transition-colors">
-            <FontAwesomeIcon
-              icon={faServer}
-              className="text-gray-500 group-hover/card:text-blue-600 transition-colors w-4 h-4"
-            />
-          </div>
           <div className="flex flex-col flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <p className="font-bold text-gray-700 group-hover/card:text-gray-900 transition-colors tracking-tight truncate text-[15px]">
@@ -144,13 +136,6 @@ export default function BoardList({
             <p className="text-[11px] text-gray-500 font-mono tracking-wider truncate mt-0.5 group-hover/card:text-blue-600/70 transition-colors">
               /{board.slug}
             </p>
-          </div>
-
-          <div className="hidden sm:flex w-8 h-8 rounded-full border border-gray-200 bg-gray-50 items-center justify-center opacity-0 -translate-x-4 group-hover/card:opacity-100 group-hover/card:translate-x-0 transition-all duration-300 ml-4">
-            <FontAwesomeIcon
-              icon={faChevronRight}
-              className="text-blue-600 w-3 h-3"
-            />
           </div>
         </Link>
 
@@ -200,7 +185,6 @@ export default function BoardList({
       {showCodeModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
           <div className="glass-card p-8 w-full max-w-sm relative shadow-2xl border-blue-500/20">
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl" />
 
             <h3 className="text-[11px] font-bold tracking-widest uppercase text-blue-600 mb-6 text-center flex items-center justify-center gap-2">
               <FontAwesomeIcon icon={faKey} /> Share Server
@@ -255,7 +239,7 @@ export default function BoardList({
         createPortal(
           <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
             <div className="glass-card p-8 w-full max-w-sm relative shadow-2xl border-amber-500/20">
-              <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/20 rounded-full blur-3xl" />
+              
               <h3 className="text-lg font-bold text-gray-700 mb-2">
                 Leave leaderboard?
               </h3>
@@ -292,7 +276,6 @@ export default function BoardList({
       {showDeleteModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
           <div className="glass-card p-8 w-full max-w-sm relative shadow-2xl border-red-500/20">
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-red-500/20 rounded-full blur-3xl" />
 
             <h3 className="text-lg font-bold text-gray-700 mb-2">
               Delete Network

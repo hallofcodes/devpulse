@@ -8,8 +8,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { joinCode } = await req.json();
-  if (!joinCode) {
+  const { join_code } = await req.json();
+  if (!join_code) {
     return NextResponse.json(
       { error: "Join code is required." },
       { status: 400 },
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   }
 
   const leaderboard = await prisma.leaderboard.findUnique({
-    where: { joinCode },
+    where: { join_code },
     select: { id: true, slug: true },
   });
 

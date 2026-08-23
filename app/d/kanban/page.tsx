@@ -69,7 +69,6 @@ function isKanbanProject(value: unknown): value is KanbanProject {
     typeof project.name === "string" &&
     typeof project.description === "string" &&
     typeof project.wakatime_project_name === "string" &&
-    typeof project.color === "string" &&
     typeof project.created_at === "string" &&
     typeof project.board_count === "number" &&
     typeof project.column_count === "number" &&
@@ -495,7 +494,7 @@ export default function Kanban() {
                         {currentProject.name}
                       </h3>
                       <p className="mt-1 text-sm text-gray-600">
-                        {currentProject.description || "No project brief yet."}
+                        {currentProject.description}
                       </p>
                     </div>
                   </div>

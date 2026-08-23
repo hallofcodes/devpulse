@@ -167,7 +167,6 @@ export async function getKanbanData(userId: string) {
           p.name,
           p.description,
           p.wakatime_project_name,
-          p.color,
           p.created_at
         FROM projects p
         WHERE p.user_id = ${userId} OR p.user_id IS NULL

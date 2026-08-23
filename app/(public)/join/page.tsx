@@ -19,13 +19,13 @@ type Props = {
 
 async function getLeaderboard(code: string) {
   return prisma.leaderboard.findUnique({
-    where: { joinCode: code },
+    where: { join_code: code },
     select: {
       id: true,
       name: true,
       description: true,
       slug: true,
-      ownerId: true,
+      owner_id: true,
       created_at: true,
     },
   });

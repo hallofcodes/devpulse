@@ -13,7 +13,7 @@ export default async function LeaderboardsPage() {
   if (!user) return redirect("/login?from=/leaderboards");
 
   return (
-    <div className="p-6 md:p-8 space-y-6 max-w-5xl mx-auto">
+    <div className="p-6 md:p-8 space-y-6">
       <div className="border-b border-gray-200 pb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
@@ -26,9 +26,7 @@ export default async function LeaderboardsPage() {
         <Leaderboards />
       </div>
 
-      <div className="w-full">
-        <LeaderboardsList />
-      </div>
+      <LeaderboardsList />
     </div>
   );
 }

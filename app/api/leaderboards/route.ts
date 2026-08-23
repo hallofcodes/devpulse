@@ -23,9 +23,9 @@ export async function POST(req: Request) {
         name: name.trim(),
         description: "",
         slug,
-        ownerId: session.user.id,
-        joinCode,
-        isPublic: true,
+        owner_id: session.user.id,
+        join_code: joinCode,
+        is_public: true,
       },
     });
 
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(
-      { joinCode: leaderboard.joinCode },
+      { join_code: leaderboard.join_code },
       { status: 201 },
     );
   } catch {

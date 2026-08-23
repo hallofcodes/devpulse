@@ -44,14 +44,14 @@ export async function POST(req: Request) {
   const flex = await prisma.userFlex.create({
     data: {
       user_id: session.user.id,
-      userEmail: session.user.email,
+      user_email: session.user.email,
       project_name: project_name.trim(),
       project_description: project_description ?? "",
       project_url: project_url ?? "",
       project_time: project_time ?? "",
       is_open_source: is_open_source ?? false,
       open_source_url: is_open_source ? (open_source_url ?? "") : "",
-      expiresAt,
+      expires_at: expiresAt,
     },
   });
 
