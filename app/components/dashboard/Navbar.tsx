@@ -16,6 +16,7 @@ import {
   faCodeBranch,
   faBars,
   faProjectDiagram,
+  faGear,
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import NavProfileDropdown from "../common/NavProfileDropdown";
@@ -68,6 +69,13 @@ const navItems: NavItem[] = [
     href: "/d/leaderboards",
     label: "Leaderboards",
     icon: faTrophy,
+    role: "user",
+    category: "dev",
+  },
+  {
+    href: "/d/settings",
+    label: "Settings",
+    icon: faGear,
     role: "user",
     category: "dev",
   },
@@ -191,14 +199,17 @@ export default function DashboardLayout({
         </div>
 
         <nav className="flex-1 px-3 py-4 space-y-1">
-          {groupedNavItems.map((item) => (
+          {groupedNavItems.map((item, idx) => (
             <div key={item.href}>
               {item.showCategory && (
-                <p className="text-[10px] uppercase tracking-[0.15em] text-gray-600 font-semibold px-3 mb-3">
+                <p
+                  className={`text-[10px] uppercase tracking-[0.15em] text-gray-600 font-semibold px-3 mb-3 ${
+                    idx !== 0 ? "mt-5" : ""
+                  }`}
+                >
                   {item.category}
                 </p>
               )}
-
               <Link
                 href={item.href}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg

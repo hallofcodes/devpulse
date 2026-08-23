@@ -141,6 +141,7 @@ export default function NavProfileDropdown({
             <FontAwesomeIcon icon={faGear} className="w-4 h-4" />
             Settings
           </Link>
+          
           {type === "navbar" && (
             <Link
               href="/d/logout"
