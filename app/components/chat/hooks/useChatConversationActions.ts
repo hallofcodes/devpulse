@@ -15,7 +15,7 @@ type ParticipantPresence = {
 };
 
 type UseChatConversationActionsParams = {
-  user_id: string;
+  userId: string;
   userEmail: string | null | undefined;
   conversationId: string | null;
   conversations: Conversation[];
@@ -138,7 +138,7 @@ export function useChatConversationActions({
   );
 
   const openPrivateChatFromGlobalProfile = useCallback(
-    (targetuser_id: string, targetEmail: string) => {
+    (targetUserId: string, targetEmail: string) => {
       if (!targetUserId || targetUserId === userId) return;
       if (!targetEmail) {
         toast.info("Cannot start a private chat without user email.");

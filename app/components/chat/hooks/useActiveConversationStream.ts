@@ -15,7 +15,7 @@ type TypingState = {
 
 type UseActiveConversationStreamParams = {
   conversationId: string | null;
-  user_id: string;
+  userId: string;
   bottomRef: RefObject<HTMLDivElement | null>;
   setMessages: Dispatch<SetStateAction<Message[]>>;
   markConversationAsRead: (targetConversationId: string) => Promise<void>;
@@ -40,8 +40,8 @@ const isEphemeralMessageId = (id: string) =>
   id.startsWith("temp-") || id.startsWith("live-");
 
 const isCreatedWithinWindow = (
-  candidatecreated_at: string,
-  incomingcreated_at: string,
+  candidateCreatedAt: string,
+  incomingCreatedAt: string,
   windowMs = EPHEMERAL_RECONCILE_WINDOW_MS,
 ) => {
   const a = Date.parse(candidateCreatedAt);

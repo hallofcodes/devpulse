@@ -8,7 +8,7 @@ type ConversationLike = {
 };
 
 type UseChatBadgesParams = {
-  user_id: string;
+  userId: string;
   conversations: ConversationLike[];
 };
 

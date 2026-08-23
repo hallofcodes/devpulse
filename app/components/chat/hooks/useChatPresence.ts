@@ -16,7 +16,7 @@ type ParticipantPresence = {
 };
 
 type UseChatPresenceParams = {
-  user_id: string;
+  userId: string;
   onlineTimeoutMs: number;
   maxPresenceFutureSkewMs: number;
   presenceHeartbeatMs: number;

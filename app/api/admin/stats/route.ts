@@ -22,7 +22,7 @@ export async function GET() {
       prisma.userStats.findMany({
         select: {
           user_id: true,
-          totalSeconds: true,
+          total_seconds: true,
           categories: true,
           user: { select: { email: true } },
         },
@@ -34,9 +34,9 @@ export async function GET() {
     ]);
 
   const users = topUserStats.map((row) => ({
-    user_id: row.userId,
+    user_id: row.user_id,
     email: row.user.email,
-    total_seconds: Number(row.totalSeconds),
+    total_seconds: Number(row.total_seconds),
     categories: row.categories,
   }));
 

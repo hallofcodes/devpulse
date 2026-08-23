@@ -135,7 +135,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
     fetchUnreadCountsForConversations,
     markConversationAsRead,
   } = useChatPresence({
-    user_id: user.id,
+    userId: user.id,
     onlineTimeoutMs: ONLINE_TIMEOUT_MS,
     maxPresenceFutureSkewMs: MAX_PRESENCE_FUTURE_SKEW_MS,
     presenceHeartbeatMs: PRESENCE_HEARTBEAT_MS,
@@ -151,7 +151,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
     stopTyping,
     markTypingFromInput,
   } = useChatTyping({
-    user_id: user.id,
+    userId: user.id,
     userEmail: user.email ?? "",
     typingInactiveTimeoutMs: TYPING_INACTIVE_TIMEOUT_MS,
     typingRemoteExpireMs: TYPING_REMOTE_EXPIRE_MS,
@@ -170,13 +170,13 @@ export default function Chat({ user }: { user: ChatUserShape }) {
   } = useChatAttachmentInput();
 
   const { search, setSearch, allUsers, filteredUsers } = useChatUserPicker({
-    user_id: user.id,
+    userId: user.id,
     showModal,
     globalConversationId: GLOBAL_CONVERSATION_ID,
   });
 
   const { badgesByUserId } = useChatBadges({
-    user_id: user.id,
+    userId: user.id,
     conversations,
   });
 
@@ -191,7 +191,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
   }, [conversationId]);
 
   useChatConversationsRealtime({
-    user_id: user.id,
+    userId: user.id,
     userEmail: user.email ?? "",
     globalConversationId: GLOBAL_CONVERSATION_ID,
     conversationIdsRef,
@@ -205,7 +205,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
 
   useActiveConversationStream({
     conversationId,
-    user_id: user.id,
+    userId: user.id,
     bottomRef,
     setMessages,
     markConversationAsRead,
@@ -218,7 +218,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
     openPrivateChatFromGlobalProfile,
     handleDeleteConversation,
   } = useChatConversationActions({
-    user_id: user.id,
+    userId: user.id,
     userEmail: user.email,
     conversationId,
     conversations,
@@ -233,7 +233,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
   });
 
   const { sendMessage, isSendingMessage } = useChatMessageComposer({
-    user_id: user.id,
+    userId: user.id,
     conversationId,
     input,
     badWords,

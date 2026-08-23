@@ -18,7 +18,10 @@ export async function GET(
 
   const participant = await prisma.conversationParticipant.findUnique({
     where: {
-      conversationId_user_id: { conversationId, user_id: session.user.id },
+      conversation_id_user_id: {
+        conversation_id: conversationId,
+        user_id: session.user.id,
+      },
     },
   });
 

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { ChatUser } from "@/app/components/Chat";
 
 type UseChatUserPickerParams = {
-  user_id: string;
+  userId: string;
   showModal: boolean;
   globalConversationId: string;
 };

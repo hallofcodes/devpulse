@@ -17,8 +17,8 @@ export async function GET() {
             select: {
               user_id: true,
               email: true,
-              lastSeenAt: true,
-              lastReadAt: true,
+              last_seen_at: true,
+              last_read_at: true,
             },
           },
         },
@@ -27,14 +27,14 @@ export async function GET() {
   });
 
   const conversations = participantRows.map((row) => ({
-    id: row.conversationId,
+    id: row.conversation_id,
     type: row.conversation.type.toLowerCase(),
-    created_at: row.conversation.createdAt.toISOString(),
-    last_read_at: row.lastReadAt.toISOString(),
+    created_at: row.conversation.created_at.toISOString(),
+    last_read_at: row.last_read_at.toISOString(),
     users: row.conversation.participants.map((p) => ({
-      id: p.userId,
+      id: p.user_id,
       email: p.email,
-      last_seen_at: p.lastSeenAt.toISOString(),
+      last_seen_at: p.last_seen_at.toISOString(),
     })),
   }));
 
@@ -67,21 +67,21 @@ export async function POST(req: Request) {
           {
             user_id: session.user.id,
             email: session.user.email,
-            lastSeenAt: timestamp,
-            lastReadAt: timestamp,
+            last_seen_at: timestamp,
+            last_read_at: timestamp,
           },
           {
             user_id: otherUserId,
             email: otherUserEmail ?? "",
-            lastSeenAt: EPOCH,
-            lastReadAt: EPOCH,
+            last_seen_at: EPOCH,
+            last_read_at: EPOCH,
           },
         ],
       },
     },
     include: {
       participants: {
-        select: { user_id: true, email: true, lastSeenAt: true },
+        select: { user_id: true, email: true, last_seen_at: true },
       },
     },
   });
@@ -90,12 +90,12 @@ export async function POST(req: Request) {
     {
       id: conversation.id,
       type: "private",
-      created_at: conversation.createdAt.toISOString(),
+      created_at: conversation.created_at.toISOString(),
       last_read_at: timestamp.toISOString(),
       users: conversation.participants.map((p) => ({
-        id: p.userId,
+        id: p.user_id,
         email: p.email,
-        last_seen_at: p.lastSeenAt.toISOString(),
+        last_seen_at: p.last_seen_at.toISOString(),
       })),
     },
     { status: 201 },

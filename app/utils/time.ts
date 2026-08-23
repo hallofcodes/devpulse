@@ -7,7 +7,7 @@
 export function formatHours(seconds: string | number) {
   try {
     const safeSeconds = Number(seconds);
-    if (!Number.isFinite(safeSeconds)) return null;
+    if (!Number.isFinite(safeSeconds)) return "N/A";
 
     const totalMinutes = Math.ceil(safeSeconds / 60);
 
@@ -18,7 +18,7 @@ export function formatHours(seconds: string | number) {
     return `${mins}m`;
   } catch {
     console.error("Invalid seconds:", seconds);
-    return null;
+    return "N/A";
   }
 }
 

@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLink } from "@fortawesome/free-solid-svg-icons";
 import { Metadata } from "next/types";
 import { prisma } from "@/app/lib/prisma";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Flexes - Devpulse",
@@ -91,40 +92,40 @@ export default async function Flexs() {
               >
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold mb-2">
-                    {flex.projectName}
+                    {flex.project_name}
                   </h3>
                   <span className="text-sm">
-                    {timeAgo(flex.createdAt.toISOString())}
+                    {timeAgo(flex.created_at.toISOString())}
                   </span>
                 </div>
                 <div className="text-sm text-gray-500 mb-4">
-                  {flex.projectTime}
+                  {flex.project_time}
                 </div>
                 <span className="font-bold text-xs text-gray-500">
                   Description:
                 </span>
-                <p className="text-gray-500 mb-2">{flex.projectDescription}</p>
-                {flex.isOpenSource && (
+                <p className="text-gray-500 mb-2">{flex.project_description}</p>
+                {flex.is_open_source && (
                   <>
                     <span className="font-bold text-xs text-gray-500">
                       Open Source:
                     </span>
-                    <a
-                      href={flex.openSourceUrl}
+                    <Link
+                      href={flex.project_url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-sm block underline hover:text-green-300 transition mb-2 truncate"
                     >
-                      {flex.openSourceUrl}
-                    </a>
+                      {flex.is_open_source}
+                    </Link>
                   </>
                 )}
                 <div className="flex items-center justify-between mt-4">
                   <p className="text-sm text-gray-500">
-                    Posted by {flex.userEmail.split("@")[0]}
+                    Posted by {flex.user_email.split("@")[0]}
                   </p>
                   <a
-                    href={flex.projectUrl}
+                    href={flex.project_url}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

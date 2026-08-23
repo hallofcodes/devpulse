@@ -15,7 +15,7 @@ export async function DELETE(
 
   const participant = await prisma.conversationParticipant.findUnique({
     where: {
-      conversationId_user_id: { conversationId: id, user_id: session.user.id },
+      conversation_id_user_id: { conversation_id: id, user_id: session.user.id },
     },
   });
 

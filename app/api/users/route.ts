@@ -20,7 +20,7 @@ export async function GET(req: Request) {
 
   const participants = await prisma.conversationParticipant.findMany({
     where: {
-      conversationId,
+      conversation_id: conversationId,
       user_id: { not: session.user.id },
     },
     select: { user_id: true, email: true },
@@ -28,7 +28,7 @@ export async function GET(req: Request) {
 
   const users = participants
     .filter((p) => p.email)
-    .map((p) => ({ user_id: p.userId, email: p.email }))
+    .map((p) => ({ user_id: p.user_id, email: p.email }))
     .sort((a, b) => a.email.localeCompare(b.email));
 
   return NextResponse.json(users);

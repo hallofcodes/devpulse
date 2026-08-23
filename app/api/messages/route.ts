@@ -21,7 +21,10 @@ export async function GET(req: Request) {
 
   const participant = await prisma.conversationParticipant.findUnique({
     where: {
-      conversationId_user_id: { conversationId, user_id: session.user.id },
+      conversation_id_user_id: {
+        conversation_id: conversationId,
+        user_id: session.user.id,
+      },
     },
   });
 
@@ -31,7 +34,7 @@ export async function GET(req: Request) {
 
   const messages = await prisma.message.findMany({
     where: {
-      conversationId,
+      conversation_id: conversationId,
       expires_at: { gt: new Date() },
     },
     orderBy: { created_at: "asc" },
@@ -40,11 +43,11 @@ export async function GET(req: Request) {
   return NextResponse.json(
     messages.map((m) => ({
       id: m.id,
-      conversation_id: m.conversationId,
-      sender_id: m.senderId,
+      conversation_id: m.conversation_id,
+      sender_id: m.sender_id,
       text: m.text,
       attachments: m.attachments,
-      created_at: m.createdAt.toISOString(),
+      created_at: m.created_at.toISOString(),
     })),
   );
 }
@@ -69,7 +72,10 @@ export async function POST(req: Request) {
 
   const participant = await prisma.conversationParticipant.findUnique({
     where: {
-      conversationId_user_id: { conversationId, user_id: session.user.id },
+      conversation_id_user_id: {
+        conversation_id: conversationId,
+        user_id: session.user.id,
+      },
     },
   });
 
@@ -79,8 +85,8 @@ export async function POST(req: Request) {
 
   const message = await prisma.message.create({
     data: {
-      conversationId,
-      senderId: session.user.id,
+      conversation_id: conversationId,
+      sender_id: session.user.id,
       text: text?.trim() ?? "",
       attachments: attachments ?? [],
     },
@@ -88,22 +94,25 @@ export async function POST(req: Request) {
 
   const payload = {
     id: message.id,
-    conversation_id: message.conversationId,
-    sender_id: message.senderId,
+    conversation_id: message.conversation_id,
+    sender_id: message.sender_id,
     text: message.text,
     attachments: message.attachments,
-    created_at: message.createdAt.toISOString(),
+    created_at: message.created_at.toISOString(),
   };
 
   emitter.emit(`chat:${conversationId}`, { type: "message", data: payload });
 
   const participants = await prisma.conversationParticipant.findMany({
-    where: { conversationId, user_id: { not: session.user.id } },
+    where: {
+      conversation_id: conversationId,
+      user_id: { not: session.user.id },
+    },
     select: { user_id: true },
   });
 
   for (const p of participants) {
-    emitter.emit(`user:${p.userId}`, {
+    emitter.emit(`user:${p.user_id}`, {
       type: "new_message",
       data: { conversation_id: conversationId, sender_id: session.user.id },
     });

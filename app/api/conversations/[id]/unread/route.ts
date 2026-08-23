@@ -15,9 +15,12 @@ export async function GET(
 
   const participant = await prisma.conversationParticipant.findUnique({
     where: {
-      conversationId_user_id: { conversationId, user_id: session.user.id },
+      conversation_id_user_id: {
+        conversation_id: conversationId,
+        user_id: session.user.id,
+      },
     },
-    select: { lastReadAt: true },
+    select: { last_read_at: true },
   });
 
   if (!participant) {
@@ -26,9 +29,9 @@ export async function GET(
 
   const count = await prisma.message.count({
     where: {
-      conversationId,
-      senderId: { not: session.user.id },
-      created_at: { gt: participant.lastReadAt },
+      conversation_id: conversationId,
+      sender_id: { not: session.user.id },
+      created_at: { gt: participant.last_read_at },
       expires_at: { gt: new Date() },
     },
   });

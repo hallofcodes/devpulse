@@ -12,7 +12,7 @@ export async function PATCH() {
 
   await prisma.conversationParticipant.updateMany({
     where: { user_id: session.user.id },
-    data: { lastSeenAt: timestamp },
+    data: { last_seen_at: timestamp },
   });
 
   return NextResponse.json({ success: true });

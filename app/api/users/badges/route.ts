@@ -17,13 +17,13 @@ export async function GET(req: Request) {
 
   const stats = await prisma.userStats.findMany({
     where: { user_id: { in: ids } },
-    select: { user_id: true, totalSeconds: true },
+    select: { user_id: true, total_seconds: true },
   });
 
   return NextResponse.json(
     stats.map((s) => ({
-      user_id: s.userId,
-      total_seconds: Number(s.totalSeconds),
+      user_id: s.user_id,
+      total_seconds: Number(s.total_seconds),
     })),
   );
 }

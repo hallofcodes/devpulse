@@ -135,10 +135,8 @@ export default function Stats() {
     void fetchStats(true);
   };
 
-  const totalHoursFormatted = formatHours(stats.total_seconds);
-  const avgDailyFormatted = stats.daily_average
-    ? formatHours(stats.daily_average)
-    : formatHours(stats.total_seconds / 7);
+  const totalHoursFormatted = formatHours(stats.total_seconds) || "N/A";
+  const avgDailyFormatted = formatHours(stats.daily_average) || "N/A";
   const topLang = stats.languages[0]?.name || "N/A";
   const topEditor = stats.editors[0]?.name || "N/A";
 
@@ -224,14 +222,14 @@ export default function Stats() {
     {
       label: "Top Language",
       value: topLang,
-      sub: formatHours(stats.languages[0]?.total_seconds || 0),
+      sub: formatHours(stats.languages[0]?.total_seconds || 0) || "N/A",
       trend: `${topLangProgress.toFixed(0)}%`,
       progress: topLangProgress,
     },
     {
       label: "Editor",
       value: topEditor,
-      sub: formatHours(stats.editors[0]?.total_seconds || 0),
+      sub: formatHours(stats.editors[0]?.total_seconds || 0) || "N/A",
       trend: `${topEditorProgress.toFixed(0)}%`,
       progress: topEditorProgress,
     },
