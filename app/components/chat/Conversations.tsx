@@ -46,20 +46,14 @@ export default function Conversations({
             key={idx}
             type="button"
             onClick={() => setConversationId(conv.id)}
-            className={`w-full flex items-center gap-3.5 p-3 rounded-xl transition-all text-left ${
+            className={`w-full flex items-center bg-gray-100 gap-3.5 p-3 rounded-xl transition-all text-left ${
               isActive
-                ? "bg-gray-100 border border-gray-200 shadow-sm"
+                ? "bg-gray-100 border border-gray-300"
                 : "hover:bg-gray-100 border border-transparent opacity-80 hover:opacity-100"
             }`}
           >
             <div className="relative flex-shrink-0">
-              <div
-                className={`flex justify-center items-center w-[38px] h-[38px] rounded-full text-[14px] font-bold transition-all border ${
-                  isGlobal
-                    ? "bg-blue-500/15 text-blue-600 border-blue-500/30"
-                    : "bg-neutral-800 text-gray-700 border-gray-200 shadow-sm"
-                }`}
-              >
+              <div className="flex justify-center items-center w-[38px] h-[38px] rounded-full text-[14px] font-bold transition-all border bg-white-800 text-gray-500 border-gray-200">
                 {initials}
               </div>
               {!isGlobal && isOnline && (

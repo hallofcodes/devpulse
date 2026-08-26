@@ -16,11 +16,11 @@ export async function PATCH(
 
   const timestamp = new Date();
 
-  const data: { lastSeenAt: Date; lastReadAt?: Date } = {
-    lastSeenAt: timestamp,
+  const data: { last_seen_at: Date; last_read_at?: Date } = {
+    last_seen_at: timestamp,
   };
   if (mark_read) {
-    data.lastReadAt = timestamp;
+    data.last_read_at = timestamp;
   }
 
   await prisma.conversationParticipant.updateMany({

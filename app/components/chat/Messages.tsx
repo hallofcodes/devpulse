@@ -225,8 +225,8 @@ export default function Messages({
                   <div
                     className={`px-5 py-3 text-[14px] leading-relaxed break-words break-all overflow-x-hidden ${
                       isSelf
-                        ? "bg-blue-600 border border-blue-500/50 text-gray-900 rounded-2xl rounded-br-sm shadow-sm"
-                        : "bg-[rgba(15,15,40,0.6)] border border-blue-200 text-gray-700 rounded-2xl rounded-bl-sm"
+                        ? "bg-blue-500 text-white rounded-2xl rounded-br-sm shadow-sm"
+                        : "bg-white border border-gray-200 text-gray-500 rounded-2xl rounded-bl-sm"
                     }`}
                   >
                     <div className="prose prose-invert prose-sm max-w-none break-words break-all whitespace-pre-wrap leading-[1.6]">

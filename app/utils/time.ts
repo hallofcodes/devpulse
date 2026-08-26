@@ -28,31 +28,33 @@ export function formatHours(seconds: string | number) {
  * @param timestamp The timestamp to compare against the current time.
  * @returns A human-readable string representing the time elapsed since the given timestamp, or `null` if the timestamp is invalid.
  */
-export function timeAgo(timestamp: string) {
+export function timeAgo(timestamp: string | null | undefined) {
   if (!timestamp) return null;
 
-  const timestampDate = Number(timestamp);
-  const now = Date.now();
-  const diffSeconds = Math.floor(now / 1000 - timestampDate);
+  // support both ISO strings and unix-seconds strings
+  const isNumeric = /^\d+$/.test(timestamp.trim());
+  const timestampMs = isNumeric
+    ? Number(timestamp) * 1000
+    : new Date(timestamp).getTime();
+
+  if (Number.isNaN(timestampMs)) return null;
+
+  const diffSeconds = Math.floor((Date.now() - timestampMs) / 1000);
+  if (diffSeconds < 0) return "just now"; // guard against clock skew
 
   if (diffSeconds < 60)
     return `${diffSeconds} second${diffSeconds !== 1 ? "s" : ""} ago`;
-
   const diffMinutes = Math.floor(diffSeconds / 60);
   if (diffMinutes < 60)
     return `${diffMinutes} minute${diffMinutes !== 1 ? "s" : ""} ago`;
-
   const diffHours = Math.floor(diffMinutes / 60);
   if (diffHours < 24)
     return `${diffHours} hour${diffHours !== 1 ? "s" : ""} ago`;
-
   const diffDays = Math.floor(diffHours / 24);
   if (diffDays < 30) return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
-
   const diffMonths = Math.floor(diffDays / 30);
   if (diffMonths < 12)
     return `${diffMonths} month${diffMonths !== 1 ? "s" : ""} ago`;
-
   const diffYears = Math.floor(diffMonths / 12);
   return `${diffYears} year${diffYears !== 1 ? "s" : ""} ago`;
 }
