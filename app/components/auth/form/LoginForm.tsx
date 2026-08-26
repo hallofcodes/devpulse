@@ -81,16 +81,19 @@ export default function LoginForm() {
       success: "Login successful! Redirecting...",
       error: {
         render({ data }) {
-          setLoading(false);
           const err = data as Error;
           return err?.message || "Failed to login. Please try again.";
         },
       },
     });
 
-    loginPromise.then(() => {
-      router.push(redirectTo);
-    });
+    loginPromise
+      .then(() => {
+        router.push(redirectTo);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (

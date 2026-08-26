@@ -75,7 +75,7 @@ export default function VerifyEmail({
       error: "Failed to resend. Please try again.",
     });
 
-    verifyEmailPromise.then(() => {
+    verifyEmailPromise.finally(() => {
       setLoading(false);
     });
   };

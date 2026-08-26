@@ -57,21 +57,22 @@ export default function VerifyWakatime() {
 
     toast.promise(verifyWakatimePromise, {
       pending: "Verifying...",
-      success: {
-        render() {
-          router.push("/d");
-
-          return "Verification successful!";
-        },
-      },
+      success: "Verification successful!",
       error: {
         render({ data }) {
-          setLoading(false);
           const err = data as Error;
           return err?.message || "Failed to verify. Please try again.";
         },
       },
     });
+
+    verifyWakatimePromise
+      .then(() => {
+        router.push("/d");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (

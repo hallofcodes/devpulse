@@ -65,19 +65,21 @@ export default function UserProfile({ user }: { user: UserShape }) {
       success: "Profile updated!",
       error: {
         render({ data }) {
-          setLoading(false);
           const err = data as Error;
           return err?.message || "Failed to update profile. Please try again.";
         },
       },
     });
 
-    updateUserProfile.then(() => {
-      setLoading(false);
-      setOriginalName(sanitizedName);
-      setName(sanitizedName);
-      setIsEditing(false);
-    });
+    updateUserProfile
+      .then(() => {
+        setOriginalName(sanitizedName);
+        setName(sanitizedName);
+        setIsEditing(false);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }
 
   return (

@@ -74,26 +74,24 @@ export default function ResetPasswordForm() {
 
     toast.promise(updatePasswordPromise, {
       pending: "Resetting password...",
-      success: {
-        render() {
-          setLoading(false);
-          setPassword("");
-          setConfirmPassword("");
-          return "Password updated! You can log in now.";
-        },
-      },
+      success: "Password updated! You can log in now.",
       error: {
         render({ data }) {
-          setLoading(false);
           const err = data as Error;
           return err?.message || "Failed to reset password. Please try again.";
         },
       },
     });
 
-    updatePasswordPromise.then(() => {
-      router.replace("/login");
-    });
+    updatePasswordPromise
+      .then(() => {
+        setPassword("");
+        setConfirmPassword("");
+        router.replace("/login");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
