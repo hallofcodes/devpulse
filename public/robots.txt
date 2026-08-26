@@ -9,4 +9,4 @@ Allow: /join$
 Disallow: /join/
 Disallow: /reset-password/
 
-Sitemap: https://www.hallofcodes.org/sitemap.xml
+Sitemap: https://devpulse.hallofcodes.org/sitemap.xml

@@ -75,7 +75,7 @@ export default function VerifyEmail({
       error: "Failed to resend. Please try again.",
     });
 
-    verifyEmailPromise.then(() => {
+    verifyEmailPromise.finally(() => {
       setLoading(false);
     });
   };
@@ -91,7 +91,7 @@ export default function VerifyEmail({
             href="/"
             className="flex items-center gap-3 w-fit hover:opacity-80 transition"
           >
-            <Image src="/logo.svg" alt="Devpulse Logo" width={40} height={40} />
+            <Image src="/apple-touch-icon.png" alt="Devpulse Logo" width={40} height={40} />
             <span className="text-2xl font-bold tracking-tight text-white">
               Devpulse
             </span>
@@ -157,7 +157,7 @@ export default function VerifyEmail({
             href="/"
             className="lg:hidden flex items-center justify-center gap-3 mb-10"
           >
-            <Image src="/logo.svg" alt="Devpulse Logo" width={40} height={40} />
+            <Image src="/apple-touch-icon.png" alt="Devpulse Logo" width={40} height={40} />
             <h2 className="text-3xl font-bold text-gray-900">Devpulse</h2>
           </Link>
 

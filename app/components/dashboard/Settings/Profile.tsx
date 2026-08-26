@@ -22,7 +22,7 @@ export default function UserProfile({ user }: { user: UserShape }) {
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const { badWords } = useBadWords();
-  const preferredAvatar = user.image || "/logo.svg";
+  const preferredAvatar = user.image || "/apple-touch-icon.png";
 
   const isEdited = name.trim() !== originalName.trim();
 
@@ -65,19 +65,21 @@ export default function UserProfile({ user }: { user: UserShape }) {
       success: "Profile updated!",
       error: {
         render({ data }) {
-          setLoading(false);
           const err = data as Error;
           return err?.message || "Failed to update profile. Please try again.";
         },
       },
     });
 
-    updateUserProfile.then(() => {
-      setLoading(false);
-      setOriginalName(sanitizedName);
-      setName(sanitizedName);
-      setIsEditing(false);
-    });
+    updateUserProfile
+      .then(() => {
+        setOriginalName(sanitizedName);
+        setName(sanitizedName);
+        setIsEditing(false);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }
 
   return (

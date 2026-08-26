@@ -160,7 +160,7 @@ export default async function JoinPage({ searchParams }: Props) {
         <div className="glass-card max-w-lg w-full p-8 md:p-10 text-center">
           <div className="flex justify-center mb-6">
             <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-500/20 flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.15)]">
-              <Image src="/logo.svg" alt="Devpulse" width={36} height={36} />
+              <Image src="/apple-touch-icon.png" alt="Devpulse" width={36} height={36} />
             </div>
           </div>
 

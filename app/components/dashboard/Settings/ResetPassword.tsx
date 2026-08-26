@@ -67,21 +67,19 @@ export default function ResetPassword({ email }: { email: string }) {
 
     toast.promise(resetUserPasswordPromise, {
       pending: "Sending reset email...",
-      success: {
-        render() {
-          setLoading(false);
-          return "Reset email sent!";
-        },
-      },
+      success: "Reset email sent!",
       error: {
         render({ data }) {
-          setLoading(false);
           const err = data as Error;
           return (
             err?.message || "Failed to send reset email. Please try again."
           );
         },
       },
+    });
+
+    resetUserPasswordPromise.finally(() => {
+      setLoading(false);
     });
   };
 

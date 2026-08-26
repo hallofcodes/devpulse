@@ -110,7 +110,7 @@ export default async function Home() {
       "@type": "Organization",
       name: "Devpulse",
       url: "https://devpulse.hallofcodes.org",
-      logo: "https://devpulse.hallofcodes.org/favicon.png",
+      logo: "https://devpulse.hallofcodes.org/favicon-32x32.png",
     },
   };
 
@@ -138,26 +138,12 @@ export default async function Home() {
         <Nav />
 
         {/* Hero Section */}
-        <section className="relative max-w-7xl mx-auto px-6 pt-32 lg:pt-40 pb-20 lg:pb-32 flex flex-col lg:flex-row items-center gap-16 min-h-[85vh]">
+        <section className="relative max-w-7xl mx-auto px-6 py-20 flex flex-col lg:flex-row items-center gap-16 min-h-screen">
           {/* Left text */}
           <div className="w-full lg:w-1/2 text-center lg:text-left z-10">
-            <Link
-              href="https://github.com/hallofcodes/devpulse"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors text-xs font-semibold uppercase tracking-widest mb-8 group"
-              data-aos="fade-right"
-            >
-              <FontAwesomeIcon
-                icon={faStar}
-                className="w-4 h-4 text-yellow-400 group-hover:scale-110 transition-transform"
-              />
-              Star on GitHub
-            </Link>
-
             <h1
               className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] text-gray-900 mb-6"
-             
+
               data-aos-delay="100"
             >
               Measure your <br />
@@ -166,7 +152,7 @@ export default async function Home() {
 
             <p
               className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10"
-             
+
               data-aos-delay="200"
             >
               Turn your daily coding activity into competitive, shareable
@@ -176,21 +162,33 @@ export default async function Home() {
 
             <div
               className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4"
-             
+
               data-aos-delay="300"
             >
               <Link
                 href="/signup"
                 className="btn-primary px-8 py-3.5 text-base md:text-lg"
               >
-                Start Tracking Free
+                Get Started
               </Link>
-              <a
-                href="#features"
-                className="btn-secondary px-8 py-3.5 text-base md:text-lg"
+            </div>
+
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-400 animate-bounce">
+              <span className="text-sm tracking-wide">Scroll to explore</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
               >
-                See How It Works
-              </a>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
             </div>
           </div>
 
@@ -233,7 +231,9 @@ export default async function Home() {
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="font-bold text-gray-900">TypeScript</span>
+                        <span className="font-bold text-gray-900">
+                          TypeScript
+                        </span>
                         <span className="text-gray-500 font-mono text-xs">
                           28h 40m
                         </span>
@@ -304,15 +304,12 @@ export default async function Home() {
           className="max-w-7xl mx-auto px-6 py-24 lg:py-32 relative z-10"
         >
           <div className="text-center mb-16">
-            <h2
-              className="text-3xl md:text-5xl font-bold text-gray-900 mb-4"
-             
-            >
+            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
               Everything you need to grow.
             </h2>
             <p
               className="text-gray-500 text-lg max-w-2xl mx-auto"
-             
+
               data-aos-delay="100"
             >
               Devpulse integrates seamlessly with your tools to provide
@@ -384,7 +381,7 @@ function FeatureCard({
   return (
     <div
       className="glass-card p-8 group hover:-translate-y-2 transition-transform duration-300 bg-gray-50 border-gray-200 hover:border-blue-500/20"
-     
+
       data-aos-delay={delay}
     >
       <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-blue-50 transition-all">

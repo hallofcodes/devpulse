@@ -83,7 +83,7 @@ export async function generateMetadata(): Promise<Metadata> {
       },
       {
         rel: "icon",
-        url: "/favicon.png",
+        url: "/favicon-32x32.png",
       },
     ],
   };
@@ -104,16 +104,52 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
     >
       <head>
+        <meta charSet="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="hostname" content="devpulse.hallofcodes.org" />
+
+        <link
+          rel="alternate"
+          type="application/xml"
+          href="https://devpulse.hallofcodes.org/sitemap.xml"
+        />
+
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+        <link rel="manifest" href="/site.webmanifest" />
+
         <NortonSafeweb />
       </head>
       <body className="antialiased">
         <NextTopLoader showSpinner={false} color="#2563eb" />
         <AOSWrapper />
+
         {children}
+
         <ToastContainer
-          toastStyle={{ backgroundColor: "#ffffff", color: "#1a1f2e", border: "1px solid #e2e8f0", boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}
+          toastStyle={{
+            backgroundColor: "#ffffff",
+            color: "#1a1f2e",
+            border: "1px solid #e2e8f0",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+          }}
         />
+
         {isProduction && (
           <>
             <DevToolsDetector />

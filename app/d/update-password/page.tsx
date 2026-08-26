@@ -13,7 +13,7 @@ export default async function UpdatePassword() {
       <div className="min-h-screen flex items-center justify-center  px-4 grid-bg relative">
         <div className="w-full max-w-lg glass-card p-10 relative z-10">
           <div className="flex items-center gap-3 mb-2">
-            <Image src="/logo.svg" alt="Devpulse Logo" width={36} height={36} />
+            <Image src="/apple-touch-icon.png" alt="Devpulse Logo" width={36} height={36} />
             <h2 className="text-2xl font-bold gradient-text">Devpulse</h2>
           </div>
           <p className="mb-8 text-gray-500 text-sm">

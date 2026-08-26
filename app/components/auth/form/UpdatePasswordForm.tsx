@@ -69,19 +69,17 @@ export default function UpdatePasswordForm() {
 
     toast.promise(updateUserPasswordPromise, {
       pending: "Updating password...",
-      success: {
-        render() {
-          setLoading(false);
-          return "Password updated!";
-        },
-      },
+      success: "Password updated!",
       error: {
         render({ data }) {
-          setLoading(false);
           const err = data as Error;
           return err?.message || "Failed to update password. Please try again.";
         },
       },
+    });
+
+    updateUserPasswordPromise.finally(() => {
+      setLoading(false);
     });
   };
 

@@ -36,7 +36,7 @@ export default function LeaderboardHeader({
             <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl bg-white p-1.5 sm:p-2 shadow-2xl shrink-0">
               <div className="w-full h-full rounded-xl bg-[#121226] border border-gray-200 flex items-center justify-center overflow-hidden relative">
                 <Image
-                  src="/logo.svg"
+                  src="/apple-touch-icon.png"
                   alt="Devpulse Logo"
                   width={40}
                   height={40}

@@ -86,22 +86,22 @@ export default function SignupForm() {
 
     toast.promise(signUp, {
       pending: "Creating account...",
-      success: {
-        render() {
-          setLoading(false);
-          router.push(`/verify-email?email=${encodeURIComponent(email)}`);
-          
-          return "Please check your email to verify your account.";
-        },
-      },
+      success: "Please check your email to verify your account.",
       error: {
         render({ data }) {
-          setLoading(false);
           const err = data as Error;
           return err?.message || "Failed to sign up. Please try again.";
         },
       },
     });
+
+    signUp
+      .then(() => {
+        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
