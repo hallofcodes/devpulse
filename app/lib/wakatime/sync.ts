@@ -179,17 +179,39 @@ export async function syncWakatimeData({
         Date.now() - lastFetch < SIX_HOURS_MS &&
         (existingDailyStats as unknown[]).length >= CONSISTENCY_DAYS
       ) {
-        return {
-          status: 200,
-          success: true,
-          data: serializeBigInts(existing),
-        };
+        return { status: 200, success: true, data: serializeBigInts(existing) };
       }
     }
   }
 
   const { startStr, endStr } = getWindowRange();
-  const waka = await fetchWakatimeData(resolvedApiKey, startStr, endStr);
+
+  const keyUpdatePromise = normalizedIncomingApiKey
+    ? updateProfileWakatimeApiKey(userId, normalizedIncomingApiKey).then(
+        () => ({ ok: true as const }),
+        (err) => ({ ok: false as const, err }),
+      )
+    : Promise.resolve({ ok: true as const });
+
+  const [waka, keyUpdateResult] = await Promise.all([
+    fetchWakatimeData(resolvedApiKey, startStr, endStr),
+    keyUpdatePromise,
+  ]);
+
+  if (!keyUpdateResult.ok) {
+    const err = keyUpdateResult.err;
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2002"
+    ) {
+      return {
+        status: 400,
+        success: false,
+        error: "This WakaTime API key is already in use.",
+      };
+    }
+    return { status: 500, success: false, error: "Failed to update API key" };
+  }
 
   if (!waka.ok || !waka.stats || !waka.summaries) {
     return {
@@ -197,24 +219,6 @@ export async function syncWakatimeData({
       success: false,
       error: "Failed to fetch data from WakaTime",
     };
-  }
-
-  if (normalizedIncomingApiKey) {
-    try {
-      await updateProfileWakatimeApiKey(userId, normalizedIncomingApiKey);
-    } catch (err) {
-      if (
-        err instanceof Prisma.PrismaClientKnownRequestError &&
-        err.code === "P2002"
-      ) {
-        return {
-          status: 400,
-          success: false,
-          error: "This WakaTime API key is already in use.",
-        };
-      }
-      return { status: 500, success: false, error: "Failed to update API key" };
-    }
   }
 
   const dailyStats = waka.summaries.map((day) => ({
@@ -251,15 +255,7 @@ export async function syncWakatimeData({
       projects: (waka.stats.projects || []) as Prisma.InputJsonValue,
       last_fetched_at: new Date(nowIso),
     }),
-  ]);
-
-  const mergedResult = {
-    ...statsResult,
-    projects: projectsResult?.projects || [],
-  };
-
-  try {
-    await upsertUserDashboardSnapshot({
+    upsertUserDashboardSnapshot({
       user_id: userId,
       snapshot_date: new Date(endStr),
       total_seconds_7d: BigInt(snapshotMetrics.totalSeconds7d),
@@ -277,10 +273,16 @@ export async function syncWakatimeData({
           ? new Prisma.Decimal(topLanguage.percent.toFixed(2))
           : null,
       updated_at: new Date(nowIso),
-    });
-  } catch (err) {
-    console.error("Failed to upsert user dashboard snapshot", err);
-  }
+    }).catch((err) => {
+      console.error("Failed to upsert user dashboard snapshot", err);
+      return null;
+    }),
+  ]);
+
+  const mergedResult = {
+    ...statsResult,
+    projects: projectsResult?.projects || [],
+  };
 
   return {
     status: 200,
