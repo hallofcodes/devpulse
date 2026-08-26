@@ -42,16 +42,13 @@ export default function WakaTimeKey({
 
     const updateKey = new Promise<void>(async (resolve, reject) => {
       try {
-        const response = await fetch(
-          `/api/wakatime/sync?apiKey=${encodeURIComponent(nextKey)}&saveOnly=1`,
-        );
-        const payload = (await response.json()) as { error?: string };
-
-        if (!response.ok) {
-          return reject(
-            new Error(payload.error || "Failed to update API key."),
-          );
-        }
+        const wakatimeSyncResponse = await fetch(`/api/wakatime/sync`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ api_key: key, save_only: true }),
+        });
+        if (!wakatimeSyncResponse.ok)
+          throw new Error("Failed to sync Wakatime.");
 
         resolve();
       } catch (error) {

@@ -86,7 +86,7 @@ export function useChatMessageComposer({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          conversationId: targetConversationId,
+          conversation_id: targetConversationId,
           text: outgoingText,
           attachments: [],
         }),

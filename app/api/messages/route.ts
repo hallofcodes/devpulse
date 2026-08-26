@@ -58,10 +58,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { conversationId, text, attachments } = await req.json();
+  const { conversation_id, text, attachments } = await req.json();
 
   if (
-    !conversationId ||
+    !conversation_id ||
     (!text?.trim() && (!attachments || attachments.length === 0))
   ) {
     return NextResponse.json(
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
   const participant = await prisma.conversationParticipant.findUnique({
     where: {
       conversation_id_user_id: {
-        conversation_id: conversationId,
+        conversation_id,
         user_id: session.user.id,
       },
     },
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
 
   const message = await prisma.message.create({
     data: {
-      conversation_id: conversationId,
+      conversation_id,
       sender_id: session.user.id,
       text: text?.trim() ?? "",
       attachments: attachments ?? [],
@@ -101,11 +101,11 @@ export async function POST(req: Request) {
     created_at: message.created_at.toISOString(),
   };
 
-  emitter.emit(`chat:${conversationId}`, { type: "message", data: payload });
+  emitter.emit(`chat:${conversation_id}`, { type: "message", data: payload });
 
   const participants = await prisma.conversationParticipant.findMany({
     where: {
-      conversation_id: conversationId,
+      conversation_id,
       user_id: { not: session.user.id },
     },
     select: { user_id: true },
@@ -114,7 +114,7 @@ export async function POST(req: Request) {
   for (const p of participants) {
     emitter.emit(`user:${p.user_id}`, {
       type: "new_message",
-      data: { conversation_id: conversationId, sender_id: session.user.id },
+      data: { conversation_id, sender_id: session.user.id },
     });
   }
 

@@ -12,16 +12,15 @@ export async function PATCH(
   }
 
   const { id: conversationId } = await params;
-  const body = await req.json().catch(() => ({}));
-  const { markRead } = body as { markRead?: boolean };
+  const { mark_read } = await req.json();
 
   const timestamp = new Date();
 
-  const data: { lastSeenAt: Date; lastReadAt?: Date } = {
-    lastSeenAt: timestamp,
+  const data: { last_seen_at: Date; last_read_at?: Date } = {
+    last_seen_at: timestamp,
   };
-  if (markRead) {
-    data.lastReadAt = timestamp;
+  if (mark_read) {
+    data.last_read_at = timestamp;
   }
 
   await prisma.conversationParticipant.updateMany({

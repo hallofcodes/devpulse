@@ -47,11 +47,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { otherUserId, otherUserEmail } = await req.json();
+  const { other_user_id, other_user_email } = await req.json();
 
-  if (!otherUserId) {
+  if (!other_user_id) {
     return NextResponse.json(
-      { error: "otherUserId is required." },
+      { error: "other_user_id is required." },
       { status: 400 },
     );
   }
@@ -71,8 +71,8 @@ export async function POST(req: Request) {
             last_read_at: timestamp,
           },
           {
-            user_id: otherUserId,
-            email: otherUserEmail ?? "",
+            user_id: other_user_id,
+            email: other_user_email ?? "",
             last_seen_at: EPOCH,
             last_read_at: EPOCH,
           },

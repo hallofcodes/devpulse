@@ -1,6 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkRateLimit } from "../../utils/rate-limit";
 
+/*
+ * Gets the rate limit for a given route based on pathname and method.
+ *
+ * @param pathname The pathname of the request.
+ * @param method The HTTP method of the request.
+ * @returns An object containing the maximum number of requests and the window duration in milliseconds.
+ */
+function getLimitsForRoute(pathname: string, method: string) {
+  const isAuthEndpoint = /api\/(login|signup)/.test(pathname);
+  if (isAuthEndpoint) return { max: 10, windowMs: 60 * 60 * 1000 }; // thats 1 hour for 10 requests
+
+  const isMutating = ["POST", "PUT", "PATCH", "DELETE"].includes(method);
+  if (isMutating) return { max: 20, windowMs: 5 * 60 * 1000 }; // thats 5 minutes for 20 requests
+
+  return { max: 100, windowMs: 5 * 60 * 1000 }; // thats 5 minutes for 100 requests
+}
+
 export default function RateLimiter(
   request: NextRequest,
 ): NextResponse | undefined {
@@ -27,11 +44,11 @@ export default function RateLimiter(
     );
   }
 
-  const isAuthEndpoint = /api\/(login|signup)/.test(request.nextUrl.pathname);
-  const maxRequests = isAuthEndpoint ? 5 : 10;
-  const windowMs = isAuthEndpoint ? 60 * 60 * 1000 : 5 * 60 * 1000;
-
-  const withinLimit = checkRateLimit(ip, maxRequests, windowMs);
+  const { max, windowMs } = getLimitsForRoute(
+    request.nextUrl.pathname,
+    request.method,
+  );
+  const withinLimit = checkRateLimit(ip, max, windowMs);
 
   if (!withinLimit) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });

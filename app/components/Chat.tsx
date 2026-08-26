@@ -302,19 +302,18 @@ export default function Chat({ user }: { user: ChatUserShape }) {
     : undefined;
 
   const activeLabel = isGlobalActive
-    ? "Global Chat"
+    ? "Global"
     : activeOtherUser?.email?.split("@")[0] || "Unknown";
 
   const activeSublabel = isGlobalActive
-    ? "Public Channel"
+    ? "Worldwide"
     : activeOtherUserOnline
       ? "Online"
       : "Offline";
 
-  const activeSublabelClass =
-    activeOtherUserOnline || isGlobalActive
-      ? "text-emerald-600"
-      : "text-gray-500";
+  const activeSublabelClass = activeOtherUserOnline
+    ? "text-emerald-600"
+    : "text-gray-500";
 
   const typingIndicatorText = activeTypingState
     ? isGlobalActive
@@ -355,15 +354,15 @@ export default function Chat({ user }: { user: ChatUserShape }) {
         attachments={allMediaAttachments}
         onChange={setMediaViewer}
       />
-      <div className="flex h-screen w-full bg-transparent text-gray-900 overflow-hidden relative">
+      <div className="flex h-220 sm:h-screen w-full bg-transparent text-gray-900 overflow-hidden relative">
         {/* Left Sidebar */}
         <div
-          className={`w-full md:w-[300px] flex-shrink-0 border-r border-gray-200 flex flex-col bg-white md:bg-transparent z-20 absolute md:relative h-full transition-transform duration-300 ${conversationId ? "-translate-x-full md:translate-x-0" : "translate-x-0"}`}
+          className={`w-full md:w-[300px] flex-shrink-0 border-r border-gray-200 flex flex-col bg-white z-20 absolute md:relative h-full transition-transform duration-300 ${conversationId ? "-translate-x-full md:translate-x-0" : "translate-x-0"}`}
         >
           <div className="p-5 border-b border-gray-200">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-gray-700 tracking-tight">
-                Message category
+                Messages
               </h2>
               <button
                 onClick={() => setShowModal(true)}
@@ -492,7 +491,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
           {conversationId ? (
             <>
               {/* Header */}
-              <div className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b border-gray-200 bg-white/[0.01] z-10 flex-shrink-0">
+              <div className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b border-gray-200 bg-white z-10 flex-shrink-0">
                 <div className="flex items-center gap-2 sm:gap-3.5">
                   <button
                     onClick={() => setConversationId(null)}
@@ -503,16 +502,6 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                       className="w-3.5 h-3.5"
                     />
                   </button>
-                  <div className="relative">
-                    <div
-                      className={`flex justify-center items-center w-11 h-11 rounded-full text-[16px] font-bold shadow-sm ${isGlobalActive ? "bg-blue-500/15 text-blue-600 border border-blue-500/30" : "bg-neutral-800 text-gray-700 border border-gray-200"}`}
-                    >
-                      {activeInitials}
-                    </div>
-                    {!isGlobalActive && activeOtherUserOnline && (
-                      <div className="absolute bottom-0.5 right-0.5 w-3 h-3 bg-emerald-400 border-[2px] border-transparent rounded-full"></div>
-                    )}
-                  </div>
                   <div>
                     <h2 className="text-[16px] font-bold text-gray-700 leading-tight">
                       {activeLabel}
@@ -682,7 +671,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
         {/* Right Sidebar */}
         {conversationId && (
           <div
-            className={`w-full sm:w-[320px] flex-shrink-0 border-l border-gray-200 flex flex-col absolute right-0 top-0 bottom-0 h-full z-40 bg-white md:bg-white xl:bg-transparent xl:relative xl:transform-none transition-transform duration-300 ${showRightSidebar ? "translate-x-0" : "translate-x-full xl:translate-x-0 xl:hidden"}`}
+            className={`w-full sm:w-[320px] flex-shrink-0 border-l border-gray-200 flex flex-col absolute right-0 top-0 bottom-0 h-full z-40 bg-white xl:bg-transparent xl:relative xl:transform-none transition-transform duration-300 ${showRightSidebar ? "translate-x-0" : "translate-x-full xl:translate-x-0 xl:hidden"}`}
           >
             <div className="absolute top-4 right-4 xl:hidden">
               <button
@@ -839,9 +828,11 @@ export default function Chat({ user }: { user: ChatUserShape }) {
         )}
 
         {showModal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 backdrop-blur-sm">
-            <div className="glass-card w-[400px] p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">New Message</h3>
+          <div className="fixed p-5 inset-0 flex items-center justify-center bg-black/70 z-50 backdrop-blur-sm">
+            <div className="glass-card p-8">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">
+                New Message
+              </h3>
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
