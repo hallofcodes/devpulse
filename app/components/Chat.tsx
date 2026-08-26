@@ -841,7 +841,9 @@ export default function Chat({ user }: { user: ChatUserShape }) {
         {showModal && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 backdrop-blur-sm">
             <div className="glass-card w-[400px] p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">New Message</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">
+                New Message
+              </h3>
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}

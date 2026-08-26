@@ -13,17 +13,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { apiKey, saveOnly } = await req.json();
+  const { api_key, save_only } = await req.json();
 
-  const validationError = validateWakatimeApiKey(apiKey);
+  const validationError = validateWakatimeApiKey(api_key);
   if (validationError) {
     return NextResponse.json({ error: validationError }, { status: 400 });
   }
 
-  if (saveOnly) {
+  if (save_only) {
     const result = await saveWakatimeApiKey({
       userId: session.user.id,
-      apiKey,
+      apiKey: api_key,
     });
 
     if (!result.success) {
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
 
   const result = await syncWakatimeData({
     userId: session.user.id,
-    incomingApiKey: apiKey,
+    incomingApiKey: api_key,
     storedApiKey: session.user.wakatime_api_key,
   });
 

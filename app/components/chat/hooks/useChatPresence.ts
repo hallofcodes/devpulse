@@ -101,7 +101,7 @@ export function useChatPresence({
       await fetch(`/api/conversations/${targetConversationId}/presence`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ markRead: true }),
+        body: JSON.stringify({ mark_read: true }),
       }).catch(() => {});
     },
     [

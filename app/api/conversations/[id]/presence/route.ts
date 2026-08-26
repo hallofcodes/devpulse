@@ -12,15 +12,14 @@ export async function PATCH(
   }
 
   const { id: conversationId } = await params;
-  const body = await req.json().catch(() => ({}));
-  const { markRead } = body as { markRead?: boolean };
+  const { mark_read } = await req.json();
 
   const timestamp = new Date();
 
   const data: { lastSeenAt: Date; lastReadAt?: Date } = {
     lastSeenAt: timestamp,
   };
-  if (markRead) {
+  if (mark_read) {
     data.lastReadAt = timestamp;
   }
 

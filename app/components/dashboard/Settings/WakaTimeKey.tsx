@@ -45,7 +45,7 @@ export default function WakaTimeKey({
         const wakatimeSyncResponse = await fetch(`/api/wakatime/sync`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ apiKey: nextKey, saveOnly: true }),
+          body: JSON.stringify({ api_key: key, save_only: true }),
         });
         if (!wakatimeSyncResponse.ok)
           throw new Error("Failed to sync Wakatime.");

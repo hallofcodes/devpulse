@@ -46,7 +46,7 @@ export default function VerifyWakatime() {
         const wakatimeSyncResponse = await fetch(`/api/wakatime/sync`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ apiKey, saveOnly: true }),
+          body: JSON.stringify({ api_key: apiKey, save_only: true }),
         });
         if (!wakatimeSyncResponse.ok)
           throw new Error("Failed to sync Wakatime.");
