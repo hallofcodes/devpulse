@@ -72,7 +72,7 @@ export default function NavProfileDropdown({
       </div>
 
       <Link
-        href="/d/logout"
+        href="/logout"
         className={`${type === "sidebar" ? "flex" : "hidden"} items-center gap-2 px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors mt-1 rounded`}
         onClick={() => setProfileOpen(false)}
       >
@@ -144,7 +144,7 @@ export default function NavProfileDropdown({
           
           {type === "navbar" && (
             <Link
-              href="/d/logout"
+              href="/logout"
               className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors mt-1"
               onClick={() => setProfileOpen(false)}
             >
