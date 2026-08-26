@@ -22,7 +22,7 @@ export default function UserProfile({ user }: { user: UserShape }) {
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const { badWords } = useBadWords();
-  const preferredAvatar = user.image || "/logo.svg";
+  const preferredAvatar = user.image || "/apple-touch-icon.png";
 
   const isEdited = name.trim() !== originalName.trim();
 

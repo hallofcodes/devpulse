@@ -68,7 +68,7 @@ export default async function Leaderboards() {
         <BackButton href="/leaderboards" />
 
         <div className="flex justify-center items-center gap-3 mb-8">
-          <Image src="/logo.svg" alt="Devpulse Logo" width={36} height={36} />
+          <Image src="/apple-touch-icon.png" alt="Devpulse Logo" width={36} height={36} />
           <h1 className="text-3xl font-bold text-gray-900">
             Devpulse Leaderboards
           </h1>

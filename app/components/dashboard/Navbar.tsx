@@ -184,7 +184,7 @@ export default function DashboardLayout({
       >
         <div className="h-16 px-4 flex items-center justify-between border-b border-gray-200">
           <div className="flex items-center gap-2">
-            <Image src="/logo.svg" alt="Devpulse" width={22} height={22} />
+            <Image src="/apple-touch-icon.png" alt="Devpulse" width={22} height={22} />
             <span className="text-sm font-semibold">Devpulse</span>
           </div>
         </div>
