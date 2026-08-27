@@ -4,7 +4,7 @@ import { BADGE_LEGEND_HOURS, getBadgeInfoFromHours } from "@/app/utils/badge";
 export interface TopMember {
   email: string;
   total_seconds: number;
-  categories: { name: string; total_seconds: number }[] | null;
+  categories: { name: string; total_seconds: number; percent: number }[] | null;
   user_id: string | null;
 }
 
@@ -44,26 +44,15 @@ export default function TopLeaderboard({
   return (
     <>
       {top_members && top_members.length > 0 && (
-        <section
-          className="max-w-5xl mx-auto px-6 pb-8 relative z-10"
-         
-        >
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
-            <div>
-              <p className="text-xs uppercase tracking-[0.16em] text-blue-600/90 font-semibold mb-3">
-                Real Leaderboard
-              </p>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                Top Developers of the Week
-              </h2>
-              <p className="text-gray-500 text-sm md:text-base max-w-2xl">
-                Ranked by weekly coding time with clear podium cutoffs and
-                progress to the top.
-              </p>
-            </div>
-            <div className="inline-flex items-center rounded-full border border-blue-400/30 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">
-              {rankedTopMembers.length} ranked developers
-            </div>
+        <section className="max-w-5xl mx-auto px-6 pb-8 relative z-10">
+          <div className="gap-4 mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+              Top Developers of the Week
+            </h2>
+            <p className="text-gray-500 text-sm md:text-base max-w-2xl">
+              Ranked by weekly coding time with clear podium cutoffs and
+              progress to the top.
+            </p>
           </div>
 
           <div className="glass-card border-gray-200 bg-gray-50 rounded-2xl overflow-hidden">
@@ -93,7 +82,7 @@ export default function TopLeaderboard({
                   <div
                     key={`${member.email}-${rank}`}
                     className="grid grid-cols-[72px_minmax(0,1fr)_110px] md:grid-cols-[72px_minmax(0,1fr)_120px_180px] gap-3 items-center px-4 py-3 transition-colors bg-white/[0.01] hover:bg-gray-100"
-                   
+
                     data-aos-delay={(i * 45).toString()}
                   >
                     <span

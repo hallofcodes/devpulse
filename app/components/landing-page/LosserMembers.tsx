@@ -23,15 +23,9 @@ export default function LosserMembers({
   return (
     <>
       {losser_members && losser_members.length > 0 && (
-        <section
-          className="max-w-5xl mx-auto px-6 pb-8 relative z-10"
-         
-        >
+        <section className="max-w-5xl mx-auto px-6 pb-8 relative z-10">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
             <div>
-              <p className="text-xs uppercase tracking-[0.16em] text-blue-600/90 font-semibold mb-3">
-                Team Insight
-              </p>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
                 Lower Activity Leaderboard
               </h2>
@@ -80,7 +74,7 @@ export default function LosserMembers({
                     <article
                       key={`${member.email}-${i}`}
                       className="glass-card border-gray-200 bg-gray-50 rounded-xl p-4"
-                     
+
                       data-aos-delay={(i * 50).toString()}
                     >
                       <div className="flex items-start justify-between gap-3 mb-3">

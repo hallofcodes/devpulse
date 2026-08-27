@@ -13,6 +13,7 @@ import VibeCoders from "./components/landing-page/VibeCoders";
 import Nav from "./components/layout/Nav";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faArrowDown,
   faBolt,
   faLock,
   faStar,
@@ -137,13 +138,11 @@ export default async function Home() {
       <div className="min-h-screen overflow-hidden grid-bg relative">
         <Nav />
 
-        {/* Hero Section */}
-        <section className="relative max-w-7xl mx-auto px-6 py-20 flex flex-col lg:flex-row items-center gap-16 min-h-screen">
+        <section className="relative max-w-7xl mx-auto px-6 py-20 flex flex-col lg:flex-row items-center justify-center gap-16 min-h-screen">
           {/* Left text */}
-          <div className="w-full lg:w-1/2 text-center lg:text-left z-10">
+          <div className="w-full lg:w-1/2 flex flex-col items-center text-center lg:items-start lg:text-left z-10">
             <h1
               className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] text-gray-900 mb-6"
-
               data-aos-delay="100"
             >
               Measure your <br />
@@ -151,8 +150,7 @@ export default async function Home() {
             </h1>
 
             <p
-              className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10"
-
+              className="text-lg md:text-xl text-gray-500 max-w-xl leading-relaxed mb-10"
               data-aos-delay="200"
             >
               Turn your daily coding activity into competitive, shareable
@@ -161,8 +159,7 @@ export default async function Home() {
             </p>
 
             <div
-              className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4"
-
+              className="flex flex-col sm:flex-row gap-4"
               data-aos-delay="300"
             >
               <Link
@@ -172,91 +169,73 @@ export default async function Home() {
                 Get Started
               </Link>
             </div>
-
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-400 animate-bounce">
-              <span className="text-sm tracking-wide">Scroll to explore</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-5 h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
           </div>
 
-          {/* Right abstract UI visual / Mockup */}
-          <div className="w-full lg:w-1/2 relative h-[400px] lg:h-[500px] hidden md:block z-10 perspective-1000">
+          {/* Right abstract UI visual / Mockup — desktop only */}
+          <div className="w-full lg:w-1/2 relative h-[500px] hidden lg:block z-10">
             {/* Card 1 */}
-            <div data-aos="fade-left" data-aos-delay="200">
-              <div
-                className="absolute top-0 right-10 lg:right-0 w-[320px] glass-card p-5 border-gray-200 shadow-2xl skew-y-3 -rotate-3 transition-all duration-700 hover:rotate-0 hover:skew-y-0"
-                style={{ transformStyle: "preserve-3d" }}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="text-xs text-gray-500 font-semibold uppercase tracking-wider">
-                    Total Coding
-                  </div>
-                  <div className="text-xs text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full font-bold">
-                    +18%
-                  </div>
+            <div
+              data-aos="fade-left"
+              data-aos-delay="200"
+              className="absolute top-0 right-0 w-[320px] glass-card p-5 border border-gray-200 shadow-xl transition-transform duration-500 hover:-translate-y-1"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-xs text-gray-500 font-semibold uppercase tracking-wider">
+                  Total Coding
                 </div>
-                <div className="text-4xl font-extrabold text-gray-900 mb-2">
-                  42h 15m
+                <div className="text-xs text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full font-bold">
+                  +18%
                 </div>
-                <div className="text-xs text-gray-500 mb-4">Last 7 days</div>
-                <div className="h-1.5 w-full bg-gray-50 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 w-3/4 rounded-full" />
-                </div>
+              </div>
+              <div className="text-4xl font-extrabold text-gray-900 mb-2">
+                42h 15m
+              </div>
+              <div className="text-xs text-gray-500 mb-4">Last 7 days</div>
+              <div className="h-1.5 w-full bg-gray-50 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 w-3/4 rounded-full" />
               </div>
             </div>
 
             {/* Card 2 */}
-            <div data-aos-delay="400">
-              <div className="absolute top-44 left-10 lg:-left-10 w-[280px] glass-card p-5 border-gray-200 shadow-2xl -skew-y-3 rotate-3 z-20 backdrop-blur-xl bg-white/90 transition-all duration-700 hover:rotate-0 hover:skew-y-0 text-left">
-                <h4 className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-4">
-                  Top Languages
-                </h4>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-md bg-[#3178c6]/20 flex items-center justify-center text-[#3178c6] font-bold text-xs">
-                      TS
+            <div
+              data-aos-delay="400"
+              className="absolute top-48 left-0 w-[280px] glass-card p-5 border border-gray-200 shadow-xl bg-white/95 backdrop-blur-xl z-20 transition-transform duration-500 hover:-translate-y-1 text-left"
+            >
+              <h4 className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-4">
+                Top Languages
+              </h4>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-md bg-[#3178c6]/20 flex items-center justify-center text-[#3178c6] font-bold text-xs">
+                    TS
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="font-bold text-gray-900">
+                        TypeScript
+                      </span>
+                      <span className="text-gray-500 font-mono text-xs">
+                        28h 40m
+                      </span>
                     </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="font-bold text-gray-900">
-                          TypeScript
-                        </span>
-                        <span className="text-gray-500 font-mono text-xs">
-                          28h 40m
-                        </span>
-                      </div>
-                      <div className="h-1 w-full bg-gray-50 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#3178c6] w-[70%]" />
-                      </div>
+                    <div className="h-1 w-full bg-gray-50 rounded-full overflow-hidden">
+                      <div className="h-full bg-[#3178c6] w-[70%]" />
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-md bg-[#61dafb]/20 flex items-center justify-center text-[#61dafb] font-bold text-xs">
-                      Re
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-md bg-[#61dafb]/20 flex items-center justify-center text-[#61dafb] font-bold text-xs">
+                    Re
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="font-bold text-gray-900">React</span>
+                      <span className="text-gray-500 font-mono text-xs">
+                        12h 10m
+                      </span>
                     </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="font-bold text-gray-900">React</span>
-                        <span className="text-gray-500 font-mono text-xs">
-                          12h 10m
-                        </span>
-                      </div>
-                      <div className="h-1 w-full bg-gray-50 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#61dafb] w-[30%]" />
-                      </div>
+                    <div className="h-1 w-full bg-gray-50 rounded-full overflow-hidden">
+                      <div className="h-full bg-[#61dafb] w-[30%]" />
                     </div>
                   </div>
                 </div>
@@ -264,7 +243,7 @@ export default async function Home() {
             </div>
 
             {/* Card 3 (Code terminal) */}
-            <div className="absolute bottom-5 right-20 w-[300px] glass-card p-4 border border-gray-200 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-30 bg-white/95 transition-transform duration-700 hover:-translate-y-2 text-left">
+            <div className="absolute bottom-0 right-16 w-[300px] glass-card p-4 border border-gray-200 shadow-xl bg-white/95 z-30 transition-transform duration-500 hover:-translate-y-1 text-left">
               <div className="flex gap-1.5 mb-3">
                 <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
                 <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
@@ -292,6 +271,12 @@ export default async function Home() {
                 {"}"});
               </div>
             </div>
+          </div>
+
+          {/* Scroll indicator */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-400 animate-bounce">
+            <span className="text-sm tracking-wide">Scroll to explore</span>
+            <FontAwesomeIcon icon={faArrowDown} className="w-5 h-5" />
           </div>
         </section>
 
@@ -379,16 +364,14 @@ function FeatureCard({
   delay: string;
 }) {
   return (
-    <div
-      className="glass-card p-8 group hover:-translate-y-2 transition-transform duration-300 bg-gray-50 border-gray-200 hover:border-blue-500/20"
-
-      data-aos-delay={delay}
-    >
-      <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-blue-50 transition-all">
-        {icon}
+    <div className="glass-card p-8">
+      <div data-aos-delay={delay}>
+        <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-blue-50 transition-all">
+          {icon}
+        </div>
+        <h3 className="text-xl font-bold mb-3 text-gray-900">{title}</h3>
+        <p className="text-gray-500 text-sm leading-relaxed">{description}</p>
       </div>
-      <h3 className="text-xl font-bold mb-3 text-gray-900">{title}</h3>
-      <p className="text-gray-500 text-sm leading-relaxed">{description}</p>
     </div>
   );
 }
