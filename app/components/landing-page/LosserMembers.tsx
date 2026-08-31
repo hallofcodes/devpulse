@@ -23,7 +23,7 @@ export default function LosserMembers({
   return (
     <>
       {losser_members && losser_members.length > 0 && (
-        <section className="max-w-5xl mx-auto px-6 pb-8 relative z-10">
+        <section className="max-x-7xl mx-auto px-6 pb-8 relative z-10">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">

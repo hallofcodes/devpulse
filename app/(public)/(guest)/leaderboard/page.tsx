@@ -63,19 +63,14 @@ export default async function Leaderboards() {
   });
 
   return (
-    <div className="min-h-screen  grid-bg relative">
-      <div className="max-w-5xl mx-auto p-6 md:p-10 relative z-10">
-        <BackButton href="/leaderboards" />
-
-        <div className="flex justify-center items-center gap-3 mb-8">
-          <Image src="/apple-touch-icon.png" alt="Devpulse Logo" width={36} height={36} />
-          <h1 className="text-3xl font-bold text-gray-900">
-            Devpulse Leaderboards
-          </h1>
-        </div>
+    <>
+      <div className="px-6 py-8 flex flex-col gap-8">
+        <h1 className="text-2xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
+          Leaderboards
+        </h1>
 
         {leaderboards.length === 0 && (
-          <div className="max-w-5xl mx-auto p-6 md:p-10 relative z-10">
+          <div className="max-x-7xl mx-auto p-6 md:p-10 relative z-10">
             <h2 className="text-2xl font-bold mb-4">No Leaderboards Yet</h2>
             <p className="text-gray-500 mb-6">
               Please come back later to see the leaderboards from our community.
@@ -90,7 +85,7 @@ export default async function Leaderboards() {
                 key={board.id}
                 href={`/leaderboard/${board.slug}`}
                 className="stat-card flex justify-between items-center px-6 py-4 group bg-gray-100 hover:bg-gray-100 transition-all border border-gray-200 rounded-xl rounded-tl-sm hover:border-blue-500/30"
-               
+
                 data-aos-delay={(i * 50).toString()}
               >
                 <div className="flex items-center gap-3">
@@ -111,6 +106,6 @@ export default async function Leaderboards() {
 
       <CTA />
       <Footer />
-    </div>
+    </>
   );
 }

@@ -24,7 +24,7 @@ export default async function Contributors() {
 
   return (
     <section
-      className="max-w-5xl mx-auto px-6 pb-8 relative z-10"
+      className="max-x-7xl mx-auto px-6 pb-8 relative z-10"
      
     >
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">

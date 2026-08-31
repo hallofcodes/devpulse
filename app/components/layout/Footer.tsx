@@ -2,9 +2,9 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-gray-200 mt-24">
+    <footer className="mt-24">
       <div className="max-w-7xl mx-auto px-6 py-10 text-sm text-gray-500">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="my-20 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-center md:text-left">
             <p className="font-semibold text-gray-600">
               © {new Date().getFullYear()} Devpulse
@@ -43,8 +43,6 @@ export default function Footer() {
             </a>
           </div>
         </div>
-
-        <div className="my-6 border-t border-gray-200" />
 
         <div className="text-center text-xs text-gray-600">
           <Link href="https://www.hallofcodes.org">

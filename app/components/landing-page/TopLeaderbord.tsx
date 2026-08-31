@@ -44,7 +44,7 @@ export default function TopLeaderboard({
   return (
     <>
       {top_members && top_members.length > 0 && (
-        <section className="max-w-5xl mx-auto px-6 pb-8 relative z-10">
+        <section className="max-x-7xl mx-auto px-6 pb-8 relative z-10">
           <div className="gap-4 mb-6">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
               Top Developers of the Week
@@ -74,15 +74,11 @@ export default function TopLeaderboard({
             <div className="divide-y divide-white/5">
               {rankedTopMembers.map((member, i) => {
                 const rank = i + 1;
-                const badgeInfo = getBadgeInfoFromHours(
-                  member.total_seconds / 3600,
-                );
-
+                const badgeInfo = getBadgeInfoFromHours(member.total_seconds / 3600);
                 return (
                   <div
                     key={`${member.email}-${rank}`}
                     className="grid grid-cols-[72px_minmax(0,1fr)_110px] md:grid-cols-[72px_minmax(0,1fr)_120px_180px] gap-3 items-center px-4 py-3 transition-colors bg-white/[0.01] hover:bg-gray-100"
-
                     data-aos-delay={(i * 45).toString()}
                   >
                     <span
@@ -90,29 +86,28 @@ export default function TopLeaderboard({
                     >
                       {formatRank(rank)}
                     </span>
-
+            
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-gray-900 truncate">
                         {member.email.split("@")[0]}
                       </p>
-                      <p className="text-[11px] uppercase tracking-[0.1em] text-gray-500">
-                        {rank <= 3 ? "Podium zone" : "Chasing podium"}
+                      <p className="text-[11px] uppercase tracking-[0.1em] text-gray-500 flex items-center gap-1.5">
+                        <span className="truncate">
+                          {rank <= 3 ? "Podium zone" : "Chasing podium"}
+                        </span>
                       </p>
                     </div>
-
+            
                     <span className="text-sm font-semibold text-gray-700 text-right md:text-left whitespace-nowrap">
                       {formatDuration(member.total_seconds)}
                     </span>
-
+            
                     <div className="hidden md:flex md:justify-start">
                       <div
                         className={`badge-base ${badgeInfo.className} shrink-0 !text-[9px] !py-0.5 !px-2`}
                       >
                         {badgeInfo.icon && (
-                          <FontAwesomeIcon
-                            icon={badgeInfo.icon}
-                            className="w-2.5 h-2.5"
-                          />
+                          <FontAwesomeIcon icon={badgeInfo.icon} className="w-2.5 h-2.5" />
                         )}
                         {badgeInfo.label}
                       </div>
@@ -127,7 +122,7 @@ export default function TopLeaderboard({
             <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">
               Rankings Legend
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-2">
               {BADGE_LEGEND_HOURS.map((hours) => {
                 const b = getBadgeInfoFromHours(hours);
                 return (

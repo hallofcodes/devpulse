@@ -1,7 +1,7 @@
 import { Metadata } from "next/types";
 import { prisma } from "@/app/lib/prisma";
 import { getCurrentUser } from "@/app/lib/auth/user";
-import JoinButton from "../../components/JoinButton";
+import JoinButton from "../../../components/JoinButton";
 import Footer from "@/app/components/layout/Footer";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,6 +12,7 @@ import {
   faRankingStar,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
+import { notFound } from "next/navigation";
 
 type Props = {
   searchParams: Promise<{ id?: string }>;
@@ -81,59 +82,14 @@ export default async function JoinPage({ searchParams }: Props) {
   const { id } = await searchParams;
   const code = (id || "").trim();
 
-  if (!code) {
-    return (
-      <div className="min-h-screen flex items-center justify-center  grid-bg">
-        <div className="glass-card p-10 text-center max-w-md mx-auto">
-          <div className="w-16 h-16 rounded-full bg-blue-50 border border-blue-500/20 flex items-center justify-center mx-auto mb-5">
-            <FontAwesomeIcon
-              icon={faCircleInfo}
-              className="w-8 h-8 text-blue-600"
-            />
-          </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">
-            Join a Leaderboard
-          </h1>
-          <p className="text-gray-500 text-sm mb-6">
-            Open an invite link like{" "}
-            <span className="font-mono">/join?id=XXXXXXXX</span>.
-          </p>
-          <Link href="/" className="btn-primary inline-block px-6 py-3 text-sm">
-            Go to Devpulse
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  if (!code) return notFound();
 
   const [leaderboard, { user }] = await Promise.all([
     getLeaderboard(code),
     getCurrentUser(),
   ]);
 
-  if (!leaderboard) {
-    return (
-      <div className="min-h-screen flex items-center justify-center  grid-bg">
-        <div className="glass-card p-10 text-center max-w-md mx-auto">
-          <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-5">
-            <FontAwesomeIcon
-              icon={faCircleXmark}
-              className="w-8 h-8 text-red-600"
-            />
-          </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">
-            Invite Not Found
-          </h1>
-          <p className="text-gray-500 text-sm mb-6">
-            This invite link is invalid or has expired.
-          </p>
-          <Link href="/" className="btn-primary inline-block px-6 py-3 text-sm">
-            Go to Devpulse
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  if (!leaderboard) return notFound();
 
   const memberCount = await getMemberCount(leaderboard.id);
 
@@ -152,7 +108,7 @@ export default async function JoinPage({ searchParams }: Props) {
   }
 
   return (
-    <div className="min-h-screen  grid-bg relative overflow-hidden">
+    <div className="min-h-screen  relative overflow-hidden">
       <div className="glow-orb w-[500px] h-[500px] bg-blue-600/20 top-[-200px] left-1/2 -translate-x-1/2 absolute" />
       <div className="glow-orb w-[300px] h-[300px] bg-purple-600/15 bottom-[-100px] right-[-50px] absolute" />
 
@@ -160,7 +116,12 @@ export default async function JoinPage({ searchParams }: Props) {
         <div className="glass-card max-w-lg w-full p-8 md:p-10 text-center">
           <div className="flex justify-center mb-6">
             <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-500/20 flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.15)]">
-              <Image src="/apple-touch-icon.png" alt="Devpulse" width={36} height={36} />
+              <Image
+                src="/apple-touch-icon.png"
+                alt="Devpulse"
+                width={36}
+                height={36}
+              />
             </div>
           </div>
 

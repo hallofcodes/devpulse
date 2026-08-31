@@ -135,7 +135,7 @@ export default function RootLayout({
 
         <NortonSafeweb />
       </head>
-      <body className="antialiased">
+      <body className="antialiased grid-bg">
         <NextTopLoader showSpinner={false} color="#2563eb" />
         <AOSWrapper />
 

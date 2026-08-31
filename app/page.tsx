@@ -135,10 +135,10 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(devpulseWaka) }}
       />
 
-      <div className="min-h-screen overflow-hidden grid-bg relative">
+      <div className="min-h-screen overflow-hidden relative max-w-7xl mx-auto">
         <Nav />
 
-        <section className="relative max-w-7xl mx-auto px-6 py-20 flex flex-col lg:flex-row items-center justify-center gap-16 min-h-screen">
+        <section className="relative px-6 py-20 flex flex-col lg:flex-row items-center justify-center gap-16 min-h-screen">
           {/* Left text */}
           <div className="w-full lg:w-1/2 flex flex-col items-center text-center lg:items-start lg:text-left z-10">
             <h1

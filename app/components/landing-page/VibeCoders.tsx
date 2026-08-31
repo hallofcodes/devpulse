@@ -23,7 +23,7 @@ export default function VibeCoders({
   const visibleVibeCoders = vibe_coders.slice(0, 6);
 
   return (
-    <section className="max-w-5xl mx-auto px-6 pb-8 relative z-10">
+    <section className="max-x-7xl mx-auto px-6 pb-8 relative z-10">
       <div className="mb-6">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
           Agentic Coders

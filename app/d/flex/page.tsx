@@ -4,7 +4,7 @@ import { Metadata } from "next/types";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Flexes - Devpulse",
+  title: "Flex - Devpulse",
 };
 
 export default async function FlexPage() {

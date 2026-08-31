@@ -239,7 +239,7 @@ export default function DashboardLayout({
       </aside>
 
       <main
-        className="min-h-screen grid-bg relative overflow-x-hidden
+        className="min-h-screen relative overflow-x-hidden
           transition-[padding-left] duration-200
           md:pl-64
           pt-0
