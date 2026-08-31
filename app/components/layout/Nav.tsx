@@ -12,9 +12,13 @@ export default async function Nav() {
         <Link
           href="/"
           className="flex items-center gap-3 hover:opacity-80 transition"
-          data-aos="fade-down"
         >
-          <Image src="/apple-touch-icon.png" alt="Devpulse Logo" width={36} height={36} />
+          <Image
+            src="/apple-touch-icon.png"
+            alt="Devpulse Logo"
+            width={36}
+            height={36}
+          />
           <span className="text-xl font-bold tracking-tight">Devpulse</span>
         </Link>
 
@@ -26,11 +30,7 @@ export default async function Nav() {
             type="navbar"
           />
         ) : (
-          <div
-            className="flex items-center gap-6 text-sm font-medium"
-            data-aos="fade-down"
-            data-aos-delay="100"
-          >
+          <div className="flex items-center gap-6 text-sm font-medium">
             <Link
               href="/login"
               className="text-gray-600 hover:text-gray-900 transition"

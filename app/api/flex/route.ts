@@ -8,8 +8,13 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const now = new Date();
+
   const flexes = await prisma.userFlex.findMany({
-    where: { user_id: session.user.id },
+    where: {
+      user_id: session.user.id,
+      expires_at: { gt: now },
+    },
     orderBy: { created_at: "desc" },
   });
 
@@ -32,10 +37,29 @@ export async function POST(req: Request) {
     open_source_url,
   } = body;
 
-  if (!project_name?.trim()) {
+  const normalizedProjectName = project_name?.trim();
+
+  if (!normalizedProjectName) {
     return NextResponse.json(
       { error: "Project name is required." },
       { status: 400 },
+    );
+  }
+
+  const now = new Date();
+  const existingActiveFlex = await prisma.userFlex.findFirst({
+    where: {
+      user_id: session.user.id,
+      project_name: normalizedProjectName,
+      expires_at: { gt: now },
+    },
+    select: { id: true },
+  });
+
+  if (existingActiveFlex) {
+    return NextResponse.json(
+      { error: "You already have an active flex for this project." },
+      { status: 409 },
     );
   }
 
@@ -45,7 +69,7 @@ export async function POST(req: Request) {
     data: {
       user_id: session.user.id,
       user_email: session.user.email,
-      project_name: project_name.trim(),
+      project_name: normalizedProjectName,
       project_description: project_description ?? "",
       project_url: project_url ?? "",
       project_time: project_time ?? "",

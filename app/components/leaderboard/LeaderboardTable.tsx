@@ -2,6 +2,7 @@
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { BADGE_LEGEND_HOURS, getBadgeInfoFromHours } from "@/app/utils/badge";
+import LeaderboardStats from "./LeaderboardStats";
 
 export interface NonNullableMember {
   user_id: string;
@@ -12,111 +13,6 @@ export interface NonNullableMember {
   operating_systems: { name: string }[];
   editors: { name: string }[];
 }
-
-function LeaderboardPodium({
-  topUsers,
-}: {
-  topUsers: {
-    user_id: string;
-    rank: number;
-    email: string | null;
-    hours: number;
-    role: string | null;
-    languages: string[];
-    os: string;
-    editor: string;
-  }[];
-}) {
-  if (topUsers.length === 0) return null;
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
-      {topUsers.map((user, idx) => {
-        const rankColor =
-          idx === 0
-            ? "text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.4)]"
-            : idx === 1
-              ? "text-gray-600 drop-shadow-[0_0_8px_rgba(209,213,219,0.4)]"
-              : "text-amber-600 drop-shadow-[0_0_8px_rgba(217,119,6,0.4)]";
-
-        const badgeInfo = getBadgeInfoFromHours(user.hours);
-        const initial = (user.email?.[0] || "?").toUpperCase();
-
-        return (
-          <div
-            key={user.user_id}
-            className="glass-card p-5 flex flex-col justify-between relative overflow-hidden group hover:border-blue-500/30 transition-all duration-300"
-          >
-            {/* Minimal Background Glow based on rank */}
-            <div
-              className={`absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-10 transition-transform group-hover:scale-125 duration-700 ${idx === 0 ? "bg-yellow-400" : idx === 1 ? "bg-gray-300" : "bg-amber-600"}`}
-            />
-
-            <div className="flex justify-between items-start mb-6 relative z-10">
-              <div className="flex gap-4 items-center">
-                <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center text-xl font-bold text-gray-700 shadow-inner relative">
-                  {initial}
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900 tracking-tight truncate max-w-[120px] sm:max-w-[140px]">
-                    {user.email?.split("@")[0] || "Unknown"}
-                  </div>
-                  <div className={`mt-1.5 badge-base ${badgeInfo.className}`}>
-                    {badgeInfo.icon && (
-                      <FontAwesomeIcon
-                        icon={badgeInfo.icon}
-                        className="w-2.5 h-2.5"
-                      />
-                    )}
-                    {badgeInfo.label}
-                  </div>
-                </div>
-              </div>
-
-              <div
-                className={`flex flex-col items-center justify-center px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 backdrop-blur-md shadow-lg ${rankColor}`}
-              >
-                <span className="font-mono text-lg sm:text-xl tracking-tighter leading-none">
-                  {idx === 0 ? "01" : idx === 1 ? "02" : "03"}
-                </span>
-              </div>
-            </div>
-
-            {/* Stats Row */}
-            <div className="grid grid-cols-3 gap-2 border-t border-gray-200 pt-4 relative z-10">
-              <div className="text-center flex flex-col justify-center">
-                <span className="text-[9px] uppercase tracking-widest text-gray-500 mb-1">
-                  Hours
-                </span>
-                <span className="text-lg font-bold text-gray-900 tracking-tighter">
-                  {user.hours}
-                </span>
-              </div>
-              <div className="text-center flex flex-col justify-center border-l border-gray-200 pl-2">
-                <span className="text-[9px] uppercase tracking-widest text-gray-500 mb-1">
-                  Language
-                </span>
-                <span className="text-sm font-medium text-gray-600 truncate">
-                  {user.languages?.[0] || "N/A"}
-                </span>
-              </div>
-              <div className="text-center flex flex-col justify-center border-l border-gray-200 pl-2">
-                <span className="text-[9px] uppercase tracking-widest text-gray-500 mb-1">
-                  Editor
-                </span>
-                <span className="text-sm font-medium text-gray-600 truncate">
-                  {user.editor || "N/A"}
-                </span>
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-import LeaderboardStats from "./LeaderboardStats";
 
 export default function LeaderboardTable({
   members,
@@ -136,7 +32,6 @@ export default function LeaderboardTable({
       editor: member.editors?.[0]?.name || "N/A",
     }));
 
-  const maxHours = ranked[0]?.hours || 1;
   const formatRank = (rank: number) => rank.toString().padStart(2, "0");
 
   const getRankColor = (rank: number) => {
@@ -148,12 +43,8 @@ export default function LeaderboardTable({
   };
 
   return (
-    <div className="w-full flex flex-col xl:flex-row gap-6">
-      <LeaderboardStats members={members} />
-
+    <>
       <div className="flex-1 min-w-0">
-        <LeaderboardPodium topUsers={ranked.slice(0, 3)} />
-
         {ranked.length === 0 ? (
           <div className="glass-card p-16 text-center">
             <p className="text-gray-500 tracking-tight font-medium">
@@ -173,8 +64,7 @@ export default function LeaderboardTable({
 
             {/* List Body */}
             <div className="flex flex-col divide-y divide-white/5">
-              {ranked.slice(3).map((user) => {
-                const pct = Math.max(2, (user.hours / maxHours) * 100);
+              {ranked.map((user) => {
                 const badgeInfo = getBadgeInfoFromHours(user.hours);
 
                 return (
@@ -182,13 +72,6 @@ export default function LeaderboardTable({
                     key={user.user_id}
                     className="group relative flex flex-col md:flex-row items-start md:items-center px-4 sm:px-6 py-4 md:py-4 transition-colors hover:bg-gray-100 bg-transparent"
                   >
-                    {/* Background Progress Bar */}
-                    <div
-                      className="absolute left-0 bottom-0 h-[1px] bg-gradient-to-r from-blue-500/50 to-transparent"
-                      style={{ width: `${pct}%` }}
-                    />
-
-                    {/* MOBILE TOP ROW / DESKTOP LEFT FLEX */}
                     <div className="flex items-center w-full md:w-auto md:flex-1 min-w-0 md:min-w-[150px]">
                       {/* Rank */}
                       <div className="w-8 sm:w-12 shrink-0 text-center flex items-center justify-center">
@@ -201,9 +84,6 @@ export default function LeaderboardTable({
 
                       {/* Profile + Badges */}
                       <div className="flex-1 ml-3 sm:ml-4 min-w-0 flex items-center gap-3">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 rounded-lg bg-gradient-to-br from-white/5 to-white/10 border border-gray-200 flex items-center justify-center text-[10px] sm:text-sm font-semibold text-gray-600 shadow-sm uppercase">
-                          {user.email?.charAt(0) || "?"}
-                        </div>
                         <div className="flex flex-col min-w-0 gap-1 sm:gap-1.5">
                           <div className="flex items-center gap-2">
                             <p className="font-semibold text-gray-700 tracking-tight text-sm sm:text-[15px] truncate max-w-[120px] xs:max-w-[160px] sm:max-w-[180px] lg:max-w-[200px] leading-none">
@@ -291,38 +171,6 @@ export default function LeaderboardTable({
           </div>
         )}
       </div>
-
-      {/* Rankings Legend */}
-      <div className="xl:w-64 shrink-0 mt-8 xl:mt-0 flex flex-col gap-6">
-        <div className="p-5 rounded-2xl bg-gray-50 border border-gray-200 h-fit">
-          <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center justify-start gap-2">
-            Rankings Legend
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-1 gap-2">
-            {BADGE_LEGEND_HOURS.map((hours) => {
-              const b = getBadgeInfoFromHours(hours);
-              return (
-                <div
-                  key={hours}
-                  className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 hover:bg-white/[0.06] transition-colors gap-2"
-                >
-                  <div
-                    className={`badge-base ${b.className} shrink-0 !text-[9px] !py-0.5 !px-2`}
-                  >
-                    {b.icon && (
-                      <FontAwesomeIcon icon={b.icon} className="w-2.5 h-2.5" />
-                    )}
-                    {b.label}
-                  </div>
-                  <span className="text-[10px] text-gray-500 font-mono font-medium">
-                    {hours === 0 ? "0 hrs" : `${hours}+`}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

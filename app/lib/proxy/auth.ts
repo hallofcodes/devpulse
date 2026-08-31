@@ -22,12 +22,7 @@ export default async function Auth(req: NextRequest) {
     }
   }
 
-  const authRoutes = [
-    "/login",
-    "/signup",
-    "/forgot-password",
-    "/reset-password",
-  ];
+  const authRoutes = ["/login", "/signup", "/forgot-password"];
 
   if (authRoutes.includes(pathname) && session) {
     if (!session.user.email_verified) {
@@ -37,6 +32,10 @@ export default async function Auth(req: NextRequest) {
       return NextResponse.redirect(new URL("/verify-wakatime", req.url));
     }
     return NextResponse.redirect(new URL("/d", req.url));
+  }
+
+  if (pathname === "/reset-password") {
+    return null;
   }
 
   if (

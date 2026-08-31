@@ -22,10 +22,37 @@ export async function PUT(
     open_source_url,
   } = body;
 
+  const normalizedProjectName = project_name?.trim();
+
+  if (!normalizedProjectName) {
+    return NextResponse.json(
+      { error: "Project name is required." },
+      { status: 400 },
+    );
+  }
+
+  const now = new Date();
+  const existingActiveFlex = await prisma.userFlex.findFirst({
+    where: {
+      user_id: session.user.id,
+      project_name: normalizedProjectName,
+      expires_at: { gt: now },
+      id: { not: id },
+    },
+    select: { id: true },
+  });
+
+  if (existingActiveFlex) {
+    return NextResponse.json(
+      { error: "You already have an active flex for this project." },
+      { status: 409 },
+    );
+  }
+
   const flex = await prisma.userFlex.updateMany({
     where: { id, user_id: session.user.id },
     data: {
-      project_name: project_name?.trim(),
+      project_name: normalizedProjectName,
       project_description: project_description ?? "",
       project_url: project_url ?? "",
       project_time: project_time ?? "",

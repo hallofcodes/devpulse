@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default async function UpdatePassword() {
   return (
     <>
-      <div className="min-h-screen flex items-center justify-center  px-4 grid-bg relative">
+      <div className="min-h-screen flex items-center justify-center  px-4 relative">
         <div className="w-full max-w-lg glass-card p-10 relative z-10">
           <div className="flex items-center gap-3 mb-2">
             <Image src="/apple-touch-icon.png" alt="Devpulse Logo" width={36} height={36} />

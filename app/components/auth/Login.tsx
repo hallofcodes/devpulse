@@ -18,11 +18,11 @@ export default function Login() {
       : undefined;
 
   return (
-    <div className="min-h-screen flex grid-bg relative">
+    <div className="min-h-screen flex relative">
       {/* Left Side - Visual / Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 md:p-16 xl:p-24 border-r border-gray-200 bg-slate-800 overflow-hidden">
         {/* Background elements */}
-        <div className="absolute inset-0 grid-bg opacity-30" />
+        <div className="absolute inset-0 opacity-30" />
 
         <div className="relative z-10">
           <Link
@@ -87,7 +87,7 @@ export default function Login() {
 
       {/* Right Side - Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 sm:p-12 xl:p-20 relative">
-        <div className="absolute inset-0 grid-bg opacity-20 lg:hidden" />
+        <div className="absolute inset-0 opacity-20 lg:hidden" />
 
         <div className="w-full max-w-sm relative z-10">
           <Link

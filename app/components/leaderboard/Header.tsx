@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Banner from "./Banner";
-import BackButton from "./BackButton";
 import InviteFriendsButton from "./InviteFriendsButton";
 
 interface LeaderboardRow {
@@ -23,14 +22,7 @@ export default function LeaderboardHeader({
           name={leaderboard.name}
           imageUrl="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop"
         />
-
-        {/* Top actions overlay */}
-        <div className="absolute top-4 left-4 right-4 flex items-start justify-between z-20 pointer-events-none">
-          <div className="pointer-events-auto">
-            <BackButton />
-          </div>
-        </div>
-
+        
         <div className="absolute left-6 right-4 sm:left-8 sm:right-8 -bottom-14 sm:-bottom-16 flex items-end justify-between gap-3 sm:gap-6 z-10">
           <div className="flex items-end gap-3 sm:gap-6 flex-1 min-w-0">
             <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl bg-white p-1.5 sm:p-2 shadow-2xl shrink-0">

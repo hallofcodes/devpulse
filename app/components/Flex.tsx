@@ -51,6 +51,7 @@ function toEditableFlex(row: FlexRow): Projects {
 
 export default function Flex() {
   const [loading, setLoading] = useState(false);
+  const [nowMs, setNowMs] = useState(() => Date.now());
   const [flexes, setFlexes] = useState<Projects[]>([]);
   const [flex, setFlex] = useState<Projects | null>(null);
   const [userFlexes, setUserFlexes] = useState<FlexRow[]>([]);
@@ -123,7 +124,10 @@ export default function Flex() {
         });
 
     if (!res.ok) {
-      toast.error("Failed to submit flex. Please try again.");
+      const errorData = (await res.json().catch(() => null)) as
+        | { error?: string }
+        | null;
+      toast.error(errorData?.error || "Failed to submit flex. Please try again.");
       return;
     }
 
@@ -136,14 +140,6 @@ export default function Flex() {
     setFlex(null);
     setEditingFlexId(null);
     toast.success(editingFlexId ? "Flex updated!" : "Flex submitted!");
-  };
-
-  const expireAt = (expireAt: string) => {
-    const expiresAt = new Date(expireAt);
-    const now = new Date();
-
-    const diffMs = expiresAt.getTime() - now.getTime();
-    return Math.max(Math.floor(diffMs / (1000 * 60 * 60)), 0) + "hr";
   };
 
   const handleDeleteFlex = async (flexId: string) => {
@@ -163,6 +159,17 @@ export default function Flex() {
     toast.success("Flex deleted.");
   };
 
+  const expireIn = (expiresAt: string) => {
+    const diffMs = new Date(expiresAt).getTime() - nowMs;
+    const totalMinutes = Math.max(Math.floor(diffMs / (1000 * 60)), 0);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    if (hours <= 0) return `${minutes}m`;
+    if (minutes === 0) return `${hours}h`;
+    return `${hours}h ${minutes}m`;
+  };
+
   useEffect(() => {
     async function fetchUserFlexes() {
       setLoading(true);
@@ -175,6 +182,18 @@ export default function Flex() {
     }
 
     fetchUserFlexes();
+  }, []);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      const currentNowMs = Date.now();
+      setNowMs(currentNowMs);
+      setUserFlexes((prev) =>
+        prev.filter((item) => new Date(item.expires_at).getTime() > currentNowMs),
+      );
+    }, 60 * 1000);
+
+    return () => window.clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
@@ -203,7 +222,7 @@ export default function Flex() {
             Flex
           </h1>
           <p className="text-sm text-gray-500 font-medium tracking-wide mt-1">
-            Share your projects with the community
+            Flex a project to the community for a limited time
           </p>
         </div>
 
@@ -408,8 +427,7 @@ export default function Flex() {
                 </a>
               )}
               <span className="text-xs">
-                Expires in {expireAt(f.expires_at || "")} • Posted{" "}
-                {timeAgo(f.created_at)}
+                Expires in {expireIn(f.expires_at)} • Posted {timeAgo(f.created_at)}
               </span>
             </div>
           ))}
