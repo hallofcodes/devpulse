@@ -12,6 +12,12 @@ import { faFile, faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import MediaViewerModal, { type MediaViewerPayload } from "./MediaViewerModal";
 
+type NormalizedAttachment = {
+  mimetype: string;
+  public_url: string;
+  filename: string;
+};
+
 export default function Messages({
   messages,
   user,
@@ -49,8 +55,8 @@ export default function Messages({
     if (!container) return;
     const handleScroll = () => {
       const nearBottom =
-        container.scrollHeight - container.scrollTop - container.clientHeight <
-        100;
+        container.scrollHeight - container.scrollTop - container.clientHeight;
+      100;
       setShowScrollBtn(!nearBottom);
     };
     container.addEventListener("scroll", handleScroll);
@@ -90,205 +96,231 @@ export default function Messages({
         )}
 
         {messages.map((msg, idx) => {
-          const isSelf = msg.sender_id === user.id;
-          const conversationRow = conversations.find(
-            (c) => c.id === msg.conversation_id,
-          );
-          const senderRow = conversationRow?.users.find(
-            (u) => u.id === msg.sender_id,
-          );
-
-          const senderInitial = senderRow?.email?.[0]?.toUpperCase() ?? "?";
-          const senderName = senderRow?.email?.split("@")?.[0] ?? "";
-          const canOpenPrivateChat =
-            !isSelf && conversationRow?.type === "global" && !!senderRow?.email;
-
-          const badgeInfo = badgesByUserId?.[msg.sender_id] ?? fallbackBadge;
-          const badgeLabel = badgeInfo.label;
-          const badgePillClass = badgeInfo.className;
-
-          // long msg? nudge avatar up, ez.
-          const text = msg.text ?? "";
-          const hasMedia = !!msg.attachments?.length;
-          const isLongMessage =
-            hasMedia || text.length >= 120 || text.includes("\n");
-          const avatarTranslateClass = isLongMessage
-            ? "-translate-y-[4.5px]"
-            : "-translate-y-[4px]";
-          const normalizedAttachments = (msg.attachments ?? [])
-            .map((att) => normalizeAttachment(att))
-            .filter(
-              (
-                att,
-              ): att is {
-                mimetype: string;
-                public_url: string;
-                filename: string;
-              } => !!att,
-            );
-          const isVoiceOnlyMessage =
-            !msg.text &&
-            normalizedAttachments.length > 0 &&
-            normalizedAttachments.every(
-              (att) => getAttachmentKind(att) === "audio",
-            );
+          const prevMsg = idx > 0 ? messages[idx - 1] : null;
+          // Only collapse the header when the previous message is from the
+          // same sender AND within the same conversation thread.
+          const isGrouped =
+            !!prevMsg &&
+            prevMsg.sender_id === msg.sender_id &&
+            prevMsg.conversation_id === msg.conversation_id;
 
           return (
-            <div
+            <MessageRow
               key={idx}
-              className={`group flex gap-2.5 items-end transition-colors ${
-                isSelf ? "justify-end" : "justify-start"
-              }`}
-            >
-              {!isSelf && (
-                <div
-                  role={canOpenPrivateChat ? "button" : undefined}
-                  tabIndex={canOpenPrivateChat ? 0 : undefined}
-                  onClick={() => {
-                    if (!canOpenPrivateChat || !senderRow?.email) return;
-                    onUserProfileClick?.(msg.sender_id, senderRow.email);
-                  }}
-                  onKeyDown={(event) => {
-                    if (!canOpenPrivateChat || !senderRow?.email) return;
-                    if (event.key !== "Enter" && event.key !== " ") return;
-                    event.preventDefault();
-                    onUserProfileClick?.(msg.sender_id, senderRow.email);
-                  }}
-                  title={canOpenPrivateChat ? "Start private chat" : undefined}
-                  className={`flex-shrink-0 ${avatarTranslateClass} w-8 h-8 rounded-full bg-neutral-700 border border-gray-200 flex items-center justify-center aspect-square overflow-hidden ${
-                    canOpenPrivateChat
-                      ? "cursor-pointer hover:border-blue-400/60 hover:bg-neutral-700/80"
-                      : ""
-                  }`}
-                >
-                  <span className="text-xs font-semibold leading-none text-gray-700">
-                    {senderInitial}
-                  </span>
-                </div>
-              )}
-
-              <div
-                className={`flex flex-col min-w-0 w-full max-w-[680px] ${
-                  isSelf ? "items-end" : "items-start"
-                }`}
-              >
-                <div
-                  className={`flex items-center gap-1.5 ${isVoiceOnlyMessage ? "mb-0" : "mb-1"} px-0.5`}
-                >
-                  {isSelf && (
-                    <span className="text-[10px] text-gray-600">
-                      {timeAgo(msg.created_at)}
-                    </span>
-                  )}
-                  {canOpenPrivateChat && senderRow?.email ? (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        onUserProfileClick?.(
-                          msg.sender_id,
-                          senderRow.email as string,
-                        )
-                      }
-                      className="text-[12px] font-semibold leading-none text-gray-700 hover:text-blue-600 transition"
-                      title="Start private chat"
-                    >
-                      {senderName}
-                    </button>
-                  ) : (
-                    <span
-                      className={`text-[12px] font-semibold leading-none ${
-                        isSelf ? "text-blue-600" : "text-gray-700"
-                      }`}
-                    >
-                      {senderName}
-                    </span>
-                  )}
-                  <span
-                    className={`badge-base shrink-0 !text-[9px] !py-0.5 !px-2 ${badgePillClass}`}
-                  >
-                    {badgeInfo.icon && (
-                      <FontAwesomeIcon
-                        icon={badgeInfo.icon}
-                        className="w-2.5 h-2.5"
-                      />
-                    )}
-                    {badgeLabel}
-                  </span>
-                  {!isSelf && (
-                    <span className="text-[10px] text-gray-600">
-                      {timeAgo(msg.created_at)}
-                    </span>
-                  )}
-                </div>
-
-                {msg.text && (
-                  <div
-                    className={`px-5 py-3 text-[14px] leading-relaxed break-words break-all overflow-x-hidden ${
-                      isSelf
-                        ? "bg-blue-500 text-white rounded-2xl rounded-br-sm shadow-sm"
-                        : "bg-white border border-gray-200 text-gray-500 rounded-2xl rounded-bl-sm"
-                    }`}
-                  >
-                    <div className="prose prose-invert prose-sm max-w-none break-words break-all whitespace-pre-wrap leading-[1.6]">
-                      <ReactMarkdown
-                        components={{
-                          code({ className, children, ...props }) {
-                            const match = /language-(\w+)/.exec(
-                              className || "",
-                            );
-                            const codeText = String(children).replace(
-                              /\n$/,
-                              "",
-                            );
-
-                            if (!match) {
-                              return (
-                                <code
-                                  className="px-1 py-0.5 rounded bg-gray-100 text-[0.85em]"
-                                  {...(props as Record<string, unknown>)}
-                                >
-                                  {children}
-                                </code>
-                              );
-                            }
-
-                            return (
-                              <CodeBlock
-                                code={codeText}
-                                language={match[1]}
-                                props={props as Record<string, unknown>}
-                              />
-                            );
-                          },
-                        }}
-                      >
-                        {msg.text}
-                      </ReactMarkdown>
-                    </div>
-                  </div>
-                )}
-
-                {normalizedAttachments.length > 0 && (
-                  <div
-                    className={`${isVoiceOnlyMessage ? "mt-0" : "mt-1.5"} space-y-1.5`}
-                  >
-                    {normalizedAttachments.map((att, i) => (
-                      <div key={i}>
-                        {getAttachments(att, (payload) =>
-                          setMediaViewer(payload),
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
+              msg={msg}
+              user={user}
+              conversations={conversations}
+              badgesByUserId={badgesByUserId}
+              fallbackBadge={fallbackBadge}
+              showHeader={!isGrouped}
+              onUserProfileClick={onUserProfileClick}
+              onOpenMedia={setMediaViewer}
+            />
           );
         })}
 
         <div ref={bottomRef} />
       </div>
     </>
+  );
+}
+
+function MessageRow({
+  msg,
+  user,
+  conversations,
+  badgesByUserId,
+  fallbackBadge,
+  showHeader,
+  onUserProfileClick,
+  onOpenMedia,
+}: {
+  msg: Message;
+  user: ChatUserShape;
+  conversations: Conversation[];
+  badgesByUserId?: Record<string, BadgeInfo>;
+  fallbackBadge: BadgeInfo;
+  showHeader: boolean;
+  onUserProfileClick?: (targetuser_id: string, targetEmail: string) => void;
+  onOpenMedia: (payload: MediaViewerPayload) => void;
+}) {
+  const isSelf = msg.sender_id === user.id;
+  const conversationRow = conversations.find(
+    (c) => c.id === msg.conversation_id,
+  );
+  const senderRow = conversationRow?.users.find((u) => u.id === msg.sender_id);
+
+  const senderInitial = senderRow?.email?.[0]?.toUpperCase() ?? "?";
+  const senderName = senderRow?.email?.split("@")?.[0] ?? "";
+  const canOpenPrivateChat =
+    !isSelf && conversationRow?.type === "global" && !!senderRow?.email;
+
+  const badgeInfo = badgesByUserId?.[msg.sender_id] ?? fallbackBadge;
+
+  const text = msg.text ?? "";
+  const hasMedia = !!msg.attachments?.length;
+  const isLongMessage = hasMedia || text.length >= 120 || text.includes("\n");
+  const avatarTranslateClass = isLongMessage
+    ? "-translate-y-[4.5px]"
+    : "-translate-y-[4px]";
+
+  const normalizedAttachments = (msg.attachments ?? [])
+    .map(normalizeAttachment)
+    .filter((a): a is NormalizedAttachment => !!a);
+
+  const isVoiceOnlyMessage =
+    !msg.text &&
+    normalizedAttachments.length > 0 &&
+    normalizedAttachments.every((att) => getAttachmentKind(att) === "audio");
+
+  const handleProfileClick = () => {
+    if (!canOpenPrivateChat || !senderRow?.email) return;
+    onUserProfileClick?.(msg.sender_id, senderRow.email);
+  };
+
+  return (
+    <div
+      className={`group flex gap-2.5 items-end transition-colors ${
+        isSelf ? "justify-end" : "justify-start"
+      }`}
+    >
+      {!isSelf && (
+        <div
+          role={canOpenPrivateChat ? "button" : undefined}
+          tabIndex={canOpenPrivateChat ? 0 : undefined}
+          onClick={handleProfileClick}
+          onKeyDown={(event) => {
+            if (event.key !== "Enter" && event.key !== " ") return;
+            event.preventDefault();
+            handleProfileClick();
+          }}
+          title={canOpenPrivateChat ? "Start private chat" : undefined}
+          className={`flex-shrink-0 ${avatarTranslateClass} w-8 h-8 rounded-full bg-neutral-700 border border-gray-200 flex items-center justify-center aspect-square overflow-hidden ${
+            showHeader ? "" : "invisible"
+          } ${
+            canOpenPrivateChat
+              ? "cursor-pointer hover:border-blue-400/60 hover:bg-neutral-700/80"
+              : ""
+          }`}
+        >
+          <span className="text-xs font-semibold leading-none text-gray-700">
+            {senderInitial}
+          </span>
+        </div>
+      )}
+
+      <div
+        className={`flex flex-col min-w-0 w-full max-w-[680px] ${
+          isSelf ? "items-end" : "items-start"
+        }`}
+      >
+        {showHeader && (
+          <div
+            className={`flex items-center gap-1.5 ${
+              isVoiceOnlyMessage ? "mb-0" : "mb-1"
+            } px-0.5`}
+          >
+            {isSelf && (
+              <span className="text-[10px] text-gray-600">
+                {timeAgo(msg.created_at)}
+              </span>
+            )}
+            {canOpenPrivateChat && senderRow?.email ? (
+              <button
+                type="button"
+                onClick={handleProfileClick}
+                className="text-[12px] font-semibold leading-none text-gray-700 hover:text-blue-600 transition"
+                title="Start private chat"
+              >
+                {senderName}
+              </button>
+            ) : (
+              <span
+                className={`text-[12px] font-semibold leading-none ${
+                  isSelf ? "text-blue-600" : "text-gray-700"
+                }`}
+              >
+                {senderName}
+              </span>
+            )}
+            <span
+              className={`badge-base shrink-0 !text-[9px] !py-0.5 !px-2 ${badgeInfo.className}`}
+            >
+              {badgeInfo.icon && (
+                <FontAwesomeIcon
+                  icon={badgeInfo.icon}
+                  className="w-2.5 h-2.5"
+                />
+              )}
+              {badgeInfo.label}
+            </span>
+            {!isSelf && (
+              <span className="text-[10px] text-gray-600">
+                {timeAgo(msg.created_at)}
+              </span>
+            )}
+          </div>
+        )}
+
+        {msg.text && <MessageBubble text={msg.text} isSelf={isSelf} />}
+
+        {normalizedAttachments.length > 0 && (
+          <div
+            className={`${isVoiceOnlyMessage ? "mt-0" : "mt-1.5"} space-y-1.5`}
+          >
+            {normalizedAttachments.map((att, i) => (
+              <div key={i}>
+                <AttachmentView attachment={att} onOpenMedia={onOpenMedia} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MessageBubble({ text, isSelf }: { text: string; isSelf: boolean }) {
+  return (
+    <div
+      className={`px-5 py-3 text-[14px] leading-relaxed break-words break-all overflow-x-hidden ${
+        isSelf
+          ? "bg-blue-500 text-white rounded-xl rounded-br-sm shadow-sm"
+          : "bg-white border border-gray-200 text-gray-500 rounded-2xl rounded-bl-sm"
+      }`}
+    >
+      <div className="prose prose-invert prose-sm max-w-none break-words break-all whitespace-pre-wrap leading-[1.6]">
+        <ReactMarkdown
+          components={{
+            code({ className, children, ...props }) {
+              const match = /language-(\w+)/.exec(className || "");
+              const codeText = String(children).replace(/\n$/, "");
+
+              if (!match) {
+                return (
+                  <code
+                    className="px-1 py-0.5 rounded bg-gray-100 text-[0.85em]"
+                    {...(props as Record<string, unknown>)}
+                  >
+                    {children}
+                  </code>
+                );
+              }
+
+              return (
+                <CodeBlock
+                  code={codeText}
+                  language={match[1]}
+                  props={props as Record<string, unknown>}
+                />
+              );
+            },
+          }}
+        >
+          {text}
+        </ReactMarkdown>
+      </div>
+    </div>
   );
 }
 
@@ -353,18 +385,13 @@ function CodeBlock({
   );
 }
 
-function getAttachments(
-  attachment: {
-    mimetype: string;
-    public_url: string;
-    filename: string;
-  },
-  onOpenMedia: (payload: {
-    type: "image" | "video";
-    url: string;
-    filename: string;
-  }) => void,
-) {
+function AttachmentView({
+  attachment,
+  onOpenMedia,
+}: {
+  attachment: NormalizedAttachment;
+  onOpenMedia: (payload: MediaViewerPayload) => void;
+}) {
   const kind = getAttachmentKind(attachment);
 
   switch (kind) {
@@ -467,7 +494,6 @@ function getAttachmentKind(attachment: {
   if (/\.(mp3|wav|ogg|m4a|aac|flac|weba|opus|amr)(\?|$)/.test(source))
     return "audio";
 
-  // Mobile voice uploads can end up as generic binary mime.
   if (
     mime.includes("octet-stream") &&
     (source.includes("audio") ||
@@ -477,7 +503,6 @@ function getAttachmentKind(attachment: {
     return "audio";
   }
 
-  // Favor voice-note UX for unknown media blobs unless clearly image/video.
   if (!mime || mime.includes("octet-stream") || mime.includes("application/")) {
     return "audio";
   }
@@ -485,11 +510,7 @@ function getAttachmentKind(attachment: {
   return "file";
 }
 
-function normalizeAttachment(raw: unknown): {
-  mimetype: string;
-  public_url: string;
-  filename: string;
-} | null {
+function normalizeAttachment(raw: unknown): NormalizedAttachment | null {
   if (!raw || typeof raw !== "object") return null;
   const obj = raw as Record<string, unknown>;
 
@@ -522,11 +543,7 @@ function normalizeAttachment(raw: unknown): {
       "attachment",
   ).trim();
 
-  return {
-    mimetype,
-    public_url,
-    filename,
-  };
+  return { mimetype, public_url, filename };
 }
 
 function AudioAttachmentPlayer({ src, type }: { src: string; type: string }) {
@@ -618,14 +635,12 @@ function AudioAttachmentPlayer({ src, type }: { src: string; type: string }) {
   const md3WaveData = useMemo(() => {
     if (!waveData.length) return [];
 
-    // Smooth neighboring peaks so waveform looks cleaner (MD3-like, less jagged).
     const smooth = waveData.map((v, i) => {
       const a = waveData[Math.max(0, i - 1)] ?? v;
       const b = v;
       const c = waveData[Math.min(waveData.length - 1, i + 1)] ?? v;
       const d = waveData[Math.min(waveData.length - 1, i + 2)] ?? c;
-      const weighted = a * 0.18 + b * 0.44 + c * 0.28 + d * 0.1;
-      return weighted;
+      return a * 0.18 + b * 0.44 + c * 0.28 + d * 0.1;
     });
 
     const min = Math.min(...smooth);
@@ -635,7 +650,6 @@ function AudioAttachmentPlayer({ src, type }: { src: string; type: string }) {
     return smooth.map((v, i) => {
       const normalized = (v - min) / range;
       const shaped = Math.pow(normalized, 0.95);
-      // Gentle center emphasis like modern voice notes.
       const pos = i / Math.max(1, smooth.length - 1);
       const centerBoost = 0.88 + 0.18 * (1 - Math.abs(pos - 0.5) * 2);
       return 7 + shaped * 10 * centerBoost;
@@ -707,7 +721,6 @@ function AudioAttachmentPlayer({ src, type }: { src: string; type: string }) {
         const maxPeak = Math.max(0.0001, ...rawPeaks);
         const next = rawPeaks.map((p) => {
           const normalized = p / maxPeak;
-          // Gamma-ish curve gives clearer separation for low-dynamic voice notes.
           const shaped = Math.pow(normalized, 0.65);
           return Math.max(8, Math.min(24, Math.round(8 + shaped * 16)));
         });

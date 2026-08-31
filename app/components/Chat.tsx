@@ -386,7 +386,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                 value={messageSearch}
                 onChange={(e) => setMessageSearch(e.target.value)}
                 placeholder="Search Message..."
-                className="w-full bg-gray-50 border border-transparent rounded-xl py-2 pl-9 pr-4 text-sm text-gray-700 placeholder:text-gray-500 outline-none focus:border-blue-500/50 transition-colors shadow-inner"
+                className="w-full bg-gray-50 border border-transparent rounded py-2 pl-9 pr-4 text-sm text-gray-700 placeholder:text-gray-500 outline-none focus:border-blue-500/50 transition-colors"
               />
             </div>
           </div>
@@ -550,13 +550,13 @@ export default function Chat({ user }: { user: ChatUserShape }) {
               )}
 
               {/* Input Area */}
-              <div className="p-4 border-t border-gray-200 bg-white/[0.01] z-10 flex-shrink-0 pb-6 w-full">
+              <div className="p-4 border-t border-gray-200 bg-white z-10 flex-shrink-0 pb-6 w-full">
                 {attachments.length > 0 && (
                   <div className="mb-3 flex flex-wrap gap-2 px-1">
                     {attachments.map((file, index) => (
                       <div
                         key={index}
-                        className="bg-neutral-800/80 border border-gray-200 text-xs px-2.5 py-1.5 rounded-lg flex items-center gap-2 shadow-sm"
+                        className="bg-gray-200 border border-gray-200 text-xs px-2.5 py-1.5 rounded-lg flex items-center gap-2"
                       >
                         {file.type.startsWith("image/") ? (
                           <Image
@@ -596,7 +596,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                     isDraggingOver
                       ? "border-blue-500/60 bg-blue-50 shadow-lg shadow-blue-500/10"
                       : "border-gray-200 bg-gray-50 hover:border-gray-300 focus-within:border-blue-500/50 focus-within:bg-white focus-within:shadow-[0_0_15px_rgba(99,102,241,0.1)]"
-                  } transition-all duration-300 rounded-[24px] border flex items-end gap-2 p-2 shadow-sm backdrop-blur-md`}
+                  } transition-all duration-300 rounded-xl border flex items-end gap-2 p-2`}
                 >
                   <button
                     onClick={() => fileInputRef.current?.click()}
@@ -635,7 +635,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                       className={`h-10 px-5 rounded-[20px] font-semibold text-[14px] flex items-center gap-2.5 transition-all duration-300 flex-shrink-0
                       ${
                         canSendMessage
-                          ? "bg-gradient-to-r from-blue-500 to-violet-500 hover:from-blue-400 hover:to-violet-400 text-gray-900 shadow-md shadow-blue-500/25 active:scale-95"
+                          ? "bg-blue-500 text-white shadow-md shadow-blue-500/25"
                           : "bg-gray-50 text-gray-500 cursor-not-allowed"
                       }
                     `}
@@ -671,7 +671,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
         {/* Right Sidebar */}
         {conversationId && (
           <div
-            className={`w-full sm:w-[320px] flex-shrink-0 border-l border-gray-200 flex flex-col absolute right-0 top-0 bottom-0 h-full z-40 bg-white xl:bg-transparent xl:relative xl:transform-none transition-transform duration-300 ${showRightSidebar ? "translate-x-0" : "translate-x-full xl:translate-x-0 xl:hidden"}`}
+            className={`w-full sm:w-[320px] flex-shrink-0 border-l border-gray-200 flex flex-col absolute right-0 top-0 bottom-0 h-full z-40 bg-white xl:relative xl:transform-none transition-transform duration-300 ${showRightSidebar ? "translate-x-0" : "translate-x-full xl:translate-x-0 xl:hidden"}`}
           >
             <div className="absolute top-4 right-4 xl:hidden">
               <button
@@ -693,43 +693,6 @@ export default function Chat({ user }: { user: ChatUserShape }) {
               <p className="text-[13px] text-gray-500 font-medium mt-1">
                 {isGlobalActive ? "Community channel" : activeOtherUser?.email}
               </p>
-
-              <div className="flex items-center gap-3 mt-6 w-full justify-center">
-                <button
-                  onClick={() => {
-                    const input = document.getElementById("message-search");
-                    if (input) {
-                      input.focus();
-                    }
-                  }}
-                  className="w-11 h-11 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-gray-100 transition shadow-sm"
-                  title="Search Message"
-                >
-                  <FontAwesomeIcon icon={faSearch} className="w-4 h-4" />
-                </button>
-                <button
-                  disabled={isGlobalActive}
-                  onClick={handleDeleteConversation}
-                  className={`w-11 h-11 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition shadow-sm ${isGlobalActive ? "opacity-50 cursor-not-allowed" : "hover:text-red-600"}`}
-                  title="Delete Conversation"
-                >
-                  <FontAwesomeIcon icon={faTrash} className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => toast.info("Channel info")}
-                  className="w-11 h-11 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition shadow-sm"
-                  title="Info"
-                >
-                  <FontAwesomeIcon icon={faInfoCircle} className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => toast.success("Notifications muted")}
-                  className="w-11 h-11 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition shadow-sm"
-                  title="Mute"
-                >
-                  <FontAwesomeIcon icon={faBellSlash} className="w-4 h-4" />
-                </button>
-              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/30 border-t border-gray-200">
