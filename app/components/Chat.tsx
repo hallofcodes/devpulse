@@ -596,9 +596,9 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                     isDraggingOver
                       ? "border-blue-500/60 bg-blue-50 shadow-lg shadow-blue-500/10"
                       : "border-gray-200 bg-gray-50 hover:border-gray-300 focus-within:border-blue-500/50 focus-within:bg-white focus-within:shadow-[0_0_15px_rgba(99,102,241,0.1)]"
-                  } transition-all duration-300 rounded-xl border flex items-end gap-2 p-2`}
+                  } transition-all duration-300 rounded-xl border flex items-end gap-2`}
                 >
-                  <button
+                  {/*<button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isSendingMessage}
                     className="w-10 h-10 mb-[2px] rounded-full bg-transparent hover:bg-gray-100 flex items-center justify-center transition-all duration-300 flex-shrink-0 group"
@@ -607,7 +607,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                     <div className="w-[28px] h-[28px] rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:text-blue-600 text-gray-500 transition-colors">
                       <FontAwesomeIcon icon={faPlus} className="w-3.5 h-3.5" />
                     </div>
-                  </button>
+                  </button>*/}
                   <input
                     type="file"
                     ref={fileInputRef}
@@ -622,7 +622,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                       value={input}
                       onChange={handleInputChange}
                       onKeyDown={handleInputKeyDown}
-                      className="w-full block outline-none resize-none overflow-y-auto bg-transparent text-gray-700 placeholder:text-gray-500/80 leading-relaxed max-h-[150px] text-[15px] pt-0 pb-0 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/30"
+                      className="px-2 w-full block outline-none resize-none overflow-y-auto bg-transparent text-gray-700 placeholder:text-gray-500/80 leading-relaxed max-h-[150px] text-[15px] pt-0 pb-0 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-white/30"
                       placeholder="Type a message..."
                       rows={1}
                     />
@@ -632,7 +632,7 @@ export default function Chat({ user }: { user: ChatUserShape }) {
                     <button
                       onClick={sendMessage}
                       disabled={!canSendMessage}
-                      className={`h-10 px-5 rounded-[20px] font-semibold text-[14px] flex items-center gap-2.5 transition-all duration-300 flex-shrink-0
+                      className={`h-10 px-5 rounded-full font-semibold text-[14px] flex items-center gap-2.5 transition-all duration-300 flex-shrink-0
                       ${
                         canSendMessage
                           ? "bg-blue-500 text-white shadow-md shadow-blue-500/25"

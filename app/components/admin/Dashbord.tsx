@@ -105,12 +105,6 @@ export default function Dashboard() {
 
   return (
     <div className="p-6 md:p-8 space-y-6">
-      <div className="flex flex-row justify-between items-center w-full">
-        <div>
-          <h1 className="text-3xl font-bold text-blue-600">Admin Panel</h1>
-        </div>
-      </div>
-
       <TopInsights
         totalUsers={totalUsers}
         totalSeconds={totalSeconds}

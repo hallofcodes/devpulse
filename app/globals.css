@@ -78,9 +78,17 @@ body {
 .grid-bg {
     background-image:
         linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+        linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+        radial-gradient(
+            circle at center,
+            transparent 0%,
+            rgba(255, 255, 255, 0.9) 80%
+        );
 
-    background-size: 40px 40px;
+    background-size:
+        40px 40px,
+        40px 40px,
+        100% 100%;
 }
 
 /* Decorative orb disabled */
