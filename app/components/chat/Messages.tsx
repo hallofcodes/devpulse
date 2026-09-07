@@ -150,7 +150,6 @@ function MessageRow({
   );
   const senderRow = conversationRow?.users.find((u) => u.id === msg.sender_id);
 
-  const senderInitial = senderRow?.email?.[0]?.toUpperCase() ?? "?";
   const senderName = senderRow?.email?.split("@")?.[0] ?? "";
   const canOpenPrivateChat =
     !isSelf && conversationRow?.type === "global" && !!senderRow?.email;
@@ -160,9 +159,6 @@ function MessageRow({
   const text = msg.text ?? "";
   const hasMedia = !!msg.attachments?.length;
   const isLongMessage = hasMedia || text.length >= 120 || text.includes("\n");
-  const avatarTranslateClass = isLongMessage
-    ? "-translate-y-[4.5px]"
-    : "-translate-y-[4px]";
 
   const normalizedAttachments = (msg.attachments ?? [])
     .map(normalizeAttachment)
@@ -184,31 +180,6 @@ function MessageRow({
         isSelf ? "justify-end" : "justify-start"
       }`}
     >
-      {!isSelf && (
-        <div
-          role={canOpenPrivateChat ? "button" : undefined}
-          tabIndex={canOpenPrivateChat ? 0 : undefined}
-          onClick={handleProfileClick}
-          onKeyDown={(event) => {
-            if (event.key !== "Enter" && event.key !== " ") return;
-            event.preventDefault();
-            handleProfileClick();
-          }}
-          title={canOpenPrivateChat ? "Start private chat" : undefined}
-          className={`flex-shrink-0 ${avatarTranslateClass} w-8 h-8 rounded-full bg-neutral-700 border border-gray-200 flex items-center justify-center aspect-square overflow-hidden ${
-            showHeader ? "" : "invisible"
-          } ${
-            canOpenPrivateChat
-              ? "cursor-pointer hover:border-blue-400/60 hover:bg-neutral-700/80"
-              : ""
-          }`}
-        >
-          <span className="text-xs font-semibold leading-none text-gray-700">
-            {senderInitial}
-          </span>
-        </div>
-      )}
-
       <div
         className={`flex flex-col min-w-0 w-full max-w-[680px] ${
           isSelf ? "items-end" : "items-start"

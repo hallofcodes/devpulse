@@ -105,6 +105,7 @@ const navItems: NavItem[] = [
 // Primary items shown directly in the bottom nav (mobile).
 // Keep this to 4 so the "More" button fits as the 5th slot.
 const BOTTOM_NAV_HREFS = ["/d", "/d/chat", "/d/kanban", "/d/leaderboards"];
+const HIDDEN_BOTTOM_NAV_HREFS = ["/d/chat"];
 
 export default function DashboardLayout({
   email,

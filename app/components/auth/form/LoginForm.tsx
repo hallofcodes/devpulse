@@ -78,7 +78,6 @@ export default function LoginForm() {
 
     toast.promise(loginPromise, {
       pending: "Logging in...",
-      success: "Login successful! Redirecting...",
       error: {
         render({ data }) {
           const err = data as Error;
