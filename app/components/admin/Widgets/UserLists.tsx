@@ -1,6 +1,10 @@
 export interface UserStat {
-  user_id: string | null;
-  email: string | null;
+  user_id: string;
+  name: string;
+  email: string;
+  role: string;
+  email_verified: string;
+  wakatime_api_key: string;
   total_seconds: number | null;
   categories: unknown;
 }
@@ -13,29 +17,32 @@ export default function UserLists({
   loading: boolean;
 }) {
   return (
-    <div className="overflow-x-auto rounded-2xl border border-zinc-800">
+    <div className="overflow-x-auto glass-card">
       <table className="min-w-full text-sm">
-        <thead className="bg-zinc-900 text-gray-500">
+        <thead className="text-gray-500">
           <tr>
-            <th className="text-left p-3 whitespace-nowrap">User</th>
+            <th className="text-left p-3 whitespace-nowrap">Name</th>
             <th className="text-left p-3 whitespace-nowrap">Email</th>
             <th className="text-left p-3 whitespace-nowrap">
               Total Time (hrs)
             </th>
+            <th className="text-left p-3 whitespace-nowrap">Role</th>
+            <th className="text-left p-3 whitespace-nowrap">Verified</th>
+            <th className="text-left p-3 whitespace-nowrap">WakaTime</th>
             <th className="text-left p-3 whitespace-nowrap">Action</th>
           </tr>
         </thead>
         <tbody>
           {users.map((u, i) => (
-            <tr
-              key={i}
-              className="border-t border-zinc-800 hover:bg-zinc-900/50"
-            >
-              <td className="p-3">{u.user_id || "N/A"}</td>
+            <tr key={i} className="hover:bg-zinc-100">
+              <td className="p-3">{u.name || "N/A"}</td>
               <td className="p-3">{u.email || "N/A"}</td>
               <td className="p-3">
                 {Math.floor((u.total_seconds || 0) / 3600)}
               </td>
+              <td className="p-3 capitalize">{u.role || "N/A"}</td>
+              <td className="p-3">{u.email_verified}</td>
+              <td className="p-3">{u.wakatime_api_key}</td>
               <td></td>
             </tr>
           ))}

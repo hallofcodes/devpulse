@@ -4,7 +4,7 @@ import { Metadata } from "next/types";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Admin Panel - Devpulse",
+  title: "Admin Dashboard - Devpulse",
 };
 
 export default async function AdminPage() {
