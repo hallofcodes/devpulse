@@ -114,31 +114,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         update: {},
       });
 
-      const globalConversationId = process.env.GLOBAL_CONVERSATION_ID;
-      if (globalConversationId && user.email) {
-        await prisma.conversation.upsert({
-          where: { id: globalConversationId },
-          create: { id: globalConversationId, type: "GLOBAL" },
-          update: {},
-        });
-
-        await prisma.conversationParticipant.upsert({
-          where: {
-            conversation_id_user_id: {
-              conversation_id: globalConversationId,
-              user_id: user.id,
-            },
-          },
-          create: {
-            conversation_id: globalConversationId,
-            user_id: user.id,
-            email: user.email,
-            type: "global",
-          },
-          update: {},
-        });
-      }
-
       void account;
       return true;
     },

@@ -8,14 +8,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChartLine,
   faTrophy,
-  faMessage,
+  // my backspace is getting tired
   faCrown,
   faDashboard,
   faGlobe,
   faEdit,
   faCodeBranch,
   faBars,
-  faProjectDiagram,
   faGear,
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
@@ -44,20 +43,7 @@ const navItems: NavItem[] = [
     role: "user",
     category: "dev",
   },
-  {
-    href: "/d/chat",
-    label: "Chat",
-    icon: faMessage,
-    role: "user",
-    category: "dev",
-  },
-  {
-    href: "/d/kanban",
-    label: "Kanban",
-    icon: faProjectDiagram,
-    role: "user",
-    category: "dev",
-  },
+  
   {
     href: "/d/flex",
     label: "Flex",
@@ -104,8 +90,9 @@ const navItems: NavItem[] = [
 
 // Primary items shown directly in the bottom nav (mobile).
 // Keep this to 4 so the "More" button fits as the 5th slot.
-const BOTTOM_NAV_HREFS = ["/d", "/d/chat", "/d/kanban", "/d/leaderboards"];
-const HIDDEN_BOTTOM_NAV_HREFS = ["/d/chat"];
+// added this after removing faMessages
+const BOTTOM_NAV_HREFS = ["/d", "/d/flex", "/d/leaderboards"];
+// removed the last remaining kanban related code
 
 export default function DashboardLayout({
   email,

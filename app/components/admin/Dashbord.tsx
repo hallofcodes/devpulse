@@ -18,12 +18,11 @@ type CategoryStat = {
 export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<UserStat[]>([]);
-  const [totalThreads, setTotalThreads] = useState(0);
-  const [totalMessages, setTotalMessages] = useState(0);
+  // used backspace on two lines
   const [totalLeaderboards, setTotalLeaderboards] = useState(0);
   const [totalFlexes, setTotalFlexes] = useState(0);
   const categoryMap: Record<string, CategoryStat> = {};
-
+ // made use of backspace here too
   useEffect(() => {
     async function fetchStats() {
       setLoading(true);
@@ -31,8 +30,6 @@ export default function Dashboard() {
       if (res.ok) {
         const data = await res.json();
         setUsers(data.users ?? []);
-        setTotalThreads(data.totalThreads ?? 0);
-        setTotalMessages(data.totalMessages ?? 0);
         setTotalLeaderboards(data.totalLeaderboards ?? 0);
         setTotalFlexes(data.totalFlexes ?? 0);
       }
@@ -108,8 +105,6 @@ export default function Dashboard() {
       <TopInsights
         totalUsers={totalUsers}
         totalSeconds={totalSeconds}
-        totalThreads={totalThreads}
-        totalMessages={totalMessages}
       />
 
       <FeatureInsights

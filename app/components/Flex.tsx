@@ -253,12 +253,7 @@ export default function Flex() {
               <h2 className="text-xl font-bold mb-2">{flex.name}</h2>
               <p>{flex.text}</p>
 
-              <input
-                type="text"
-                value={flex.name || ""}
-                onChange={(e) => setFlex({ ...flex, name: e.target.value })}
-                className="w-full mt-4 px-3 py-2 bg-transparent text-gray-700 placeholder:text-gray-500 border border-neutral-800 rounded-xl outline-none"
-              />
+              {/* deleted a block from here. this is the last change i made there. everything is done. all that us remaining is double checking the changes. signing outt*/}
 
               <textarea
                 value={flex.project_description || ""}

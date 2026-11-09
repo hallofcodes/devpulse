@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import AOS from "aos";
+// why did you even add this AOS library? it wasnt even used anywhere
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowsRotate } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
@@ -11,7 +11,7 @@ import StatsCard from "./widgets/StatsCard";
 import LanguageDestribution from "./widgets/LanguageDestribution";
 import Editors from "./widgets/Editors";
 import OperatingSystem from "./widgets/OperatingSystem";
-import Projects from "./widgets/Projects";
+
 import Machines from "./widgets/Machines";
 import Categories from "./widgets/Categories";
 import Dependencies from "./widgets/Dependencies";
@@ -272,10 +272,8 @@ export default function Stats() {
           />
 
           {/* Core Codebase Breakdown */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-            <Projects stats={stats} animated={animated} />
-            <Dependencies stats={stats} animated={animated} />
-          </div>
+          <Dependencies stats={stats} animated={animated} />
+          {/* deleted somee code yaya */}
         </div>
 
         {/* Right Sidebar: Environment & Tools */}

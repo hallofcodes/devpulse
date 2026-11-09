@@ -17,7 +17,7 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden." }, { status: 403 });
   }
 
-  const [topUserStats, threads, messages, leaderboards, flexes] =
+  const [topUserStats, leaderboards, flexes] =
     await Promise.all([
       prisma.userStats.findMany({
         select: {
@@ -35,8 +35,8 @@ export async function GET() {
           },
         },
       }),
-      prisma.conversation.count(),
-      prisma.message.count({ where: { expires_at: { gt: new Date() } } }),
+      // removed prisma.conversation.count here
+      // also removed prisma.message.count toooo
       prisma.leaderboard.count(),
       prisma.userFlex.count({ where: { expires_at: { gt: new Date() } } }),
     ]);
@@ -54,8 +54,7 @@ export async function GET() {
 
   return NextResponse.json({
     users,
-    totalThreads: threads,
-    totalMessages: messages,
+    // removed excess code from here too
     totalLeaderboards: leaderboards,
     totalFlexes: flexes,
   });
